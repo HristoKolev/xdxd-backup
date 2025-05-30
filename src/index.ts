@@ -1,5 +1,6 @@
 import path from 'node:path';
 import process from 'node:process';
+import { fileURLToPath } from 'node:url';
 
 import { parseBackupIgnore } from '~backup-ignore.js';
 import { readCliArguments } from '~cli.js';
@@ -16,7 +17,8 @@ const cliArgs = readCliArguments();
 // START Test setup
 cliArgs.inputDirectory = 'archive-test';
 cliArgs.outputDirectory = '.';
-process.chdir('K:\\temp');
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
+process.chdir(path.resolve(__dirname, '../manual-test'));
 zx.cwd = process.cwd();
 // END Test setup
 
@@ -53,7 +55,7 @@ commandArgs.push(...ignoreList);
 commandArgs.push(outputArchivePath);
 
 // Input path
-commandArgs.push(`${inputPath}\\*`);
+commandArgs.push(`${inputPath}${path.sep}*`);
 
 const proc = zx`rar ${commandArgs}`;
 pipeStreamsToFile(proc, outputLogPath);

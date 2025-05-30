@@ -7,16 +7,16 @@ interface Cli {
 }
 
 export function readCliArguments() {
-  // TODO: Mark as required.
-  program.addOption(
-    new Option('-i, --inputDirectory <inputDirectory>', 'Input directory')
+  program.requiredOption(
+    '-i, --inputDirectory <inputDirectory>',
+    'Input directory'
   );
 
-  // TODO: Mark as required.
-  program.addOption(
-    new Option('-o, --outputDirectory <outputDirectory>', 'Output directory')
+  program.requiredOption(
+    '-o, --outputDirectory <outputDirectory>',
+    'Output directory'
   );
-
+ 
   program.addOption(
     new Option(
       '--ignoreFilePath <ignoreFilePath>',

@@ -1,6 +1,6 @@
 {
-  "exec": "npm run start",
-  "watch": ["."],
+  "exec": "npm run start -- -i archive-test -o .",
+  "watch": [".", "test/.backupignore"],
   "ext": "*",
-  "ignore": ["node_modules", "dist"]
+  "ignore": ["node_modules", "dist", "manual-test/*.log", "manual-test/*.rar"]
 }

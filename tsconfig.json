@@ -13,7 +13,8 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
     "noImplicitAny": true,
-    "pretty": true
+    "pretty": true,
+    "noEmit": true
   },
   "include": ["src"]
 }

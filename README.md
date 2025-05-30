@@ -1,5 +1,8 @@
 # xdxd-win-backup
 
+[![npm version](https://badge.fury.io/js/xdxd-win-backup.svg)](https://badge.fury.io/js/xdxd-win-backup)
+[![Lint](https://github.com/HristoKolev/xdxd-win-backup/workflows/Lint/badge.svg)](https://github.com/HristoKolev/xdxd-win-backup/actions/workflows/lint.yml)
+
 A command-line tool for creating RAR backups with ignore file support. Automatically creates timestamped archives while respecting ignore patterns similar to `.gitignore`.
 
 ## Features

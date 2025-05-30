@@ -1,0 +1,30 @@
+{
+  "name": "xdxd-win-backup",
+  "version": "0.0.1",
+  "type": "module",
+  "scripts": {
+    "start": "npm run build && node ./dist/index.js",
+    "start:watch": "nodemon",
+    "build": "rimraf dist && tsc && resolve-tspaths",
+    "format": "prettier --cache --write .",
+    "format-check": "prettier --cache --check .",
+    "lint": "eslint ./ --max-warnings 0",
+    "lint:fix": "npm run lint -- --fix"
+  },
+  "dependencies": {
+    "commander": "^14.0.0",
+    "log4js": "^6.9.1",
+    "zx": "^8.5.4"
+  },
+  "devDependencies": {
+    "@arabasta/eslint-config": "^1.0.8",
+    "@types/node": "^20.17.55",
+    "eslint": "^8.57.1",
+    "nodemon": "^3.1.10",
+    "prettier": "^3.5.3",
+    "resolve-tspaths": "^0.8.23",
+    "rimraf": "^6.0.1",
+    "typescript": "^5.7.3"
+  },
+  "license": "MIT"
+}

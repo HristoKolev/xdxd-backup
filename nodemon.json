@@ -1,0 +1,6 @@
+{
+  "exec": "npm run start",
+  "watch": ["."],
+  "ext": "*",
+  "ignore": ["node_modules", "dist"]
+}

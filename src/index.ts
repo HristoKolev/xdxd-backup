@@ -1,14 +1,12 @@
-#!/usr/bin/env node
-
 import path from 'node:path';
 import process from 'node:process';
 import { fileURLToPath } from 'node:url';
 
-import { parseBackupIgnore } from '~backup-ignore.js';
-import { readCliArguments } from '~cli.js';
-import { generateDateString } from '~date.js';
-import { configureLogging } from '~logging.js';
-import { pipeStreamsToFile, setupZx } from '~setup-zx.js';
+import { parseBackupIgnore } from './backup-ignore.js';
+import { readCliArguments } from './cli.js';
+import { generateDateString } from './date.js';
+import { configureLogging } from './logging.js';
+import { pipeStreamsToFile, setupZx } from './setup-zx.js';
 
 configureLogging();
 

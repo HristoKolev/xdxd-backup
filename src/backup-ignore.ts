@@ -2,7 +2,7 @@ import fsSync from 'node:fs';
 import path from 'node:path';
 import readline from 'node:readline';
 
-import { getLogger } from '~logging.js';
+import { getLogger } from './logging.js';
 
 function convertGitignoreToRarExclusion(pattern: string): string | undefined {
   // Remove leading slash if present

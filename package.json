@@ -33,7 +33,7 @@
   "scripts": {
     "start": "npm run build && node ./dist/index.js",
     "start:watch": "nodemon",
-    "build": "rimraf dist && tsc && resolve-tspaths",
+    "build": "rimraf dist && tsc",
     "format": "prettier --cache --write .",
     "format-check": "prettier --cache --check .",
     "lint": "eslint ./ --max-warnings 0",
@@ -53,7 +53,6 @@
     "nodemon": "^3.1.10",
     "prettier": "^3.5.3",
     "publint": "^0.3.12",
-    "resolve-tspaths": "^0.8.23",
     "rimraf": "^6.0.1",
     "typescript": "~5.5"
   },

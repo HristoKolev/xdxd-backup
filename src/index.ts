@@ -51,7 +51,11 @@ commandArgs.push('-r');
 commandArgs.push('-ep1');
 
 // Add ignore list
-const ignoreList = await parseBackupIgnore(cliArgs.ignoreFilePath);
+const ignoreFilePath = path.isAbsolute(cliArgs.ignoreFilePath)
+  ? cliArgs.ignoreFilePath
+  : path.join(inputPath, cliArgs.ignoreFilePath);
+
+const ignoreList = await parseBackupIgnore(ignoreFilePath);
 commandArgs.push(...ignoreList);
 
 // Output path

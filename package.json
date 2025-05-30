@@ -2,6 +2,9 @@
   "name": "xdxd-win-backup",
   "version": "0.0.1",
   "type": "module",
+  "bin": {
+    "xdxd-win-backup": "./dist/index.js"
+  },
   "scripts": {
     "start": "npm run build && node ./dist/index.js",
     "start:watch": "nodemon",

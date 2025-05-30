@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import path from 'node:path';
 import process from 'node:process';
 import { fileURLToPath } from 'node:url';
@@ -14,13 +16,13 @@ const zx = setupZx();
 
 const cliArgs = readCliArguments();
 
-// START Test setup
-cliArgs.inputDirectory = 'archive-test';
-cliArgs.outputDirectory = '.';
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-process.chdir(path.resolve(__dirname, '../manual-test'));
-zx.cwd = process.cwd();
-// END Test setup
+if (process.env.MANUAL_TESTING === 'true') {
+  cliArgs.inputDirectory = 'archive-test';
+  cliArgs.outputDirectory = '.';
+  const __dirname = path.dirname(fileURLToPath(import.meta.url));
+  process.chdir(path.resolve(__dirname, '../manual-test'));
+  zx.cwd = process.cwd();
+}
 
 const inputPath = path.resolve(cliArgs.inputDirectory);
 

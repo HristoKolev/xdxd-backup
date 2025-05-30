@@ -1,3 +1,7 @@
+import { readFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
 import { Option, program } from 'commander';
 
 interface Cli {
@@ -7,6 +11,15 @@ interface Cli {
 }
 
 export function readCliArguments() {
+  // eslint-disable-next-line @typescript-eslint/naming-convention,no-underscore-dangle
+  const __dirname = dirname(fileURLToPath(import.meta.url));
+  const packageJsonPath = join(__dirname, '../package.json');
+  const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf8')) as {
+    version: string;
+  };
+
+  program.version(packageJson.version);
+
   program.requiredOption(
     '-i, --inputDirectory <inputDirectory>',
     'Input directory'

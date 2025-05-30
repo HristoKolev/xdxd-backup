@@ -16,7 +16,7 @@ export function readCliArguments() {
     '-o, --outputDirectory <outputDirectory>',
     'Output directory'
   );
- 
+
   program.addOption(
     new Option(
       '--ignoreFilePath <ignoreFilePath>',

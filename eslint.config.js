@@ -128,5 +128,5 @@ export default tseslint.config(
     },
   }),
 
-  { ignores: ['dist', 'node_modules', 'manual-test'] }
+  { ignores: ['dist', 'node_modules', 'manual-test', '**/*.json'] }
 );

@@ -12,7 +12,9 @@
     "format": "prettier --cache --write .",
     "format-check": "prettier --cache --check .",
     "lint": "eslint ./ --max-warnings 0",
-    "lint:fix": "npm run lint -- --fix"
+    "lint:fix": "npm run lint -- --fix",
+    "lint:package": "publint --strict",
+    "prepublishOnly": "npm run build && npm run format-check && npm run lint && npm run lint:package"
   },
   "dependencies": {
     "commander": "^14.0.0",
@@ -25,9 +27,10 @@
     "eslint": "^8.57.1",
     "nodemon": "^3.1.10",
     "prettier": "^3.5.3",
+    "publint": "^0.3.12",
     "resolve-tspaths": "^0.8.23",
     "rimraf": "^6.0.1",
-    "typescript": "^5.7.3"
+    "typescript": "~5.5"
   },
   "license": "MIT"
 }

@@ -18,17 +18,20 @@ A TypeScript-based backup utility that creates RAR archives from directories wit
 ## Installation
 
 1. Clone the repository:
+
 ```bash
 git clone <repository-url>
 cd xdxd-win-backup
 ```
 
 2. Install dependencies:
+
 ```bash
 npm install
 ```
 
 3. Build the project:
+
 ```bash
 npm run build
 ```
@@ -44,7 +47,7 @@ npm start -- -i <input-directory> -o <output-directory> [--ignoreFilePath <ignor
 #### Options
 
 - `-i, --inputDirectory <path>` - Input directory to backup (required)
-- `-o, --outputDirectory <path>` - Output directory for archive (required)  
+- `-o, --outputDirectory <path>` - Output directory for archive (required)
 - `--ignoreFilePath <path>` - Path to backup ignore file (default: `.backupignore`)
 
 #### Example
@@ -85,11 +88,14 @@ Each line in the file represents a pattern to exclude from the backup.
 
 1. Make your changes
 2. Run tests and linting:
+
 ```bash
 npm run lint
 npm run format-check
 ```
+
 3. Build the project:
+
 ```bash
 npm run build
 ```
@@ -97,6 +103,7 @@ npm run build
 ## Output
 
 The tool generates two files:
+
 - `<directory-name>-<timestamp>.rar` - The backup archive
 - `<directory-name>-<timestamp>.log` - Log file with backup operation details
 

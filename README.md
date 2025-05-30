@@ -5,7 +5,7 @@ A command-line tool for creating RAR backups with ignore file support. Automatic
 ## Features
 
 - 📦 Creates timestamped RAR archives from any directory
-- 🚫 Supports `.backupignore` files for excluding files/directories  
+- 🚫 Supports `.backupignore` files for excluding files/directories
 - 📝 Generates detailed backup logs
 - ⚡ Fast and lightweight CLI tool
 - 🔧 Configurable ignore file paths
@@ -47,22 +47,25 @@ xdxd-win-backup -i <input-directory> -o <output-directory>
 ### Options
 
 - `-i, --inputDirectory <path>` - Directory to backup (required)
-- `-o, --outputDirectory <path>` - Directory where archive will be saved (required)  
+- `-o, --outputDirectory <path>` - Directory where archive will be saved (required)
 - `--ignoreFilePath <path>` - Custom ignore file path (default: `.backupignore`)
 
 ### Examples
 
 **Backup a project directory:**
+
 ```bash
 xdxd-win-backup -i ./my-project -o ./backups
 ```
 
 **Backup with custom ignore file:**
+
 ```bash
 xdxd-win-backup -i ./documents -o ./backups --ignoreFilePath ./custom-ignore.txt
 ```
 
 **Backup current directory:**
+
 ```bash
 xdxd-win-backup -i . -o ../backups
 ```
@@ -100,6 +103,7 @@ temp/
 ```
 
 Each line represents a pattern to exclude. Supports:
+
 - Directory names (with or without trailing `/`)
 - File extensions (`*.log`, `*.tmp`)
 - Specific filenames
@@ -113,6 +117,7 @@ The tool generates two files in the output directory:
 - **`<directory-name>-<timestamp>.log`** - Detailed backup operation log
 
 Example output files:
+
 ```
 my-project-2024-01-15_14-30-45.rar
 my-project-2024-01-15_14-30-45.log
@@ -123,15 +128,18 @@ my-project-2024-01-15_14-30-45.log
 ### Installing RAR Command-Line Tool
 
 **Windows:**
+
 1. Download WinRAR from [rarlab.com](https://www.rarlab.com/)
 2. Install and ensure `rar.exe` is in your PATH
 
 **macOS:**
+
 ```bash
 brew install rar
 ```
 
 **Linux (Ubuntu/Debian):**
+
 ```bash
 sudo apt install rar
 ```

@@ -6,7 +6,7 @@
   "bin": {
     "xdxd-win-backup": "./dist/index.js"
   },
-  "author": "HristoKolev",
+  "author": "Hristo Kolev",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/HristoKolev/xdxd-win-backup.git"

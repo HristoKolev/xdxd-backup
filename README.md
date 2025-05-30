@@ -1,112 +1,145 @@
 # xdxd-win-backup
 
-A TypeScript-based backup utility that creates RAR archives from directories with support for ignore patterns.
+A command-line tool for creating RAR backups with ignore file support. Automatically creates timestamped archives while respecting ignore patterns similar to `.gitignore`.
 
 ## Features
 
-- Creates timestamped RAR archives from input directories
-- Supports `.backupignore` files for excluding files/directories
-- Logs backup operations
-- Command-line interface with customizable options
+- 📦 Creates timestamped RAR archives from any directory
+- 🚫 Supports `.backupignore` files for excluding files/directories  
+- 📝 Generates detailed backup logs
+- ⚡ Fast and lightweight CLI tool
+- 🔧 Configurable ignore file paths
 
 ## Prerequisites
 
-- Node.js (version 18 or higher recommended)
-- RAR command-line tool must be installed and available in PATH
-- npm or yarn package manager
+- **Node.js** 18 or higher
+- **RAR command-line tool** must be installed and available in PATH
 
 ## Installation
 
-1. Clone the repository:
+### Global Installation (Recommended)
 
 ```bash
-git clone <repository-url>
-cd xdxd-win-backup
+npm install -g xdxd-win-backup
 ```
 
-2. Install dependencies:
+### Using npx (No Installation Required)
 
 ```bash
-npm install
+npx xdxd-win-backup -i <input-directory> -o <output-directory>
 ```
 
-3. Build the project:
+### Local Installation
 
 ```bash
-npm run build
+npm install xdxd-win-backup
+npx xdxd-win-backup -i <input-directory> -o <output-directory>
 ```
 
 ## Usage
 
-### Command Line Interface
+### Basic Usage
 
 ```bash
-npm start -- -i <input-directory> -o <output-directory> [--ignoreFilePath <ignore-file>]
+xdxd-win-backup -i <input-directory> -o <output-directory>
 ```
 
-#### Options
+### Options
 
-- `-i, --inputDirectory <path>` - Input directory to backup (required)
-- `-o, --outputDirectory <path>` - Output directory for archive (required)
-- `--ignoreFilePath <path>` - Path to backup ignore file (default: `.backupignore`)
+- `-i, --inputDirectory <path>` - Directory to backup (required)
+- `-o, --outputDirectory <path>` - Directory where archive will be saved (required)  
+- `--ignoreFilePath <path>` - Custom ignore file path (default: `.backupignore`)
 
-#### Example
+### Examples
 
+**Backup a project directory:**
 ```bash
-npm start -- -i ./my-project -o ./backups
+xdxd-win-backup -i ./my-project -o ./backups
 ```
 
-This will create a timestamped RAR archive like `my-project-2024-01-15_14-30-45.rar` in the `./backups` directory.
+**Backup with custom ignore file:**
+```bash
+xdxd-win-backup -i ./documents -o ./backups --ignoreFilePath ./custom-ignore.txt
+```
 
-### Backup Ignore File
+**Backup current directory:**
+```bash
+xdxd-win-backup -i . -o ../backups
+```
 
-Create a `.backupignore` file in your project root to exclude files and directories from the backup:
+## Backup Ignore File
+
+Create a `.backupignore` file in your input directory to exclude files and directories:
 
 ```
-node_modules
-.git
-*.log
-temp/
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build outputs
 dist/
+build/
+.next/
+
+# Version control
+.git/
+.svn/
+
+# Logs and temporary files
+*.log
+*.tmp
+temp/
+
+# Environment files
+.env
+.env.local
+
+# IDE files
+.vscode/
+.idea/
 ```
 
-Each line in the file represents a pattern to exclude from the backup.
-
-## Development
-
-### Available Scripts
-
-- `npm start` - Build and run the application
-- `npm run start:watch` - Run in watch mode for development
-- `npm run build` - Build the TypeScript project
-- `npm run format` - Format code with Prettier
-- `npm run format-check` - Check code formatting
-- `npm run lint` - Run ESLint
-- `npm run lint:fix` - Fix ESLint issues automatically
-
-### Development Workflow
-
-1. Make your changes
-2. Run tests and linting:
-
-```bash
-npm run lint
-npm run format-check
-```
-
-3. Build the project:
-
-```bash
-npm run build
-```
+Each line represents a pattern to exclude. Supports:
+- Directory names (with or without trailing `/`)
+- File extensions (`*.log`, `*.tmp`)
+- Specific filenames
+- Comments (lines starting with `#`)
 
 ## Output
 
-The tool generates two files:
+The tool generates two files in the output directory:
 
-- `<directory-name>-<timestamp>.rar` - The backup archive
-- `<directory-name>-<timestamp>.log` - Log file with backup operation details
+- **`<directory-name>-<timestamp>.rar`** - The backup archive
+- **`<directory-name>-<timestamp>.log`** - Detailed backup operation log
+
+Example output files:
+```
+my-project-2024-01-15_14-30-45.rar
+my-project-2024-01-15_14-30-45.log
+```
+
+## Requirements
+
+### Installing RAR Command-Line Tool
+
+**Windows:**
+1. Download WinRAR from [rarlab.com](https://www.rarlab.com/)
+2. Install and ensure `rar.exe` is in your PATH
+
+**macOS:**
+```bash
+brew install rar
+```
+
+**Linux (Ubuntu/Debian):**
+```bash
+sudo apt install rar
+```
 
 ## License
 
-MIT
+MIT - see [LICENSE](LICENSE) file for details.
+
+## Contributing
+
+Issues and pull requests are welcome on [GitHub](https://github.com/HristoKolev/xdxd-win-backup).

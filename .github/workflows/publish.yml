@@ -26,6 +26,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: NPM Audit
+        run: npm audit
+
       - name: Publish to npm
         run: npm publish --provenance --access public
         env:

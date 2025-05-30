@@ -42,3 +42,6 @@ jobs:
 
       - name: Check package lint
         run: npm run lint:package
+
+      - name: NPM Audit
+        run: npm audit

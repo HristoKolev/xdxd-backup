@@ -17,7 +17,7 @@ const cliArgs = readCliArguments();
 // START Test setup
 cliArgs.inputDirectory = 'archive-test';
 cliArgs.outputDirectory = '.';
-const __dirname = path.dirname(fileURLToPath(import.meta.url))
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 process.chdir(path.resolve(__dirname, '../manual-test'));
 zx.cwd = process.cwd();
 // END Test setup

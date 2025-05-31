@@ -8,16 +8,17 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: '${{ github.workflow }} ✨ ${{ github.event.pull_request.head.label || github.head_ref || github.ref }}'
   cancel-in-progress: true
 
 jobs:
   test:
-    runs-on: ubuntu-latest
-
     strategy:
       matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
         node-version: [20, 22]
+
+    runs-on: ${{ matrix.os }}
 
     steps:
       - name: Checkout code
@@ -31,10 +32,22 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Install rar and unrar
+      - name: Install rar and unrar (Ubuntu)
+        if: matrix.os == 'ubuntu-latest'
         run: |
           sudo apt-get update
           sudo apt-get install -y rar unrar
+
+      - name: Install rar and unrar (macOS)
+        if: matrix.os == 'macos-latest'
+        run: |
+          brew install rar unrar
+
+      - name: Install rar and unrar (Windows)
+        if: matrix.os == 'windows-latest'
+        run: |
+          choco install winrar --yes
+          choco install unrar --yes
 
       - name: Build project
         run: npm run build

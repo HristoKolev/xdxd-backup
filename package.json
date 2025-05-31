@@ -1,6 +1,6 @@
 {
   "name": "xdxd-win-backup",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "A command-line tool for creating RAR backups with ignore file support",
   "type": "module",
   "bin": {

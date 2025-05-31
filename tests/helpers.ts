@@ -1,4 +1,5 @@
-import fs from 'node:fs';
+import fsSync from 'node:fs';
+import fs from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import url from 'node:url';
@@ -25,12 +26,12 @@ export function useTempDir(prefix: string = 'useTempDir-') {
   let tempDir: string;
 
   beforeEach(() => {
-    tempDir = fs.mkdtempSync(path.join(os.tmpdir(), prefix));
+    tempDir = fsSync.mkdtempSync(path.join(os.tmpdir(), prefix));
   });
 
-  afterEach(() => {
+  afterEach(async () => {
     if (tempDir) {
-      fs.rmSync(tempDir, { recursive: true, force: true });
+      await fs.rm(tempDir, { recursive: true, force: true });
     }
   });
 
@@ -51,25 +52,27 @@ class TestEnv {
   inputPath!: string;
   outputPath!: string;
 
-  initialize(tempDir: string) {
+  async initialize(tempDir: string) {
     this.tempDir = tempDir;
     this.inputPath = path.join(tempDir, 'input');
     this.outputPath = path.join(tempDir, 'output');
 
-    fs.mkdirSync(this.inputPath, { recursive: true });
-    fs.mkdirSync(this.outputPath, { recursive: true });
+    await fs.mkdir(this.inputPath, { recursive: true });
+    await fs.mkdir(this.outputPath, { recursive: true });
 
     const inputTemplate = path.resolve(__dirname, 'test-data', 'input');
-    fs.cpSync(inputTemplate, this.inputPath, { recursive: true });
+    await fs.cp(inputTemplate, this.inputPath, { recursive: true });
   }
 
-  listOutputFiles(): OutputFileListResult {
+  async listOutputFiles(): Promise<OutputFileListResult> {
     const result: OutputFileListResult = {
       archiveFileNames: [],
       logFileNames: [],
     };
 
-    const outputFiles = fs.readdirSync(this.outputPath);
+    const outputFiles = await fs.readdir(this.outputPath);
+
+    outputFiles.sort((a, b) => a.localeCompare(b));
 
     result.archiveFileNames = outputFiles.filter((f) =>
       f.match(/^input-\d{2}-\d{2}-\d{4}_\d{2}-\d{2}-\d{2}\.rar$/)
@@ -81,26 +84,26 @@ class TestEnv {
     return result;
   }
 
-  listFilePaths(inputPath: string): string[] {
+  async listFilePaths(inputPath: string): Promise<string[]> {
     const result: string[] = [];
 
-    function recurse(inputPathNested: string) {
-      const files = fs.readdirSync(inputPathNested);
+    async function recurse(inputPathNested: string) {
+      const files = await fs.readdir(inputPathNested);
 
       for (const file of files) {
         const fullPath = path.join(inputPathNested, file);
 
-        const stats = fs.statSync(fullPath);
+        const stats = await fs.stat(fullPath);
 
         if (stats.isDirectory()) {
-          recurse(fullPath);
+          await recurse(fullPath);
         } else {
           result.push(path.relative(inputPath, fullPath));
         }
       }
     }
 
-    recurse(inputPath);
+    await recurse(inputPath);
 
     result.sort((a, b) => a.localeCompare(b));
 
@@ -117,8 +120,8 @@ export function useTestSetup() {
 
   const testEnv = new TestEnv();
 
-  beforeEach(() => {
-    testEnv.initialize(getTempDir());
+  beforeEach(async () => {
+    await testEnv.initialize(getTempDir());
   });
 
   return testEnv;

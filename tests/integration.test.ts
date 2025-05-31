@@ -1,4 +1,4 @@
-import fs from 'node:fs';
+import fs from 'node:fs/promises';
 import path from 'node:path';
 
 import { execa } from 'execa';
@@ -22,7 +22,7 @@ describe('Integration Tests', () => {
 
       expect(result.exitCode).toBe(0);
 
-      const outputFiles = testEnv.listOutputFiles();
+      const outputFiles = await testEnv.listOutputFiles();
 
       expect(outputFiles.archiveFileNames).toHaveLength(1);
       expect(outputFiles.logFileNames).toHaveLength(1);
@@ -39,15 +39,15 @@ describe('Integration Tests', () => {
 
       expect(result.exitCode).toBe(0);
 
-      const outputFiles = testEnv.listOutputFiles();
+      const outputFiles = await testEnv.listOutputFiles();
       expect(outputFiles.archiveFileNames).toHaveLength(1);
 
       // Get list of original input files
-      const originalFiles = testEnv.listFilePaths(testEnv.inputPath);
+      const originalFiles = await testEnv.listFilePaths(testEnv.inputPath);
 
       // Extract archive to a temp directory
       const extractPath = path.join(testEnv.outputPath, 'extracted');
-      fs.mkdirSync(extractPath, { recursive: true });
+      await fs.mkdir(extractPath, { recursive: true });
 
       const archivePath = path.join(
         testEnv.outputPath,
@@ -57,18 +57,18 @@ describe('Integration Tests', () => {
       await testEnv.extractArchive(archivePath, extractPath);
 
       // Get list of extracted files
-      const extractedFiles = testEnv.listFilePaths(extractPath);
+      const extractedFiles = await testEnv.listFilePaths(extractPath);
 
       // Compare file lists
       expect(extractedFiles).toEqual(originalFiles);
 
       // Compare file contents
       for (const filePath of originalFiles) {
-        const originalContent = fs.readFileSync(
+        const originalContent = await fs.readFile(
           path.join(testEnv.inputPath, filePath)
         );
 
-        const extractedContent = fs.readFileSync(
+        const extractedContent = await fs.readFile(
           path.join(extractPath, filePath)
         );
 

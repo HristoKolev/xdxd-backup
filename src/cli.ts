@@ -1,4 +1,4 @@
-import fs from 'node:fs';
+import fs from 'node:fs/promises';
 import path from 'node:path';
 import url from 'node:url';
 
@@ -10,11 +10,13 @@ interface Cli {
   ignoreFilePath: string;
 }
 
-export function readCliArguments() {
+export async function readCliArguments() {
   // eslint-disable-next-line @typescript-eslint/naming-convention,no-underscore-dangle
   const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
   const packageJsonPath = path.join(__dirname, '../package.json');
-  const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8')) as {
+  const packageJson = JSON.parse(
+    await fs.readFile(packageJsonPath, 'utf8')
+  ) as {
     version: string;
   };
 

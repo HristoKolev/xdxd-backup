@@ -10,7 +10,7 @@ configureLogging();
 
 const zx = setupZx();
 
-const cliArgs = readCliArguments();
+const cliArgs = await readCliArguments();
 
 const inputPath = path.resolve(cliArgs.inputDirectory);
 

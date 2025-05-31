@@ -1,4 +1,4 @@
-import fs from 'node:fs';
+import fs from 'node:fs/promises';
 import path from 'node:path';
 
 import { execa } from 'execa';
@@ -6,9 +6,9 @@ import { describe, expect, it } from 'vitest';
 
 import { buildProject } from './helpers.js';
 
-function getCurrentVersion() {
+async function getCurrentVersion() {
   const packageJson = JSON.parse(
-    fs.readFileSync(path.resolve(process.cwd(), 'package.json'), 'utf8')
+    await fs.readFile(path.resolve(process.cwd(), 'package.json'), 'utf8')
   ) as { version: string };
 
   return packageJson.version;
@@ -23,7 +23,7 @@ describe('CLI', () => {
         cwd: path.resolve(process.cwd()),
       });
 
-      expect(result.stdout.trim()).toBe(getCurrentVersion());
+      expect(result.stdout.trim()).toBe(await getCurrentVersion());
       expect(result.exitCode).toBe(0);
     });
 
@@ -32,7 +32,7 @@ describe('CLI', () => {
         cwd: path.resolve(process.cwd()),
       });
 
-      expect(result.stdout.trim()).toBe(getCurrentVersion());
+      expect(result.stdout.trim()).toBe(await getCurrentVersion());
       expect(result.exitCode).toBe(0);
     });
   });

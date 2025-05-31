@@ -1,0 +1,6 @@
+{
+  "exec": "npm run build && npm link",
+  "watch": ["."],
+  "ext": "*",
+  "ignore": ["node_modules", ".idea", "dist", "manual-test"]
+}

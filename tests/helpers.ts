@@ -18,7 +18,7 @@ export function buildProject() {
       await execa('chmod', ['+x', './dist/index.js']);
     }
 
-    await execa('npm', ['link']);
+    await execa('npm', ['install', '-g', '.']);
   });
 }
 

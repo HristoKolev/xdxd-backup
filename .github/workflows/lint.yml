@@ -19,6 +19,7 @@ jobs:
         node-version: [20, 22]
 
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
 
     concurrency:
       group: '${{ github.workflow }}-${{ matrix.os }}-${{ matrix.node-version }} ✨ ${{ github.event.pull_request.head.label || github.head_ref || github.ref }}'

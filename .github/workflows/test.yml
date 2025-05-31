@@ -57,6 +57,7 @@ jobs:
         run: |
           choco install winrar --yes
           choco install unrar --yes
+          echo "$env:ProgramFiles\WinRAR" >> $env:GITHUB_PATH
 
       - name: Build project
         run: npm run build

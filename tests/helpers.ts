@@ -1,23 +1,16 @@
-import { resolve } from 'node:path';
+import os from 'node:os';
 
 import { execa } from 'execa';
 import { beforeAll } from 'vitest';
 
 export function buildProject() {
   beforeAll(async () => {
-    await execa('npm', ['run', 'build'], {
-      cwd: resolve(process.cwd()),
-      stdio: 'inherit',
-    });
+    await execa('npm', ['run', 'build']);
 
-    await execa('chmod', ['+x', './dist/index.js'], {
-      cwd: resolve(process.cwd()),
-      stdio: 'inherit',
-    });
+    if (os.platform() !== 'win32') {
+      await execa('chmod', ['+x', './dist/index.js']);
+    }
 
-    await execa('npm', ['link'], {
-      cwd: resolve(process.cwd()),
-      stdio: 'inherit',
-    });
+    await execa('npm', ['link']);
   });
 }

@@ -37,9 +37,6 @@ describe('Integration Tests', () => {
       const outputFiles = await testEnv.listOutputFiles();
       expect(outputFiles.archiveFileNames).toHaveLength(1);
 
-      // Get list of original input files
-      const originalFiles = await testEnv.listFilePaths(testEnv.inputPath);
-
       // Extract archive to a temp directory
       const extractPath = path.join(testEnv.outputPath, 'extracted');
       await fs.mkdir(extractPath, { recursive: true });
@@ -53,6 +50,9 @@ describe('Integration Tests', () => {
 
       // Get list of extracted files
       const extractedFiles = await testEnv.listFilePaths(extractPath);
+
+      // Get list of original input files
+      const originalFiles = await testEnv.listFilePaths(testEnv.inputPath);
 
       // Compare file lists
       expect(extractedFiles).toEqual(originalFiles);
@@ -69,6 +69,116 @@ describe('Integration Tests', () => {
 
         expect(extractedContent).toEqual(originalContent);
       }
+    });
+  });
+
+  describe('Backup ignore functionality', () => {
+    it('should exclude files matching .backupignore patterns', async () => {
+      // Create .backupignore file in the test input directory
+      const backupIgnoreDestPath = path.join(
+        testEnv.inputPath,
+        '.backupignore'
+      );
+
+      const backupIgnoreContent = `# Test .backupignore file for integration tests
+
+# Ignore specific files
+file6.txt
+
+# Ignore files with specific extensions
+*.log
+
+# Ignore directories
+dir3/
+
+# Ignore files in specific paths
+dir1/file2.txt
+
+# Ignore patterns with wildcards
+*temp*
+test_*.txt`;
+
+      await fs.writeFile(backupIgnoreDestPath, backupIgnoreContent);
+
+      // Create backup with ignore file
+      const result = await testEnv.runBackup({
+        inputDirectory: testEnv.inputPath,
+        outputDirectory: testEnv.outputPath,
+        ignoreFilePath: backupIgnoreDestPath,
+      });
+
+      expect(result.exitCode).toBe(0);
+
+      const outputFiles = await testEnv.listOutputFiles();
+      expect(outputFiles.archiveFileNames).toHaveLength(1);
+
+      // Extract archive to verify contents
+      const extractPath = path.join(testEnv.outputPath, 'extracted');
+      await fs.mkdir(extractPath, { recursive: true });
+
+      const archivePath = path.join(
+        testEnv.outputPath,
+        outputFiles.archiveFileNames[0]
+      );
+
+      await testEnv.extractArchive(archivePath, extractPath);
+
+      // Get list of extracted files
+      const extractedFiles = await testEnv.listFilePaths(extractPath);
+
+      // Verify that ignored files are NOT present in the archive
+      expect(extractedFiles).not.toContain('file6.txt'); // specific file
+      expect(extractedFiles).not.toContain('application.log'); // *.log pattern
+      expect(extractedFiles).not.toContain('temp_file.txt'); // *temp* pattern
+      expect(extractedFiles).not.toContain('test_example.txt'); // test_*.txt pattern
+      expect(extractedFiles).not.toContain('dir1/file2.txt'); // specific path
+
+      // Verify that dir3/ and its contents are NOT present
+      const dir3Files = extractedFiles.filter((file) =>
+        file.startsWith('dir3/')
+      );
+      expect(dir3Files).toHaveLength(0);
+
+      // Verify that files that should be included ARE present
+      expect(extractedFiles).toContain('file1.txt');
+      expect(extractedFiles).toContain('dir1/file3.txt');
+      expect(extractedFiles).toContain('dir1/dir2/file4.txt');
+      expect(extractedFiles).toContain('dir1/dir2/file5.txt');
+    });
+
+    it('should handle empty ignore file gracefully', async () => {
+      // Create empty .backupignore file
+      const emptyIgnorePath = path.join(testEnv.inputPath, '.backupignore');
+      await fs.writeFile(emptyIgnorePath, '');
+
+      // Create backup with empty ignore file
+      const result = await testEnv.runBackup({
+        inputDirectory: testEnv.inputPath,
+        outputDirectory: testEnv.outputPath,
+      });
+
+      expect(result.exitCode).toBe(0);
+
+      const outputFiles = await testEnv.listOutputFiles();
+      expect(outputFiles.archiveFileNames).toHaveLength(1);
+
+      // Extract and verify all files are included
+      const extractPath = path.join(testEnv.outputPath, 'extracted_empty');
+      await fs.mkdir(extractPath, { recursive: true });
+
+      const archivePath = path.join(
+        testEnv.outputPath,
+        outputFiles.archiveFileNames[0]
+      );
+
+      await testEnv.extractArchive(archivePath, extractPath);
+      const extractedFiles = await testEnv.listFilePaths(extractPath);
+
+      // Get list of original input files
+      const originalFiles = await testEnv.listFilePaths(testEnv.inputPath);
+
+      // Compare file lists
+      expect(extractedFiles).toEqual(originalFiles);
     });
   });
 });

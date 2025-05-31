@@ -4,12 +4,7 @@ import path from 'node:path';
 import { execa } from 'execa';
 import { describe, expect, it } from 'vitest';
 
-import {
-  buildProject,
-  listFilePaths,
-  listOutputFiles,
-  useTestSetup,
-} from './helpers.js';
+import { buildProject, useTestSetup } from './helpers.js';
 
 describe('Integration Tests', () => {
   buildProject();
@@ -27,7 +22,7 @@ describe('Integration Tests', () => {
 
       expect(result.exitCode).toBe(0);
 
-      const outputFiles = listOutputFiles(testEnv.outputPath);
+      const outputFiles = testEnv.listOutputFiles();
 
       expect(outputFiles.archiveFileNames).toHaveLength(1);
       expect(outputFiles.logFileNames).toHaveLength(1);
@@ -44,11 +39,11 @@ describe('Integration Tests', () => {
 
       expect(result.exitCode).toBe(0);
 
-      const outputFiles = listOutputFiles(testEnv.outputPath);
+      const outputFiles = testEnv.listOutputFiles();
       expect(outputFiles.archiveFileNames).toHaveLength(1);
 
       // Get list of original input files
-      const originalFiles = listFilePaths(testEnv.inputPath);
+      const originalFiles = testEnv.listFilePaths(testEnv.inputPath);
 
       // Extract archive to a temp directory
       const extractPath = path.join(testEnv.outputPath, 'extracted');
@@ -59,24 +54,26 @@ describe('Integration Tests', () => {
         outputFiles.archiveFileNames[0]
       );
 
-      await execa('unrar', ['x', archivePath, `${extractPath}${path.sep}`]);
+      await testEnv.extractArchive(archivePath, extractPath);
 
       // Get list of extracted files
-      const extractedFiles = listFilePaths(extractPath);
+      const extractedFiles = testEnv.listFilePaths(extractPath);
 
       // Compare file lists
       expect(extractedFiles).toEqual(originalFiles);
 
-      // // Compare file contents
-      // for (const filePath of originalFiles) {
-      //   const originalContent = fs.readFileSync(
-      //     path.join(testEnv.inputPath, filePath)
-      //   );
-      //   const extractedContent = fs.readFileSync(
-      //     path.join(extractPath, filePath)
-      //   );
-      //   expect(extractedContent).toEqual(originalContent);
-      // }
+      // Compare file contents
+      for (const filePath of originalFiles) {
+        const originalContent = fs.readFileSync(
+          path.join(testEnv.inputPath, filePath)
+        );
+
+        const extractedContent = fs.readFileSync(
+          path.join(extractPath, filePath)
+        );
+
+        expect(extractedContent).toEqual(originalContent);
+      }
     });
   });
 });

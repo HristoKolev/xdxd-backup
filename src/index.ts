@@ -1,6 +1,4 @@
 import path from 'node:path';
-import process from 'node:process';
-import { fileURLToPath } from 'node:url';
 
 import { parseBackupIgnore } from './backup-ignore.js';
 import { readCliArguments } from './cli.js';
@@ -13,15 +11,6 @@ configureLogging();
 const zx = setupZx();
 
 const cliArgs = readCliArguments();
-
-if (process.env.MANUAL_TESTING === 'true') {
-  cliArgs.inputDirectory = 'archive-test';
-  cliArgs.outputDirectory = '.';
-  // eslint-disable-next-line @typescript-eslint/naming-convention,no-underscore-dangle
-  const __dirname = path.dirname(fileURLToPath(import.meta.url));
-  process.chdir(path.resolve(__dirname, '../manual-test'));
-  zx.cwd = process.cwd();
-}
 
 const inputPath = path.resolve(cliArgs.inputDirectory);
 

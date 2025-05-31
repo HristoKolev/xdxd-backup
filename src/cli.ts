@@ -4,7 +4,7 @@ import url from 'node:url';
 
 import { Option, program } from 'commander';
 
-interface Cli {
+export interface CliOptions {
   inputDirectory: string;
   outputDirectory: string;
   ignoreFilePath: string;
@@ -43,5 +43,5 @@ export async function readCliArguments() {
     ).default('.backupignore')
   );
 
-  return program.parse().opts<Cli>();
+  return program.parse().opts<CliOptions>();
 }

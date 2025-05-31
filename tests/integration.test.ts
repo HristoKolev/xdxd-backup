@@ -1,7 +1,6 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 
-import { execa } from 'execa';
 import { describe, expect, it } from 'vitest';
 
 import { buildProject, useTestSetup } from './helpers.js';
@@ -13,12 +12,10 @@ describe('Integration Tests', () => {
 
   describe('End-to-end backup process', () => {
     it('should create backup archive with correct structure', async () => {
-      const result = await execa('xdxd-win-backup', [
-        '-i',
-        testEnv.inputPath,
-        '-o',
-        testEnv.outputPath,
-      ]);
+      const result = await testEnv.runBackup({
+        inputDirectory: testEnv.inputPath,
+        outputDirectory: testEnv.outputPath,
+      });
 
       expect(result.exitCode).toBe(0);
 
@@ -30,12 +27,10 @@ describe('Integration Tests', () => {
 
     it('should create archive that unpacks to match input files', async () => {
       // Create backup
-      const result = await execa('xdxd-win-backup', [
-        '-i',
-        testEnv.inputPath,
-        '-o',
-        testEnv.outputPath,
-      ]);
+      const result = await testEnv.runBackup({
+        inputDirectory: testEnv.inputPath,
+        outputDirectory: testEnv.outputPath,
+      });
 
       expect(result.exitCode).toBe(0);
 

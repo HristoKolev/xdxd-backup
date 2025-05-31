@@ -2,24 +2,40 @@ import fsSync from 'node:fs';
 import fs from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
+import process from 'node:process';
 import url from 'node:url';
 
 import { execa } from 'execa';
 import { afterEach, beforeAll, beforeEach } from 'vitest';
 
+import type { CliOptions } from '../src/cli.js';
+
 // eslint-disable-next-line no-underscore-dangle,@typescript-eslint/naming-convention
 const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
+
+export function isDetailedLoggingEnabled() {
+  return process.env.CI_DEBUG === '1';
+}
 
 export function buildProject() {
   if (process.env.BUILD_AND_INSTALL_ON_EVERY_TEST === 'true') {
     beforeAll(async () => {
-      await execa('npm', ['run', 'build']);
+      await execa('npm', ['run', 'build'], {
+        stderr: isDetailedLoggingEnabled() ? 'inherit' : undefined,
+        stdout: isDetailedLoggingEnabled() ? 'inherit' : undefined,
+      });
 
       if (os.platform() !== 'win32') {
-        await execa('chmod', ['+x', './dist/index.js']);
+        await execa('chmod', ['+x', './dist/index.js'], {
+          stderr: isDetailedLoggingEnabled() ? 'inherit' : undefined,
+          stdout: isDetailedLoggingEnabled() ? 'inherit' : undefined,
+        });
       }
 
-      await execa('npm', ['link']);
+      await execa('npm', ['link'], {
+        stderr: isDetailedLoggingEnabled() ? 'inherit' : undefined,
+        stdout: isDetailedLoggingEnabled() ? 'inherit' : undefined,
+      });
     });
   }
 }
@@ -117,7 +133,31 @@ class TestEnv {
   }
 
   async extractArchive(archivePath: string, extractPath: string) {
-    await execa('unrar', ['x', archivePath, `${extractPath}${path.sep}`]);
+    await execa('unrar', ['x', archivePath, `${extractPath}${path.sep}`], {
+      stderr: isDetailedLoggingEnabled() ? 'inherit' : undefined,
+      stdout: isDetailedLoggingEnabled() ? 'inherit' : undefined,
+    });
+  }
+
+  async runBackup(cliOptions: Partial<CliOptions>) {
+    const cliArguments: string[] = [];
+
+    if (cliOptions.inputDirectory) {
+      cliArguments.push(`-i`, cliOptions.inputDirectory);
+    }
+
+    if (cliOptions.outputDirectory) {
+      cliArguments.push(`-o`, cliOptions.outputDirectory);
+    }
+
+    if (cliOptions.ignoreFilePath) {
+      cliArguments.push(`--ignoreFilePath`, cliOptions.ignoreFilePath);
+    }
+
+    return execa('xdxd-win-backup', cliArguments, {
+      stderr: isDetailedLoggingEnabled() ? 'inherit' : undefined,
+      stdout: isDetailedLoggingEnabled() ? 'inherit' : undefined,
+    });
   }
 }
 

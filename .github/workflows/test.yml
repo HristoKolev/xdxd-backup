@@ -7,6 +7,9 @@ on:
     branches: [main]
   workflow_dispatch:
 
+env:
+  CI: true
+
 jobs:
   test:
     strategy:
@@ -29,6 +32,11 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
+
+      - name: Output Node and NPM versions
+        run: |
+          echo "Node.js version: $(node -v)"
+          echo "NPM version: $(npm -v)"
 
       - name: Install dependencies
         run: npm ci
@@ -54,4 +62,6 @@ jobs:
         run: npm run build
 
       - name: Run tests
+        env:
+          CI_DEBUG: ${{ runner.debug }}
         run: npm run test

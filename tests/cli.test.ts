@@ -1,38 +1,26 @@
-import fs from 'node:fs/promises';
-import path from 'node:path';
-
 import { execa } from 'execa';
 import { describe, expect, it } from 'vitest';
 
 import { buildProject } from './helpers.js';
-
-async function getCurrentVersion() {
-  const packageJson = JSON.parse(
-    await fs.readFile(path.resolve(process.cwd(), 'package.json'), 'utf8')
-  ) as { version: string };
-
-  return packageJson.version;
-}
+import packageJSON from '../package.json';
 
 describe('CLI', () => {
   buildProject();
 
   describe('version', () => {
     it('should display version when --version flag is used', async () => {
-      const result = await execa('xdxd-win-backup', ['--version'], {
-        cwd: path.resolve(process.cwd()),
-      });
+      const result = await execa('xdxd-win-backup', ['--version']);
 
-      expect(result.stdout.trim()).toBe(await getCurrentVersion());
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      expect(result.stdout.trim()).toBe(packageJSON.version);
       expect(result.exitCode).toBe(0);
     });
 
     it('should display version when -v flag is used', async () => {
-      const result = await execa('xdxd-win-backup', ['-v'], {
-        cwd: path.resolve(process.cwd()),
-      });
+      const result = await execa('xdxd-win-backup', ['-v']);
 
-      expect(result.stdout.trim()).toBe(await getCurrentVersion());
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      expect(result.stdout.trim()).toBe(packageJSON.version);
       expect(result.exitCode).toBe(0);
     });
   });
@@ -41,7 +29,6 @@ describe('CLI', () => {
     it('should require input and output directories', async () => {
       const result = await execa('xdxd-win-backup', [], {
         reject: false,
-        cwd: path.resolve(process.cwd()),
       });
 
       expect(result.exitCode).toBe(1);
@@ -49,10 +36,7 @@ describe('CLI', () => {
     });
 
     it('should show help when --help is used', async () => {
-      const result = await execa('xdxd-win-backup', ['--help'], {
-        reject: false,
-        cwd: path.resolve(process.cwd()),
-      });
+      const result = await execa('xdxd-win-backup', ['--help']);
 
       expect(result.exitCode).toBe(0);
       expect(result.stdout).toContain('Usage:');

@@ -28,6 +28,8 @@ const outputLogPath = path.join(
 
 const commandArgs: string[] = [];
 
+// cats
+
 // Add files to archive
 commandArgs.push('a');
 

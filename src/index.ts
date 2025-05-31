@@ -1,3 +1,4 @@
+import os from 'node:os';
 import path from 'node:path';
 
 import { parseBackupIgnore } from './backup-ignore.js';
@@ -51,6 +52,13 @@ commandArgs.push(outputArchivePath);
 // Input path
 commandArgs.push(`${inputPath}${path.sep}*`);
 
-const proc = zx`rar ${commandArgs}`;
+const proc = zx`rar1 ${commandArgs}`;
 pipeStreamsToFile(proc, outputLogPath);
-await proc;
+
+const result = await proc;
+
+if (os.platform() === 'win32') {
+  if (result.stderr.trim().length) {
+    process.exit(1);
+  }
+}

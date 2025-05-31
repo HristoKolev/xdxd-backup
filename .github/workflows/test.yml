@@ -42,7 +42,7 @@ jobs:
       - name: Install rar and unrar (macOS)
         if: matrix.os == 'macos-latest'
         run: |
-          brew install rar unrar
+          brew install rar
 
       - name: Install rar and unrar (Windows)
         if: matrix.os == 'windows-latest'

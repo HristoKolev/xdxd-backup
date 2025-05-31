@@ -3,6 +3,7 @@ import {
   configFilesConfig,
   typescriptConfig,
   typescriptDefinitionsConfig,
+  vitestConfig,
 } from '@arabasta/eslint-config';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import globals from 'globals';
@@ -117,6 +118,20 @@ export default tseslint.config(
     extends: [...configFilesConfig],
     rules: {
       // Put your rules here.
+    },
+  }),
+
+  ...tseslint.config({
+    name: 'Test files and test related infrastructure',
+    files: [
+      `src/**/*.+(spec|test).+(${allExtensions.join('|')})`,
+      `tests/**/*.+(${allExtensions.join('|')})`,
+      `__mocks__/**/*.+(${allExtensions.join('|')})`,
+      'setupTests.ts',
+    ],
+    extends: [...vitestConfig],
+    rules: {
+      'import/no-nodejs-modules': 'off',
     },
   }),
 

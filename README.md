@@ -2,6 +2,7 @@
 
 [![npm version](https://img.shields.io/npm/v/xdxd-win-backup.svg)](https://www.npmjs.com/package/xdxd-win-backup)
 [![Lint](https://github.com/HristoKolev/xdxd-win-backup/workflows/Lint/badge.svg)](https://github.com/HristoKolev/xdxd-win-backup/actions/workflows/lint.yml)
+[![Test](https://github.com/HristoKolev/xdxd-win-backup/workflows/Test/badge.svg)](https://github.com/HristoKolev/xdxd-win-backup/actions/workflows/test.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/HristoKolev/xdxd-win-backup/blob/main/LICENSE)
 
 A command-line tool for creating RAR backups with ignore file support. Automatically creates timestamped archives while respecting ignore patterns similar to `.gitignore`.

@@ -43,6 +43,8 @@
     "lint": "eslint ./ --max-warnings 0",
     "lint:fix": "npm run lint -- --fix",
     "lint:package": "publint --strict",
+    "test": "vitest",
+    "test:run": "vitest run",
     "prepublishOnly": "npm run build && npm run format-check && npm run lint && npm run lint:package"
   },
   "dependencies": {
@@ -55,12 +57,14 @@
     "@types/node": "^20.17.55",
     "esbuild": "^0.25.5",
     "eslint": "^8.57.1",
+    "execa": "^9.6.0",
     "nodemon": "^3.1.10",
     "prettier": "^3.5.3",
     "publint": "^0.3.12",
     "rimraf": "^6.0.1",
     "run-script-os": "^1.1.6",
-    "typescript": "~5.5"
+    "typescript": "~5.5",
+    "vitest": "^3.1.4"
   },
   "license": "MIT"
 }

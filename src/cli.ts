@@ -18,7 +18,11 @@ export function readCliArguments() {
     version: string;
   };
 
-  program.version(packageJson.version);
+  program.version(
+    packageJson.version,
+    '-v, --version',
+    'Display version number'
+  );
 
   program.requiredOption(
     '-i, --inputDirectory <inputDirectory>',

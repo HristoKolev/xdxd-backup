@@ -11,26 +11,31 @@ import { afterEach, beforeAll, beforeEach } from 'vitest';
 const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
 
 export function buildProject() {
-  beforeAll(async () => {
-    await execa('npm', ['run', 'build']);
+  if (process.env.BUILD_AND_INSTALL_ON_EVERY_TEST === 'true') {
+    beforeAll(async () => {
+      await execa('npm', ['run', 'build']);
 
-    if (os.platform() !== 'win32') {
-      await execa('chmod', ['+x', './dist/index.js']);
-    }
+      if (os.platform() !== 'win32') {
+        await execa('chmod', ['+x', './dist/index.js']);
+      }
 
-    await execa('npm', ['uninstall', '-g', '.']);
-    await execa('npm', ['install', '-g', '.']);
-  });
+      await execa('npm', ['link']);
+    });
+  }
 }
 
 export function useTempDir(prefix: string = 'useTempDir-') {
   let tempDir: string;
+  let oldWd: string;
 
   beforeEach(() => {
+    oldWd = process.cwd();
     tempDir = fsSync.mkdtempSync(path.join(os.tmpdir(), prefix));
+    process.chdir(tempDir);
   });
 
   afterEach(async () => {
+    process.chdir(oldWd);
     if (tempDir) {
       await fs.rm(tempDir, { recursive: true, force: true });
     }

@@ -1,4 +1,3 @@
 node_modules
 dist
-manual-test/**/*.log
-manual-test/**/*.rar
+.env.local

@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail;
 
-npm version patch
+VERSION_TYPE=${1:-patch}
+
+npm version "$VERSION_TYPE"
 
 git push
 

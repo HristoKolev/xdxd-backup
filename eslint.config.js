@@ -54,6 +54,7 @@ export default tseslint.config(
     },
     rules: {
       'prefer-destructuring': 'off',
+      'no-restricted-imports': 'off',
       'import/no-restricted-paths': [
         'error',
         {

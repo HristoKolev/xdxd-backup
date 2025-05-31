@@ -53,7 +53,7 @@ commandArgs.push(outputArchivePath);
 // Input path
 commandArgs.push(`${inputPath}${path.sep}*`);
 
-const proc = zx`rar1 ${commandArgs}`;
+const proc = zx`rar ${commandArgs}`;
 pipeStreamsToFile(proc, outputLogPath);
 
 const result = await proc;

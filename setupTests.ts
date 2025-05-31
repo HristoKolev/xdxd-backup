@@ -2,6 +2,8 @@ import fsSync from 'node:fs';
 
 import dotenv from 'dotenv';
 
+import { setupZx } from './tests/setup-zx.js';
+
 const fileNames = ['.env.local', '.env'];
 const availableFileNames = fileNames.filter(fsSync.existsSync);
 
@@ -21,3 +23,5 @@ if (availableFileNames.length) {
     );
   }
 }
+
+setupZx();

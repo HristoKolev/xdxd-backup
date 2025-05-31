@@ -5,37 +5,25 @@ import path from 'node:path';
 import process from 'node:process';
 import url from 'node:url';
 
-import { execa } from 'execa';
 import { afterEach, beforeAll, beforeEach } from 'vitest';
+import { $ } from 'zx';
 
+import { shouldBuildAndInstallOnEveryTest } from './env-helpers.js';
 import type { CliOptions } from '../src/cli.js';
 
 // eslint-disable-next-line no-underscore-dangle,@typescript-eslint/naming-convention
 const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
 
-export function isDetailedLoggingEnabled() {
-  return process.env.CI_DEBUG === '1';
-}
-
 export function buildProject() {
-  if (process.env.BUILD_AND_INSTALL_ON_EVERY_TEST === 'true') {
+  if (shouldBuildAndInstallOnEveryTest()) {
     beforeAll(async () => {
-      await execa('npm', ['run', 'build'], {
-        stderr: isDetailedLoggingEnabled() ? 'inherit' : undefined,
-        stdout: isDetailedLoggingEnabled() ? 'inherit' : undefined,
-      });
+      await $`npm run build`;
 
       if (os.platform() !== 'win32') {
-        await execa('chmod', ['+x', './dist/index.js'], {
-          stderr: isDetailedLoggingEnabled() ? 'inherit' : undefined,
-          stdout: isDetailedLoggingEnabled() ? 'inherit' : undefined,
-        });
+        await $`chmod +x ./dist/index.js`;
       }
 
-      await execa('npm', ['link'], {
-        stderr: isDetailedLoggingEnabled() ? 'inherit' : undefined,
-        stdout: isDetailedLoggingEnabled() ? 'inherit' : undefined,
-      });
+      await $`npm link`;
     });
   }
 }
@@ -43,15 +31,22 @@ export function buildProject() {
 export function useTempDir(prefix: string = 'useTempDir-') {
   let tempDir: string;
   let oldWd: string;
+  let oldZxWd: string;
 
   beforeEach(() => {
     oldWd = process.cwd();
+    oldZxWd = $.cwd!;
+
     tempDir = fsSync.mkdtempSync(path.join(os.tmpdir(), prefix));
+
     process.chdir(tempDir);
+    $.cwd = tempDir;
   });
 
   afterEach(async () => {
     process.chdir(oldWd);
+    $.cwd = oldZxWd;
+
     if (tempDir) {
       await fs.rm(tempDir, { recursive: true, force: true });
     }
@@ -133,10 +128,7 @@ class TestEnv {
   }
 
   async extractArchive(archivePath: string, extractPath: string) {
-    await execa('unrar', ['x', archivePath, `${extractPath}${path.sep}`], {
-      stderr: isDetailedLoggingEnabled() ? 'inherit' : undefined,
-      stdout: isDetailedLoggingEnabled() ? 'inherit' : undefined,
-    });
+    await $`unrar x ${archivePath} ${extractPath}${path.sep}`;
   }
 
   async runBackup(cliOptions: Partial<CliOptions>) {
@@ -154,10 +146,7 @@ class TestEnv {
       cliArguments.push(`--ignoreFilePath`, cliOptions.ignoreFilePath);
     }
 
-    return execa('xdxd-win-backup', cliArguments, {
-      stderr: isDetailedLoggingEnabled() ? 'inherit' : undefined,
-      stdout: isDetailedLoggingEnabled() ? 'inherit' : undefined,
-    });
+    return $`xdxd-win-backup ${cliArguments}`;
   }
 }
 

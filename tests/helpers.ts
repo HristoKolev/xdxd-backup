@@ -128,7 +128,7 @@ class TestEnv {
   }
 
   async extractArchive(archivePath: string, extractPath: string) {
-    await $`unrar x ${archivePath} ${extractPath}${path.sep}`;
+    await $`unrar x ${archivePath} ${extractPath}`;
   }
 
   async runBackup(cliOptions: Partial<CliOptions>) {

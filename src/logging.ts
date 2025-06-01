@@ -19,7 +19,7 @@ export function configureLogging() {
   });
 }
 
-export function getLogger(category: string = 'xdxd-win-backup') {
+export function getLogger(category: string = 'xdxd-backup') {
   return log4js.getLogger(category);
 }
 

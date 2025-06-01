@@ -1,20 +1,20 @@
 {
-  "name": "xdxd-win-backup",
+  "name": "xdxd-backup",
   "version": "0.0.7",
   "description": "A command-line tool for creating RAR backups with ignore file support",
   "type": "module",
   "bin": {
-    "xdxd-win-backup": "./dist/index.js"
+    "xdxd-backup": "./dist/index.js"
   },
   "author": "Hristo Kolev",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/HristoKolev/xdxd-win-backup.git"
+    "url": "git+https://github.com/HristoKolev/xdxd-backup.git"
   },
   "bugs": {
-    "url": "https://github.com/HristoKolev/xdxd-win-backup/issues"
+    "url": "https://github.com/HristoKolev/xdxd-backup/issues"
   },
-  "homepage": "https://github.com/HristoKolev/xdxd-win-backup#readme",
+  "homepage": "https://github.com/HristoKolev/xdxd-backup#readme",
   "keywords": [
     "backup",
     "rar",

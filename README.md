@@ -1,10 +1,10 @@
-# xdxd-win-backup
+# xdxd-backup
 
-[![npm version](https://img.shields.io/npm/v/xdxd-win-backup.svg)](https://www.npmjs.com/package/xdxd-win-backup)
-[![Lint](https://github.com/HristoKolev/xdxd-win-backup/workflows/Lint/badge.svg)](https://github.com/HristoKolev/xdxd-win-backup/actions/workflows/lint.yml)
-[![Test](https://github.com/HristoKolev/xdxd-win-backup/workflows/Test/badge.svg)](https://github.com/HristoKolev/xdxd-win-backup/actions/workflows/test.yml)
-[![Test non existing executables](https://github.com/HristoKolev/xdxd-win-backup/workflows/Test%20non%20existing%20executables/badge.svg)](https://github.com/HristoKolev/xdxd-win-backup/actions/workflows/test-non-existing-executables.yml)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/HristoKolev/xdxd-win-backup/blob/main/LICENSE)
+[![npm version](https://img.shields.io/npm/v/xdxd-backup.svg)](https://www.npmjs.com/package/xdxd-backup)
+[![Lint](https://github.com/HristoKolev/xdxd-backup/workflows/Lint/badge.svg)](https://github.com/HristoKolev/xdxd-backup/actions/workflows/lint.yml)
+[![Test](https://github.com/HristoKolev/xdxd-backup/workflows/Test/badge.svg)](https://github.com/HristoKolev/xdxd-backup/actions/workflows/test.yml)
+[![Test non existing executables](https://github.com/HristoKolev/xdxd-backup/workflows/Test%20non%20existing%20executables/badge.svg)](https://github.com/HristoKolev/xdxd-backup/actions/workflows/test-non-existing-executables.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/HristoKolev/xdxd-backup/blob/main/LICENSE)
 
 A robust command-line tool for creating timestamped RAR backups with advanced ignore file support. Features cross-platform compatibility, comprehensive logging, and gitignore-style pattern matching.
 
@@ -25,20 +25,20 @@ A robust command-line tool for creating timestamped RAR backups with advanced ig
 ### Global Installation (Recommended)
 
 ```bash
-npm install -g xdxd-win-backup
+npm install -g xdxd-backup
 ```
 
 ### Using npx (No Installation Required)
 
 ```bash
-npx xdxd-win-backup -i <input-directory> -o <output-directory>
+npx xdxd-backup -i <input-directory> -o <output-directory>
 ```
 
 ### Local Installation
 
 ```bash
-npm install xdxd-win-backup
-npx xdxd-win-backup -i <input-directory> -o <output-directory>
+npm install xdxd-backup
+npx xdxd-backup -i <input-directory> -o <output-directory>
 ```
 
 ## Usage
@@ -46,7 +46,7 @@ npx xdxd-win-backup -i <input-directory> -o <output-directory>
 ### Basic Usage
 
 ```bash
-xdxd-win-backup -i <input-directory> -o <output-directory>
+xdxd-backup -i <input-directory> -o <output-directory>
 ```
 
 ### Command-Line Options
@@ -62,19 +62,19 @@ xdxd-win-backup -i <input-directory> -o <output-directory>
 **Backup a project directory:**
 
 ```bash
-xdxd-win-backup -i ./my-project -o ./backups
+xdxd-backup -i ./my-project -o ./backups
 ```
 
 **Backup with custom ignore file:**
 
 ```bash
-xdxd-win-backup -i ./documents -o ./backups --ignoreFilePath ./custom-ignore.txt
+xdxd-backup -i ./documents -o ./backups --ignoreFilePath ./custom-ignore.txt
 ```
 
 **Backup current directory:**
 
 ```bash
-xdxd-win-backup -i . -o ../backups
+xdxd-backup -i . -o ../backups
 ```
 
 ## Backup Ignore File
@@ -185,8 +185,8 @@ You should see RAR command-line help information.
 ### Building from Source
 
 ```bash
-git clone https://github.com/HristoKolev/xdxd-win-backup.git
-cd xdxd-win-backup
+git clone https://github.com/HristoKolev/xdxd-backup.git
+cd xdxd-backup
 npm install
 npm run build
 ```
@@ -218,11 +218,11 @@ npm run typecheck
 
 ## License
 
-MIT - see [LICENSE](https://github.com/HristoKolev/xdxd-win-backup/blob/main/LICENSE) file for details.
+MIT - see [LICENSE](https://github.com/HristoKolev/xdxd-backup/blob/main/LICENSE) file for details.
 
 ## Contributing
 
-Issues and pull requests are welcome on [GitHub](https://github.com/HristoKolev/xdxd-win-backup).
+Issues and pull requests are welcome on [GitHub](https://github.com/HristoKolev/xdxd-backup).
 
 ### Reporting Issues
 

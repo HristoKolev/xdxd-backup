@@ -1,19 +1,17 @@
+import process from 'node:process';
+
 import { $ } from 'zx';
 
 /**
  * Checks if an executable exists in the system PATH.
  */
 export async function isExecutableInPath(executable: string): Promise<boolean> {
-  const isWindows = process.platform === 'win32';
-  const command = isWindows ? 'get-command' : 'which';
-
-  const result = await $`${command} ${executable}`.nothrow();
-
-  if (isWindows) {
-    // Empty stdout means that the executable could not be found.
+  if (process.platform === 'win32') {
+    const result = await $`get-command ${executable}`.nothrow();
     return Boolean(result.stdout.trim());
   }
 
+  const result = await $`which ${executable}`.nothrow();
   return result.exitCode === 0;
 }
 

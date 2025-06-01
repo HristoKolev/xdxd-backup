@@ -13,9 +13,6 @@ A robust command-line tool for creating timestamped RAR backups with advanced ig
 - 🚫 **Advanced ignore patterns** - Supports `.backupignore` files with gitignore-style syntax
 - 📝 **Comprehensive logging** - Generates detailed backup operation logs
 - ⚡ **Cross-platform** - Works on Windows, macOS, and Linux
-- 🔍 **Input validation** - Validates directories and ignore files before processing
-- 🛡️ **Error handling** - Robust error detection and reporting
-- 🧪 **Thoroughly tested** - 100% test coverage with real archive validation
 
 ## Prerequisites
 

@@ -1,3 +1,5 @@
+import fs from 'node:fs/promises';
+
 import { describe, expect, it } from 'vitest';
 import { $ } from 'zx';
 
@@ -45,6 +47,8 @@ describe('CLI', () => {
     useTempDir();
 
     it('should exit with status code 1 when passed a non-existent backup ignore file', async () => {
+      await fs.mkdir('./input');
+
       const result =
         await $`xdxd-win-backup -i ./input -o ./output --ignoreFilePath ./non-existent-ignore-file.txt`.nothrow();
 
@@ -57,7 +61,7 @@ describe('CLI', () => {
         await $`xdxd-win-backup -i ./non-existent-input -o ./output`.nothrow();
 
       expect(result.exitCode).toBe(1);
-      expect(result.stderr).toContain('No file');
+      expect(result.stderr).toContain('Could not find input directory');
     });
   });
 });

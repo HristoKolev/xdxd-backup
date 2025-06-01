@@ -39,7 +39,20 @@ export async function readCliArguments() {
 
   program.requiredOption(
     '-i, --inputDirectory <inputDirectory>',
-    'Input directory'
+    'Input directory',
+    (value) => {
+      if (value) {
+        const resolvedPath = path.resolve(value);
+
+        if (!fsSync.existsSync(resolvedPath)) {
+          fail(`Could not find input directory "${resolvedPath}".`);
+        }
+
+        return resolvedPath;
+      }
+
+      return undefined;
+    }
   );
 
   program.requiredOption(
@@ -53,13 +66,13 @@ export async function readCliArguments() {
       'Backup ignore file path'
     ).argParser((value) => {
       if (value) {
-        const resolvedFilePath = path.resolve(value);
+        const resolvedPath = path.resolve(value);
 
-        if (!fsSync.existsSync(resolvedFilePath)) {
-          fail(`Could not find backup ignore file "${resolvedFilePath}".`);
+        if (!fsSync.existsSync(resolvedPath)) {
+          fail(`Could not find backup ignore file "${resolvedPath}".`);
         }
 
-        return resolvedFilePath;
+        return resolvedPath;
       }
 
       return undefined;

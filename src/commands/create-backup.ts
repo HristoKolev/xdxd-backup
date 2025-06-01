@@ -107,17 +107,17 @@ export function registerCreateBackupCommand(program: Command) {
       // Input path
       commandArgs.push(`"${inputPath}${path.sep}*"`);
 
-      const proc = $`rar ${commandArgs}`;
+      const proc = $`rar ${commandArgs}`.nothrow();
       pipeStreamsToFile(proc, outputLogPath);
 
       const result = await proc;
 
-      // On windows, sometimes we don't get an exit code
-      // in these cases `zx` assumes exit code of `0`.
-      if (os.platform() === 'win32') {
-        if (result.stderr.trim()) {
-          process.exit(1);
-        }
+      if (result.exitCode !== 0) {
+        process.exit(1);
+      } else if (os.platform() === 'win32' && result.stderr.trim()) {
+        // On windows, sometimes we don't get an exit code
+        // in these cases `zx` assumes exit code of `0`.
+        process.exit(1);
       }
     });
 }

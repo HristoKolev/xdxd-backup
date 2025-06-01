@@ -5,13 +5,17 @@ import process from 'node:process';
 
 import { parseBackupIgnore } from './backup-ignore.js';
 import { readCliArguments } from './cli.js';
-import { generateDateString } from './date.js';
-import { configureLogging } from './logging.js';
-import { pipeStreamsToFile, setupZx } from './setup-zx.js';
+import { generateDateString, isExecutableInPath } from './helpers.js';
+import { configureLogging, fail } from './logging.js';
+import { pipeStreamsToFile, setupZx } from './zx.js';
 
 configureLogging();
 
 const zx = setupZx();
+
+if (!(await isExecutableInPath('rar'))) {
+  fail('The "rar" executable in not in PATH.');
+}
 
 const cliArgs = await readCliArguments();
 

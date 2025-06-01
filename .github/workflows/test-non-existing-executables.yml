@@ -1,0 +1,51 @@
+name: Test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+env:
+  CI: true
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        node-version: [20, 22]
+
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+
+    concurrency:
+      group: '${{ github.workflow }}-${{ matrix.os }}-${{ matrix.node-version }} ✨ ${{ github.event.pull_request.head.label || github.head_ref || github.ref }}'
+      cancel-in-progress: true
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Output Node and NPM versions
+        run: |
+          echo "Node.js version: $(node -v)"
+          echo "NPM version: $(npm -v)"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build project
+        run: npm run build
+
+      - name: Run tests
+        env:
+          CI_DEBUG: ${{ runner.debug }}
+        run: npm run test:non-existing-executables

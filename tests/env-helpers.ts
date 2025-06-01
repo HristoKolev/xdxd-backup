@@ -15,3 +15,7 @@ export function shouldBuildAndInstallOnEveryTest() {
 export function isDebuggerAttached() {
   return process.env.IS_DEBUGGER_ATTACHED === 'true';
 }
+
+export function runNonExistingExecutableTests() {
+  return process.env.RUN_NON_EXISTING_EXECUTABLES_TESTS === 'true';
+}

@@ -26,3 +26,9 @@ export function getLogger(category: string = 'xdxd-win-backup') {
 export function getErrorLogger() {
   return getLogger('error');
 }
+
+export function fail(message: string, ...args: unknown[]): never {
+  const logger = getErrorLogger();
+  logger.fatal(message, ...args);
+  process.exit(1);
+}

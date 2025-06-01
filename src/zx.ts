@@ -4,10 +4,10 @@ import readline from 'node:readline';
 
 import { $, type ProcessPromise, usePowerShell } from 'zx';
 
-let initialized = false;
+let zxInitialized = false;
 
 export function setupZx() {
-  if (initialized) {
+  if (zxInitialized) {
     return $;
   }
 
@@ -19,7 +19,7 @@ export function setupZx() {
   $.env.FORCE_COLOR = '3';
   $.quote = (arg) => arg;
 
-  initialized = true;
+  zxInitialized = true;
 
   return $;
 }

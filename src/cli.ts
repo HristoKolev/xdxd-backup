@@ -6,7 +6,7 @@ import url from 'node:url';
 
 import { Option, program } from 'commander';
 
-import { getErrorLogger } from './logging.js';
+import { fail } from './logging.js';
 
 export interface CliOptions {
   inputDirectory: string;
@@ -15,13 +15,6 @@ export interface CliOptions {
 }
 
 export async function readCliArguments() {
-  const logger = getErrorLogger();
-
-  function fail(message: string, ...args: unknown[]): never {
-    logger.fatal(message, ...args);
-    process.exit(1);
-  }
-
   // eslint-disable-next-line @typescript-eslint/naming-convention,no-underscore-dangle
   const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
   const packageJsonPath = path.join(__dirname, '../package.json');
@@ -66,13 +59,13 @@ export async function readCliArguments() {
       'Backup ignore file path'
     ).argParser((value) => {
       if (value) {
-        const resolvedPath = path.resolve(value);
+        const resolvedFilePath = path.resolve(value);
 
-        if (!fsSync.existsSync(resolvedPath)) {
-          fail(`Could not find backup ignore file "${resolvedPath}".`);
+        if (!fsSync.existsSync(resolvedFilePath)) {
+          fail(`Could not find backup ignore file "${resolvedFilePath}".`);
         }
 
-        return resolvedPath;
+        return resolvedFilePath;
       }
 
       return undefined;

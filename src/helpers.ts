@@ -1,3 +1,16 @@
+import { $ } from 'zx';
+
+/**
+ * Checks if an executable exists in the system PATH.
+ */
+export async function isExecutableInPath(executable: string): Promise<boolean> {
+  const isWindows = process.platform === 'win32';
+  const command = isWindows ? 'where' : 'which';
+
+  const result = await $`${command} ${executable}`.nothrow();
+  return result.exitCode === 0;
+}
+
 const startTime = new Date();
 
 export function generateDateString() {

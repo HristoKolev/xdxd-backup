@@ -5,9 +5,15 @@ import { $ } from 'zx';
  */
 export async function isExecutableInPath(executable: string): Promise<boolean> {
   const isWindows = process.platform === 'win32';
-  const command = isWindows ? 'where' : 'which';
+  const command = isWindows ? 'get-command' : 'which';
 
   const result = await $`${command} ${executable}`.nothrow();
+
+  if (isWindows) {
+    // Empty stdout means that the executable could not be found.
+    return Boolean(result.stdout.trim());
+  }
+
   return result.exitCode === 0;
 }
 

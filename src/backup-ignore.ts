@@ -4,6 +4,11 @@ import readline from 'node:readline';
 
 import { getLogger } from './logging.js';
 
+function removeComment(input: string): string {
+  const hashIndex = input.indexOf('#');
+  return hashIndex === -1 ? input : input.substring(0, hashIndex);
+}
+
 function convertGitignoreToRarExclusion(pattern: string) {
   // Remove leading slash if present
   if (pattern.startsWith('/')) {
@@ -68,16 +73,16 @@ export async function parseBackupIgnore(
   const result = [];
 
   for await (const line of lineStream) {
-    const trimmedLine = line.trim();
+    const cleanLine = removeComment(line).trim();
 
     // Skip empty lines and comments
-    if (!trimmedLine || trimmedLine.startsWith('#')) {
+    if (!cleanLine) {
       // eslint-disable-next-line no-continue
       continue;
     }
 
     // Convert gitignore pattern to RAR exclusion argument
-    let rarExclusion = convertGitignoreToRarExclusion(trimmedLine);
+    let rarExclusion = convertGitignoreToRarExclusion(cleanLine);
 
     if (rarExclusion) {
       if (path.sep === '\\') {

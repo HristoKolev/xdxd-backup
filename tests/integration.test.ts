@@ -81,23 +81,27 @@ describe('Integration Tests', () => {
       );
 
       const backupIgnoreContent = `# Test .backupignore file for integration tests
+# Comments start with # and are ignored
+# Empty lines are also ignored
 
-# Ignore specific files
-file6.txt
+# Ignore specific files by name
+file6.txt                    # Excludes any file named "file6.txt"
 
-# Ignore files with specific extensions
-*.log
+# Ignore files by extension using wildcards
+*.log                        # Excludes all files ending with .log (e.g., application.log)
 
-# Ignore directories
-dir3/
+# Ignore entire directories
+dir3/                        # Excludes directory "dir3" and all its contents
 
-# Ignore files in specific paths
-dir1/file2.txt
-**/dir5
+# Ignore specific files in specific paths
+dir1/file2.txt              # Excludes only "file2.txt" inside "dir1" directory
 
-# Ignore patterns with wildcards
-*temp*
-test_*.txt`;
+# Ignore directories at any depth
+**/dir5                     # Excludes any directory named "dir5" at any level
+
+# Wildcard patterns for complex matching
+*temp*                      # Excludes files with "temp" anywhere in name (e.g., temp_file.txt)
+test_*.txt                  # Excludes files starting with "test_" and ending with ".txt"`;
 
       await fs.writeFile(backupIgnoreDestPath, backupIgnoreContent);
 

@@ -49,7 +49,6 @@ commandArgs.push('-r');
 commandArgs.push('-ep1');
 
 // Add ignore list
-
 const ignoreList = await parseBackupIgnore(cliArgs.ignoreFilePath, inputPath);
 commandArgs.push(...ignoreList);
 
@@ -64,8 +63,10 @@ pipeStreamsToFile(proc, outputLogPath);
 
 const result = await proc;
 
+// On windows, sometimes we don't get an exit code
+// in these cases `zx` assumes exit code of `0`.
 if (os.platform() === 'win32') {
-  if (result.stderr.trim().length) {
+  if (result.stderr.trim()) {
     process.exit(1);
   }
 }

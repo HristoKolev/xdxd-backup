@@ -103,6 +103,7 @@ dir1/file2.txt              # Excludes only "file2.txt" inside "dir1" directory
 
 # Ignore directories at any depth
 **/dir5                     # Excludes any directory named "dir5" at any level
+projects/**node_modules**/   # Excludes node_modules directories within projects
 
 # Wildcard patterns for complex matching
 *temp*                      # Excludes files with "temp" anywhere in name (e.g., temp_file.txt)

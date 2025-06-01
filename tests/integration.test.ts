@@ -98,6 +98,7 @@ dir1/file2.txt              # Excludes only "file2.txt" inside "dir1" directory
 
 # Ignore directories at any depth
 **/dir5                     # Excludes any directory named "dir5" at any level
+projects/**node_modules**/   # Excludes node_modules directories within projects
 
 # Wildcard patterns for complex matching
 *temp*                      # Excludes files with "temp" anywhere in name (e.g., temp_file.txt)
@@ -154,11 +155,21 @@ test_*.txt                  # Excludes files starting with "test_" and ending wi
       );
       expect(dir5Files).toHaveLength(0);
 
+      // Verify that projects/**/node_modules/ and their contents are NOT present
+      const nodeModulesFiles = extractedFiles.filter((file) =>
+        file.includes('node_modules/')
+      );
+      expect(nodeModulesFiles).toHaveLength(0);
+
       // Verify that files that should be included ARE present
       expect(extractedFiles).toContain('file1.txt');
       expect(extractedFiles).toContain('dir1/file3.txt');
       expect(extractedFiles).toContain('dir1/dir2/file4.txt');
       expect(extractedFiles).toContain('dir1/dir2/file5.txt');
+
+      // Verify that project files (but not node_modules) are included
+      expect(extractedFiles).toContain('projects/frontend/package.json');
+      expect(extractedFiles).toContain('projects/backend/package.json');
     });
 
     it('should handle empty ignore file gracefully', async () => {

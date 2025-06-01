@@ -1,4 +1,4 @@
-name: Test non existing executable
+name: Test non existing executables
 
 on:
   push:

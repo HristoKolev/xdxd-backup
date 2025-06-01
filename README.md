@@ -3,6 +3,7 @@
 [![npm version](https://img.shields.io/npm/v/xdxd-win-backup.svg)](https://www.npmjs.com/package/xdxd-win-backup)
 [![Lint](https://github.com/HristoKolev/xdxd-win-backup/workflows/Lint/badge.svg)](https://github.com/HristoKolev/xdxd-win-backup/actions/workflows/lint.yml)
 [![Test](https://github.com/HristoKolev/xdxd-win-backup/workflows/Test/badge.svg)](https://github.com/HristoKolev/xdxd-win-backup/actions/workflows/test.yml)
+[![Test non existing executables](https://github.com/HristoKolev/xdxd-win-backup/workflows/Test%20non%20existing%20executables/badge.svg)](https://github.com/HristoKolev/xdxd-win-backup/actions/workflows/test-non-existing-executables.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/HristoKolev/xdxd-win-backup/blob/main/LICENSE)
 
 A robust command-line tool for creating timestamped RAR backups with advanced ignore file support. Features cross-platform compatibility, comprehensive logging, and gitignore-style pattern matching.

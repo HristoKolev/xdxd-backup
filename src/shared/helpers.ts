@@ -15,6 +15,7 @@ export async function isExecutableInPath(executable: string): Promise<boolean> {
   return result.exitCode === 0;
 }
 
+// Extract into date.ts
 const startTime = new Date();
 
 export function generateDateString() {

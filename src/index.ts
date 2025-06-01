@@ -1,72 +1,34 @@
-import fs from 'node:fs/promises';
-import os from 'node:os';
-import path from 'node:path';
 import process from 'node:process';
 
-import { parseBackupIgnore } from './backup-ignore.js';
-import { readCliArguments } from './cli.js';
-import { generateDateString, isExecutableInPath } from './helpers.js';
-import { configureLogging, fail } from './logging.js';
-import { pipeStreamsToFile, setupZx } from './zx.js';
+import { Command } from 'commander';
+
+import packageJSON from '../package.json';
+import { registerCreateBackupCommand } from './commands/create-backup.js';
+import {
+  configureLogging,
+  getErrorLogger,
+  getLogger,
+} from './shared/logging.js';
+import { setupZx } from './shared/zx.js';
 
 configureLogging();
+setupZx();
 
-const zx = setupZx();
+const program = new Command()
+  .name(packageJSON.name)
+  .description(packageJSON.description)
+  .version(packageJSON.version, '-v, --version', 'Display version number')
+  .configureOutput({
+    writeOut(str: string) {
+      const logger = getLogger('outClean');
+      logger.info(str);
+    },
+    writeErr: (str: string) => {
+      const logger = getErrorLogger('errorClean');
+      logger.error(str);
+    },
+  });
 
-if (!(await isExecutableInPath('rar'))) {
-  fail('The "rar" executable in not in PATH.');
-}
+registerCreateBackupCommand(program);
 
-const cliArgs = await readCliArguments();
-
-const inputPath = path.resolve(cliArgs.inputDirectory);
-
-const dateString = generateDateString();
-
-await fs.mkdir(path.resolve(cliArgs.outputDirectory), {
-  recursive: true,
-});
-
-const outputArchivePath = path.join(
-  path.resolve(cliArgs.outputDirectory),
-  `${path.basename(inputPath)}-${dateString}.rar`
-);
-
-const outputLogPath = path.join(
-  path.resolve(cliArgs.outputDirectory),
-  `${path.basename(inputPath)}-${dateString}.log`
-);
-
-const commandArgs: string[] = [];
-
-// Add files to archive
-commandArgs.push('a');
-
-// Recurse subdirectories
-commandArgs.push('-r');
-
-// Do not store the path entered at the command line in archive. Exclude base folder from names.
-commandArgs.push('-ep1');
-
-// Add ignore list
-const ignoreList = await parseBackupIgnore(cliArgs.ignoreFilePath, inputPath);
-commandArgs.push(...ignoreList);
-
-// Output path
-commandArgs.push(`"${outputArchivePath}"`);
-
-// Input path
-commandArgs.push(`"${inputPath}${path.sep}*"`);
-
-const proc = zx`rar ${commandArgs}`;
-pipeStreamsToFile(proc, outputLogPath);
-
-const result = await proc;
-
-// On windows, sometimes we don't get an exit code
-// in these cases `zx` assumes exit code of `0`.
-if (os.platform() === 'win32') {
-  if (result.stderr.trim()) {
-    process.exit(1);
-  }
-}
+program.parse(process.argv);

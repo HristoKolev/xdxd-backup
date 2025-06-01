@@ -3,8 +3,8 @@ import path from 'node:path';
 
 import { describe, expect, it } from 'vitest';
 
-import { useTempDir } from './helpers.js';
-import { parseBackupIgnore } from '../src/backup-ignore.js';
+import { useTempDir } from './helpers/helpers.js';
+import { parseBackupIgnore } from '../src/shared/backup-ignore.js';
 
 describe('Backup ignore functionality', () => {
   const getTempDir = useTempDir();

@@ -9,7 +9,7 @@ import { afterEach, beforeAll, beforeEach } from 'vitest';
 import { $ } from 'zx';
 
 import { shouldBuildAndInstallOnEveryTest } from './env-helpers.js';
-import type { CliOptions } from '../src/cli.js';
+import type { CreateBackupCommandOptions } from '../../src/commands/create-backup.js';
 
 // eslint-disable-next-line no-underscore-dangle,@typescript-eslint/naming-convention
 const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
@@ -77,7 +77,7 @@ class TestEnv {
     await fs.mkdir(this.inputPath, { recursive: true });
     await fs.mkdir(this.outputPath, { recursive: true });
 
-    const inputTemplate = path.resolve(__dirname, 'test-data', 'input');
+    const inputTemplate = path.resolve(__dirname, '..', 'test-data', 'input');
     await fs.cp(inputTemplate, this.inputPath, { recursive: true });
   }
 
@@ -131,7 +131,7 @@ class TestEnv {
     await $`unrar x ${archivePath} ${extractPath}`;
   }
 
-  async runBackup(cliOptions: Partial<CliOptions>) {
+  async createBackup(cliOptions: CreateBackupCommandOptions) {
     const cliArguments: string[] = [];
 
     if (cliOptions.inputDirectory) {
@@ -147,17 +147,17 @@ class TestEnv {
     }
 
     if (process.env.IS_DEBUGGER_ATTACHED === 'true') {
-      const codeCommand = `code ${path.resolve(cliOptions.inputDirectory!, '..')}`;
+      const codeCommand = `code ${path.resolve(cliOptions.inputDirectory, '..')}`;
       void codeCommand;
 
-      const backupCommand = `xdxd-backup ${cliArguments.join(' ')}`;
+      const backupCommand = `xdxd-backup create ${cliArguments.join(' ')}`;
       void backupCommand;
 
-      const argVOverride = `process.argv = [process.argv[0], process.argv[1], ${cliArguments.map((x) => `"${x.replaceAll('\\', '\\\\')}"`).join(', ')}];`;
+      const argVOverride = `process.argv = [process.argv[0], process.argv[1], 'create', ${cliArguments.map((x) => `"${x.replaceAll('\\', '\\\\')}"`).join(', ')}];`;
       void argVOverride;
     }
 
-    return $`xdxd-backup ${cliArguments}`;
+    return $`xdxd-backup create ${cliArguments}`;
   }
 }
 

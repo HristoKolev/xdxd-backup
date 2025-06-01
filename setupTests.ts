@@ -1,8 +1,10 @@
 import fsSync from 'node:fs';
+import os from 'node:os';
 
 import dotenv from 'dotenv';
+import { $, usePowerShell } from 'zx';
 
-import { setupZx } from './tests/setup-zx.js';
+import { isDetailedLoggingEnabled } from './tests/helpers/env-helpers.js';
 
 const fileNames = ['.env.local', '.env'];
 const availableFileNames = fileNames.filter(fsSync.existsSync);
@@ -24,4 +26,11 @@ if (availableFileNames.length) {
   }
 }
 
-setupZx();
+// Setup ZX
+if (os.platform() === 'win32') {
+  usePowerShell();
+}
+
+$.verbose = isDetailedLoggingEnabled();
+$.quiet = !isDetailedLoggingEnabled();
+$.env.FORCE_COLOR = '3';

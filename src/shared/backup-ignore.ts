@@ -41,6 +41,7 @@ function convertGitignoreToRarExclusion(pattern: string) {
   return pattern;
 }
 
+// TODO: remove the direct fs access
 export async function parseBackupIgnore(
   ignoreFilePath: string | undefined,
   fullInputPath: string

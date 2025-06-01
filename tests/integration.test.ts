@@ -2,17 +2,50 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 
 import { describe, expect, it } from 'vitest';
+import { $ } from 'zx';
 
-import { buildProject, useTestSetup } from './helpers.js';
+import { buildProject, useTestSetup } from './helpers/helpers.js';
 
 describe('Integration Tests', () => {
   buildProject();
 
   const testEnv = useTestSetup();
 
+  it('should show help when --help is used', async () => {
+    const result = await $`xdxd-backup create --help`;
+
+    expect(result.exitCode).toBe(0);
+    expect(result.stdout).toContain('Usage:');
+    expect(result.stdout).toContain('-i, --inputDirectory');
+    expect(result.stdout).toContain('-o, --outputDirectory');
+  });
+
+  it('should exit with status code 1 when passed a non-existent backup ignore file', async () => {
+    const result =
+      await $`xdxd-backup create -i ./input -o ./output --ignoreFilePath ./non-existent-ignore-file.txt`.nothrow();
+
+    expect(result.exitCode).toBe(1);
+    expect(result.stderr).toContain('Could not find backup ignore file');
+  });
+
+  it('should exit with status code 1 when passed a non-existent input directory', async () => {
+    const result =
+      await $`xdxd-backup create -i ./non-existent-input -o ./output`.nothrow();
+
+    expect(result.exitCode).toBe(1);
+    expect(result.stderr).toContain('Could not find input directory');
+  });
+
+  it('should require input and output directories', async () => {
+    const result = await $`xdxd-backup create`.nothrow();
+
+    expect(result.exitCode).toBe(1);
+    expect(result.stderr).toContain('required option');
+  });
+
   describe('End-to-end backup process', () => {
     it('should create backup archive with correct structure', async () => {
-      const result = await testEnv.runBackup({
+      const result = await testEnv.createBackup({
         inputDirectory: testEnv.inputPath,
         outputDirectory: testEnv.outputPath,
       });
@@ -27,7 +60,7 @@ describe('Integration Tests', () => {
 
     it('should create archive that unpacks to match input files', async () => {
       // Create backup
-      const result = await testEnv.runBackup({
+      const result = await testEnv.createBackup({
         inputDirectory: testEnv.inputPath,
         outputDirectory: testEnv.outputPath,
       });
@@ -107,7 +140,7 @@ test_*.txt                  # Excludes files starting with "test_" and ending wi
       await fs.writeFile(backupIgnoreDestPath, backupIgnoreContent);
 
       // Create backup with ignore file
-      const result = await testEnv.runBackup({
+      const result = await testEnv.createBackup({
         inputDirectory: testEnv.inputPath,
         outputDirectory: testEnv.outputPath,
         ignoreFilePath: backupIgnoreDestPath,
@@ -178,7 +211,7 @@ test_*.txt                  # Excludes files starting with "test_" and ending wi
       await fs.writeFile(emptyIgnorePath, '');
 
       // Create backup with empty ignore file
-      const result = await testEnv.runBackup({
+      const result = await testEnv.createBackup({
         inputDirectory: testEnv.inputPath,
         outputDirectory: testEnv.outputPath,
       });

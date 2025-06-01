@@ -4,26 +4,6 @@ import readline from 'node:readline';
 
 import { $, type ProcessPromise, usePowerShell } from 'zx';
 
-let zxInitialized = false;
-
-export function setupZx() {
-  if (zxInitialized) {
-    return $;
-  }
-
-  if (os.platform() === 'win32') {
-    usePowerShell();
-  }
-
-  $.verbose = true;
-  $.env.FORCE_COLOR = '3';
-  $.quote = (arg) => arg;
-
-  zxInitialized = true;
-
-  return $;
-}
-
 export function pipeStreamsToFile(proc: ProcessPromise, outputLogPath: string) {
   const stdoutStream = readline.createInterface({
     input: proc.stdout,
@@ -57,4 +37,14 @@ export function pipeStreamsToFile(proc: ProcessPromise, outputLogPath: string) {
     logFileStream?.close();
     logFileStream = undefined;
   });
+}
+
+export function setupZx() {
+  if (os.platform() === 'win32') {
+    usePowerShell();
+  }
+
+  $.verbose = true;
+  $.env.FORCE_COLOR = '3';
+  $.quote = (arg) => arg;
 }

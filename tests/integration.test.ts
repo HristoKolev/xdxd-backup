@@ -93,6 +93,7 @@ dir3/
 
 # Ignore files in specific paths
 dir1/file2.txt
+**/dir5
 
 # Ignore patterns with wildcards
 *temp*
@@ -142,6 +143,12 @@ test_*.txt`;
         file.startsWith('dir3/')
       );
       expect(dir3Files).toHaveLength(0);
+
+      // Verify that dir1/dir5/ and its contents are NOT present
+      const dir5Files = extractedFiles.filter((file) =>
+        file.startsWith('dir1/dir5/')
+      );
+      expect(dir5Files).toHaveLength(0);
 
       // Verify that files that should be included ARE present
       expect(extractedFiles).toContain('file1.txt');

@@ -1,0 +1,1 @@
+Another file in dir5 that should be ignored

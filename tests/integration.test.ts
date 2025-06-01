@@ -124,7 +124,11 @@ test_*.txt`;
       await testEnv.extractArchive(archivePath, extractPath);
 
       // Get list of extracted files
-      const extractedFiles = await testEnv.listFilePaths(extractPath);
+      let extractedFiles = await testEnv.listFilePaths(extractPath);
+
+      if (path.sep === '\\') {
+        extractedFiles = extractedFiles.map((x) => x.replaceAll('\\', '/'));
+      }
 
       // Verify that ignored files are NOT present in the archive
       expect(extractedFiles).not.toContain('file6.txt'); // specific file

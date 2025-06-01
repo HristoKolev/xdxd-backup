@@ -1,3 +1,4 @@
+import fs from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import process from 'node:process';
@@ -17,6 +18,10 @@ const cliArgs = await readCliArguments();
 const inputPath = path.resolve(cliArgs.inputDirectory);
 
 const dateString = generateDateString();
+
+await fs.mkdir(path.resolve(cliArgs.outputDirectory), {
+  recursive: true,
+});
 
 const outputArchivePath = path.join(
   path.resolve(cliArgs.outputDirectory),
@@ -40,18 +45,15 @@ commandArgs.push('-r');
 commandArgs.push('-ep1');
 
 // Add ignore list
-const ignoreFilePath = path.isAbsolute(cliArgs.ignoreFilePath)
-  ? cliArgs.ignoreFilePath
-  : path.join(inputPath, cliArgs.ignoreFilePath);
 
-const ignoreList = await parseBackupIgnore(ignoreFilePath);
+const ignoreList = await parseBackupIgnore(cliArgs.ignoreFilePath, inputPath);
 commandArgs.push(...ignoreList);
 
 // Output path
-commandArgs.push(outputArchivePath);
+commandArgs.push(`"${outputArchivePath}"`);
 
 // Input path
-commandArgs.push(`${inputPath}${path.sep}*`);
+commandArgs.push(`"${inputPath}${path.sep}*"`);
 
 const proc = zx`rar ${commandArgs}`;
 pipeStreamsToFile(proc, outputLogPath);

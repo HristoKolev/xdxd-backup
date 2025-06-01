@@ -16,6 +16,11 @@ declare global {
        * If set to `1` CI debug in enabled.
        */
       CI_DEBUG?: '1';
+
+      /**
+       * If set to `1` means that the debugger is attached.
+       */
+      IS_DEBUGGER_ATTACHED?: 'true';
     }
   }
 }

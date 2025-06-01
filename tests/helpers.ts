@@ -146,6 +146,17 @@ class TestEnv {
       cliArguments.push(`--ignoreFilePath`, cliOptions.ignoreFilePath);
     }
 
+    if (process.env.IS_DEBUGGER_ATTACHED === 'true') {
+      const codeCommand = `code ${path.resolve(cliOptions.inputDirectory!, '..')}`;
+      void codeCommand;
+
+      const backupCommand = `xdxd-win-backup ${cliArguments.join(' ')}`;
+      void backupCommand;
+
+      const argVOverride = `process.argv = [process.argv[0], process.argv[1], ${cliArguments.map((x) => `"${x.replaceAll('\\', '\\\\')}"`).join(', ')}];`;
+      void argVOverride;
+    }
+
     return $`xdxd-win-backup ${cliArguments}`;
   }
 }

@@ -1,3 +1,5 @@
+import process from 'node:process';
+
 export function isDetailedLoggingEnabled() {
   return process.env.CI_DEBUG === '1';
 }
@@ -8,4 +10,8 @@ export function runsInCI() {
 
 export function shouldBuildAndInstallOnEveryTest() {
   return process.env.BUILD_AND_INSTALL_ON_EVERY_TEST === 'true';
+}
+
+export function isDebuggerAttached() {
+  return process.env.IS_DEBUGGER_ATTACHED === 'true';
 }

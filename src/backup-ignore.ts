@@ -4,7 +4,7 @@ import readline from 'node:readline';
 
 import { getLogger } from './logging.js';
 
-function convertGitignoreToRarExclusion(pattern: string): string | undefined {
+function convertGitignoreToRarExclusion(pattern: string) {
   // Remove leading slash if present
   if (pattern.startsWith('/')) {
     pattern = pattern.slice(1);
@@ -36,14 +36,26 @@ function convertGitignoreToRarExclusion(pattern: string): string | undefined {
   return pattern;
 }
 
-export async function parseBackupIgnore(ignoreFilePath: string) {
+export async function parseBackupIgnore(
+  ignoreFilePath: string | undefined,
+  fullInputPath: string
+) {
   const logger = getLogger();
 
-  const backupIgnorePath = path.resolve(ignoreFilePath);
+  let backupIgnorePath = ignoreFilePath;
 
-  if (!fsSync.existsSync(backupIgnorePath)) {
-    logger.log('No backup ignore file found.');
-    return [];
+  if (ignoreFilePath) {
+    backupIgnorePath = ignoreFilePath;
+  } else {
+    const defaultBackupignorePath = path.join(fullInputPath, '.backupignore');
+
+    if (fsSync.existsSync(defaultBackupignorePath)) {
+      backupIgnorePath = defaultBackupignorePath;
+    } else {
+      // The default, optional.
+      logger.log('No backup ignore file found.');
+      return [];
+    }
   }
 
   logger.log(`Using backup ignore file: "${backupIgnorePath}"`);
@@ -65,9 +77,14 @@ export async function parseBackupIgnore(ignoreFilePath: string) {
     }
 
     // Convert gitignore pattern to RAR exclusion argument
-    const rarExclusion = convertGitignoreToRarExclusion(trimmedLine);
+    let rarExclusion = convertGitignoreToRarExclusion(trimmedLine);
+
     if (rarExclusion) {
-      result.push(`-x${rarExclusion}`);
+      if (path.sep === '\\') {
+        rarExclusion = rarExclusion.replaceAll('/', '\\');
+      }
+
+      result.push(`-x"${rarExclusion}"`);
     }
   }
 

@@ -17,6 +17,7 @@ export function setupZx() {
 
   $.verbose = true;
   $.env.FORCE_COLOR = '3';
+  $.quote = (arg) => arg;
 
   initialized = true;
 

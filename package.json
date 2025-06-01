@@ -33,7 +33,7 @@
   "scripts": {
     "start": "npm run build && node ./dist/index.js",
     "build": "npm run typecheck && rimraf dist && npm run build:esbuild",
-    "build:esbuild": "esbuild src/index.ts --bundle --platform=node --target=node18 --format=esm --outfile=dist/index.js --banner:js=\"#!/usr/bin/env node\" --external:commander --external:log4js --external:zx",
+    "build:esbuild": "esbuild src/index.ts --sourcemap --bundle --platform=node --target=node18 --format=esm --outfile=dist/index.js --banner:js=\"#!/usr/bin/env node\" --external:commander --external:log4js --external:zx",
     "build:watch": "run-script-os",
     "build:watch:nix": "nodemon --config ./nodemon-nix.json",
     "build:watch:windows": "nodemon --config ./nodemon-windows.json",

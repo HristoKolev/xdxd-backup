@@ -1,16 +1,26 @@
+import fsSync from 'node:fs';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import url from 'node:url';
 
 import { Option, program } from 'commander';
 
+import { getLogger } from './logging.js';
+
 export interface CliOptions {
   inputDirectory: string;
   outputDirectory: string;
-  ignoreFilePath: string;
+  ignoreFilePath?: string;
 }
 
 export async function readCliArguments() {
+  const logger = getLogger();
+
+  function fail(message: string, ...args: unknown[]): never {
+    logger.error(message, ...args);
+    process.exit(1);
+  }
+
   // eslint-disable-next-line @typescript-eslint/naming-convention,no-underscore-dangle
   const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
   const packageJsonPath = path.join(__dirname, '../package.json');
@@ -40,8 +50,21 @@ export async function readCliArguments() {
     new Option(
       '--ignoreFilePath <ignoreFilePath>',
       'Backup ignore file path'
-    ).default('.backupignore')
+    ).argParser((value) => {
+      if (value) {
+        const resolvedFilePath = path.resolve(value);
+
+        // TODO: Test this.
+        if (!fsSync.existsSync(resolvedFilePath)) {
+          fail(`Could not find backup ignore file "${resolvedFilePath}".`);
+        }
+
+        return resolvedFilePath;
+      }
+
+      return undefined;
+    })
   );
 
-  return program.parse().opts<CliOptions>();
+  return program.parse(process.argv).opts<CliOptions>();
 }

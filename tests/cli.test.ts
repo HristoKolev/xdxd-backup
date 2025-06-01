@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { $ } from 'zx';
 
-import { buildProject } from './helpers.js';
+import { buildProject, useTempDir } from './helpers.js';
 import packageJSON from '../package.json';
 
 describe('CLI', () => {
@@ -38,6 +38,26 @@ describe('CLI', () => {
       expect(result.stdout).toContain('Usage:');
       expect(result.stdout).toContain('-i, --inputDirectory');
       expect(result.stdout).toContain('-o, --outputDirectory');
+    });
+  });
+
+  describe('error handling', () => {
+    useTempDir();
+
+    it('should exit with status code 1 when passed a non-existent backup ignore file', async () => {
+      const result =
+        await $`xdxd-win-backup -i ./input -o ./output --ignoreFilePath ./non-existent-ignore-file.txt`.nothrow();
+
+      expect(result.exitCode).toBe(1);
+      expect(result.stderr).toContain('Could not find backup ignore file');
+    });
+
+    it('should exit with status code 1 when passed a non-existent input directory', async () => {
+      const result =
+        await $`xdxd-win-backup -i ./non-existent-input -o ./output`.nothrow();
+
+      expect(result.exitCode).toBe(1);
+      expect(result.stderr).toContain('No file');
     });
   });
 });

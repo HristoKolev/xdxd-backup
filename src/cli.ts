@@ -1,11 +1,12 @@
 import fsSync from 'node:fs';
 import fs from 'node:fs/promises';
 import path from 'node:path';
+import process from 'node:process';
 import url from 'node:url';
 
 import { Option, program } from 'commander';
 
-import { getLogger } from './logging.js';
+import { getErrorLogger } from './logging.js';
 
 export interface CliOptions {
   inputDirectory: string;
@@ -14,10 +15,10 @@ export interface CliOptions {
 }
 
 export async function readCliArguments() {
-  const logger = getLogger();
+  const logger = getErrorLogger();
 
   function fail(message: string, ...args: unknown[]): never {
-    logger.error(message, ...args);
+    logger.fatal(message, ...args);
     process.exit(1);
   }
 
@@ -54,7 +55,6 @@ export async function readCliArguments() {
       if (value) {
         const resolvedFilePath = path.resolve(value);
 
-        // TODO: Test this.
         if (!fsSync.existsSync(resolvedFilePath)) {
           fail(`Could not find backup ignore file "${resolvedFilePath}".`);
         }

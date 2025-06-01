@@ -9,7 +9,6 @@ import { parseBackupIgnore } from '../src/backup-ignore.js';
 describe('Backup ignore functionality', () => {
   const getTempDir = useTempDir();
 
-  // TODO: Test missing explicit ignore file, through the cli
   it('should parse basic ignore patterns', async () => {
     const ignoreFile = path.join(getTempDir(), '.backupignore');
     fs.writeFileSync(

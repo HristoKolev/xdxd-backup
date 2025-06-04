@@ -1,0 +1,18 @@
+{
+  "prettier.useEditorConfig": true,
+  "prettier.requireConfig": true,
+  "prettier.configPath": ".prettierrc",
+
+  "[javascript][typescript][json][yaml]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+  "eslint.validate": ["typescript", "typescriptreact"],
+  "eslint.lintTask.enable":  true,
+
+  "typescript.tsdk": "node_modules/typescript/lib"
+}

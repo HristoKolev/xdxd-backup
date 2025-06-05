@@ -4,7 +4,7 @@
   "description": "Cross-platform command-line tool for creating backups with .gitignore-like ignore file support.",
   "type": "module",
   "bin": {
-    "xdxd-backup": "./dist/index.js"
+    "xdxd-backup": "./dist/src/index.js"
   },
   "author": "Hristo Kolev",
   "repository": {
@@ -31,16 +31,14 @@
     "README.md"
   ],
   "scripts": {
-    "start": "npm run build && node ./dist/index.js",
-    "build": "npm run typecheck && rimraf dist && npm run build:esbuild",
-    "build:esbuild": "esbuild src/index.ts --sourcemap --bundle --platform=node --target=node18 --format=esm --outfile=dist/index.js --banner:js=\"#!/usr/bin/env node\" --external:commander --external:log4js --external:zx",
+    "start": "npm run build && node ./dist/src/index.js",
+    "build": "rimraf dist && tsc",
     "build:watch": "run-script-os",
     "build:watch:nix": "nodemon --config ./nodemon-nix.json",
     "build:watch:windows": "nodemon --config ./nodemon-windows.json",
     "install:local": "run-script-os",
-    "install:local:nix": "npm run build && chmod +x dist/index.js && npm link",
+    "install:local:nix": "npm run build && chmod +x dist/src/index.js && npm link",
     "install:local:windows": "npm run build && npm link",
-    "typecheck": "tsc",
     "format": "prettier --cache --write .",
     "format-check": "prettier --cache --check .",
     "lint": "eslint ./ --max-warnings 0",
@@ -62,14 +60,12 @@
     "@types/node": "^18.19.110",
     "cross-env": "^7.0.3",
     "dotenv": "^16.5.0",
-    "esbuild": "^0.25.5",
     "eslint": "^8.57.1",
     "nodemon": "^3.1.10",
     "prettier": "^3.5.3",
     "publint": "^0.3.12",
     "rimraf": "^6.0.1",
     "run-script-os": "^1.1.6",
-    "strip-ansi": "^7.1.0",
     "typescript": "~5.5",
     "vitest": "^3.1.4"
   },

@@ -5,10 +5,7 @@ import { describe, expect, it } from 'vitest';
 import { $ } from 'zx';
 
 import { buildAndInstallProject, useTestSetup } from '../testing/helpers.js';
-
-export function runCommand(command?: string, args?: string[]) {
-  return $`xdxd-backup ${command} ${args}`;
-}
+import { runCommand } from '../testing/run-command.js';
 
 export async function listFilePaths(targetPath: string): Promise<string[]> {
   const result: string[] = [];

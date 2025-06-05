@@ -14,8 +14,14 @@
     "noFallthroughCasesInSwitch": true,
     "noImplicitAny": true,
     "pretty": true,
-    "noEmit": true,
     "resolveJsonModule": true
   },
-  "include": ["src", "vitest.config.ts", "setupTests.ts", "env.d.ts"]
+  "include": ["src"],
+  "exclude": [
+    "src/testing",
+    "src/**/*.test.ts",
+    "src/**/*.spec.ts",
+    "node_modules",
+    "dist"
+  ]
 }

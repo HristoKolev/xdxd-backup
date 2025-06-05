@@ -129,6 +129,7 @@ export default tseslint.config(
       `src/testing/**/*.+(${allExtensions.join('|')})`,
       `__mocks__/**/*.+(${allExtensions.join('|')})`,
       'setupTests.ts',
+      'vitest.config.ts',
     ],
     extends: [...vitestConfig],
     rules: {

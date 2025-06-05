@@ -18,7 +18,7 @@ export function buildAndInstallProject() {
       await $`npm run build`;
 
       if (os.platform() !== 'win32') {
-        await $`chmod +x ./dist/index.js`;
+        await $`chmod +x ./dist/src/index.js`;
       }
 
       await $`npm link`;

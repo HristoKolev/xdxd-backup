@@ -2,7 +2,7 @@ import process from 'node:process';
 
 import { Command } from 'commander';
 
-import packageJSON from '../package.json';
+import packageJSON from '../package.json' with { type: 'json' };
 import { registerCreateBackupCommand } from './commands/create-backup.js';
 import {
   configureLogging,

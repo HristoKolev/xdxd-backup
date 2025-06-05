@@ -2,5 +2,5 @@
   "exec": "npm run build && npm link",
   "watch": ["."],
   "ext": "*",
-  "ignore": ["node_modules", ".idea", ".git", "dist", "manual-test"]
+  "ignore": ["node_modules", ".idea", ".git", "dist"]
 }

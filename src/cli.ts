@@ -1,23 +1,31 @@
+#!/usr/bin/env node
+
 import process from 'node:process';
 
 import { Command } from 'commander';
 
-import packageJSON from '../package.json' with { type: 'json' };
 import { registerCreateBackupCommand } from './commands/create-backup.js';
 import {
   configureLogging,
   getErrorLogger,
   getLogger,
 } from './shared/logging.js';
+import { readPackageJson } from './shared/read-package-json.js';
 import { setupZx } from './shared/zx.js';
 
 configureLogging();
 setupZx();
 
+const packageJSON = readPackageJson();
+
 const program = new Command()
-  .name(packageJSON.name)
-  .description(packageJSON.description)
-  .version(packageJSON.version, '-v, --version', 'Display version number')
+  .name(packageJSON.name as string)
+  .description(packageJSON.description as string)
+  .version(
+    packageJSON.version as string,
+    '-v, --version',
+    'Display version number'
+  )
   .configureOutput({
     writeOut(str: string) {
       const logger = getLogger('outClean');

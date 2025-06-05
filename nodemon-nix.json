@@ -1,6 +1,0 @@
-{
-  "exec": "npm run build && chmod +x dist/src/index.js && npm link",
-  "watch": ["."],
-  "ext": "*",
-  "ignore": ["node_modules", ".idea", ".git", "dist"]
-}

@@ -16,7 +16,7 @@ A robust command-line tool for creating timestamped RAR backups with advanced ig
 
 ## Prerequisites
 
-- **Node.js** 18 or higher
+- **Node.js** 20 or higher
 - **RAR command-line tool** must be installed and available in PATH
 
 ## Installation

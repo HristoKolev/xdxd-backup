@@ -3,5 +3,6 @@
   <component name="TypeScriptCompiler">
     <option name="recompileOnChanges" value="true" />
     <option name="typeScriptCompilerParams" value="--noEmit" />
+    <option name="useTypesFromServer" value="true" />
   </component>
 </project>

@@ -9,17 +9,12 @@ import { isDebuggerAttached } from './env-helpers.js';
 const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
 
 export function runCommand(command?: string, args?: string[]) {
+  const commandArg = command || '';
+
   if (isDebuggerAttached()) {
-    const toolPath = path.resolve(
-      __dirname,
-      '..',
-      '..',
-      'dist',
-      'src',
-      'index.js'
-    );
-    return $`node --inspect-brk=127.0.0.1:0 "${toolPath}" ${args}`;
+    const toolPath = path.resolve(__dirname, '..', '..', 'dist', 'cli.js');
+    return $`node --inspect=127.0.0.1:0 "${toolPath}" ${commandArg} ${args}`;
   }
 
-  return $`xdxd-backup ${command} ${args}`;
+  return $`xdxd-backup ${commandArg} ${args}`;
 }

@@ -4,7 +4,7 @@
   "description": "Cross-platform command-line tool for creating backups with .gitignore-like ignore file support.",
   "type": "module",
   "bin": {
-    "xdxd-backup": "./dist/src/index.js"
+    "xdxd-backup": "./dist/cli.js"
   },
   "author": "Hristo Kolev",
   "repository": {
@@ -23,7 +23,7 @@
     "command-line"
   ],
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=20.0.0"
   },
   "files": [
     "dist",
@@ -31,13 +31,10 @@
     "README.md"
   ],
   "scripts": {
-    "start": "npm run build && node ./dist/src/index.js",
+    "start": "npm run build && node ./dist/cli.js",
     "build": "rimraf dist && tsc",
-    "build:watch": "run-script-os",
-    "build:watch:nix": "nodemon --config ./nodemon-nix.json",
-    "build:watch:windows": "nodemon --config ./nodemon-windows.json",
     "install:local": "run-script-os",
-    "install:local:nix": "npm run build && chmod +x dist/src/index.js && npm link",
+    "install:local:nix": "npm run build && chmod +x dist/cli.js && npm link",
     "install:local:windows": "npm run build && npm link",
     "format": "prettier --cache --write .",
     "format-check": "prettier --cache --check .",
@@ -46,28 +43,26 @@
     "lint:package": "publint --strict",
     "test": "npm run install:local && vitest run --passWithNoTests",
     "test:non-existing-executables": "npm run install:local && cross-env RUN_NON_EXISTING_EXECUTABLES_TESTS=true vitest run non-existing-executables",
-    "test:watch": "cross-env BUILD_AND_INSTALL_ON_EVERY_TEST=true vitest --passWithNoTests",
     "prepublishOnly": "npm run build && npm run format-check && npm run lint && npm run lint:package",
     "all": "npm run build && npm run format-check && npm run lint && npm run lint:package && npm run test"
   },
   "dependencies": {
     "commander": "^14.0.0",
     "log4js": "^6.9.1",
-    "zx": "^8.5.4"
+    "zx": "^8.5.5"
   },
   "devDependencies": {
     "@arabasta/eslint-config": "^1.0.8",
-    "@types/node": "^18.19.110",
+    "@types/node": "^20.17.58",
     "cross-env": "^7.0.3",
     "dotenv": "^16.5.0",
     "eslint": "^8.57.1",
-    "nodemon": "^3.1.10",
     "prettier": "^3.5.3",
     "publint": "^0.3.12",
     "rimraf": "^6.0.1",
     "run-script-os": "^1.1.6",
     "typescript": "~5.5",
-    "vitest": "^3.1.4"
+    "vitest": "^3.2.2"
   },
   "license": "MIT"
 }

@@ -6,6 +6,7 @@
       <script value="test" />
     </scripts>
     <node-interpreter value="project" />
+    <node-options value="--trace-warnings" />
     <envs>
       <env name="IS_DEBUGGER_ATTACHED" value="true" />
     </envs>

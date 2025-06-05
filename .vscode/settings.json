@@ -12,7 +12,7 @@
     "source.fixAll.eslint": "explicit"
   },
   "eslint.validate": ["typescript", "typescriptreact"],
-  "eslint.lintTask.enable":  true,
+  "eslint.lintTask.enable": true,
 
   "typescript.tsdk": "node_modules/typescript/lib"
 }

@@ -3,12 +3,13 @@ import path from 'node:path';
 
 import { describe, expect, it } from 'vitest';
 
-import { parseBackupIgnore } from '../src/shared/backup-ignore.js';
-import { useTempDir } from '../testing/temp-dir.js';
+import { parseBackupIgnore } from './backup-ignore.js';
+import { useTempDir } from '../../testing/temp-dir.js';
 
 describe('Backup ignore functionality', () => {
   const getTempDir = useTempDir();
 
+  // TODO: remove the fs requirement for this test
   it('should parse basic ignore patterns', async () => {
     const ignoreFile = path.join(getTempDir(), '.backupignore');
     fs.writeFileSync(

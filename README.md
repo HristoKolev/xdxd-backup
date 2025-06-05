@@ -3,7 +3,6 @@
 [![npm version](https://img.shields.io/npm/v/xdxd-backup.svg)](https://www.npmjs.com/package/xdxd-backup)
 [![Lint](https://github.com/HristoKolev/xdxd-backup/workflows/Lint/badge.svg)](https://github.com/HristoKolev/xdxd-backup/actions/workflows/lint.yml)
 [![Test](https://github.com/HristoKolev/xdxd-backup/workflows/Test/badge.svg)](https://github.com/HristoKolev/xdxd-backup/actions/workflows/test.yml)
-[![Test non existing executables](https://github.com/HristoKolev/xdxd-backup/workflows/Test%20non%20existing%20executables/badge.svg)](https://github.com/HristoKolev/xdxd-backup/actions/workflows/test-non-existing-executables.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/HristoKolev/xdxd-backup/blob/main/LICENSE)
 
 A robust command-line tool for creating timestamped RAR backups with advanced ignore file support. Features cross-platform compatibility, comprehensive logging, and gitignore-style pattern matching.

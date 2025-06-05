@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { $ } from 'zx';
 
 import packageJSON from '../package.json';
-import { buildAndInstallProject } from '../testing/helpers.js';
+import { buildAndInstallProject } from './testing/helpers.js';
 
 describe('Top-level command', () => {
   buildAndInstallProject();

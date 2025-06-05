@@ -4,7 +4,7 @@ import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 
 import { parseBackupIgnore } from './backup-ignore.js';
-import { useTempDir } from '../../testing/temp-dir.js';
+import { useTempDir } from '../testing/temp-dir.js';
 
 describe('Backup ignore functionality', () => {
   const getTempDir = useTempDir();

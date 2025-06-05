@@ -126,7 +126,7 @@ export default tseslint.config(
     name: 'Test files and test related infrastructure',
     files: [
       `src/**/*.+(spec|test).+(${allExtensions.join('|')})`,
-      `testing/**/*.+(${allExtensions.join('|')})`,
+      `src/testing/**/*.+(${allExtensions.join('|')})`,
       `__mocks__/**/*.+(${allExtensions.join('|')})`,
       'setupTests.ts',
     ],

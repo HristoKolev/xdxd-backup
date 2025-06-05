@@ -4,7 +4,7 @@ import os from 'node:os';
 import dotenv from 'dotenv';
 import { $, usePowerShell } from 'zx';
 
-import { isCIDebugEnabled } from './testing/env-helpers.js';
+import { isCIDebugEnabled } from './src/testing/env-helpers.js';
 
 const fileNames = ['.env.local', '.env'];
 const availableFileNames = fileNames.filter(fsSync.existsSync);

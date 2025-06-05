@@ -4,7 +4,7 @@ import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { $ } from 'zx';
 
-import { buildAndInstallProject, useTestSetup } from '../../testing/helpers.js';
+import { buildAndInstallProject, useTestSetup } from '../testing/helpers.js';
 
 export function runCommand(command?: string, args?: string[]) {
   return $`xdxd-backup ${command} ${args}`;
@@ -74,22 +74,26 @@ describe('Command: "create"', () => {
   const testEnv = useTestSetup();
 
   it('should show help when --help is used', async () => {
-    const result = await $`xdxd-backup create --help`;
+    const result = await runCommand('create', ['--help']);
 
     expect(result.exitCode).toBe(0);
     expect(result.stdout).toContain('Usage:');
   });
 
   it('should require input and output directory options', async () => {
-    const result = await $`xdxd-backup create`.nothrow();
+    const result = await runCommand('create').nothrow();
 
     expect(result.exitCode).toBe(1);
     expect(result.stderr).toContain('required option');
   });
 
   it('should exit with status code 1 when passed a non-existent input directory', async () => {
-    const result =
-      await $`xdxd-backup create -i ./non-existent-input -o ./output`.nothrow();
+    const result = await runCommand('create', [
+      '-i',
+      './non-existent-input',
+      '-o',
+      testEnv.outputPath,
+    ]).nothrow();
 
     expect(result.exitCode).toBe(1);
     expect(result.stderr).toContain('Could not find input directory');

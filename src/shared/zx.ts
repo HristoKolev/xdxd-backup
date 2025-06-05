@@ -45,6 +45,7 @@ export function setupZx() {
   }
 
   $.verbose = true;
-  $.env.FORCE_COLOR = '3';
+
+  // Don't format command arguments
   $.quote = (arg) => arg;
 }

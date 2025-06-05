@@ -127,6 +127,7 @@ export default tseslint.config(
     files: [
       `src/**/*.+(spec|test).+(${allExtensions.join('|')})`,
       `tests/**/*.+(${allExtensions.join('|')})`,
+      `testing/**/*.+(${allExtensions.join('|')})`,
       `__mocks__/**/*.+(${allExtensions.join('|')})`,
       'setupTests.ts',
     ],
@@ -144,5 +145,5 @@ export default tseslint.config(
     },
   }),
 
-  { ignores: ['dist', 'node_modules', 'manual-test', '**/*.json'] }
+  { ignores: ['dist', 'node_modules', '**/*.json'] }
 );

@@ -1,6 +1,6 @@
 import process from 'node:process';
 
-export function isDetailedLoggingEnabled() {
+export function isCIDebugEnabled() {
   return process.env.CI_DEBUG === '1';
 }
 

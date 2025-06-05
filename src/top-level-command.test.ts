@@ -2,10 +2,10 @@ import { describe, expect, it } from 'vitest';
 import { $ } from 'zx';
 
 import packageJSON from '../package.json';
-import { buildProject } from './helpers/helpers.js';
+import { buildAndInstallProject } from '../testing/helpers.js';
 
 describe('Top-level command', () => {
-  buildProject();
+  buildAndInstallProject();
 
   it('should display version when --version flag is used', async () => {
     const result = await $`xdxd-backup --version`;
@@ -21,5 +21,17 @@ describe('Top-level command', () => {
     expect(result.exitCode).toBe(0);
   });
 
-  // TODO: Add test for --help
+  it('should display help when --help flag is used', async () => {
+    const result = await $`xdxd-backup --help`;
+
+    expect(result.stdout).toContain('Usage:');
+    expect(result.exitCode).toBe(0);
+  });
+
+  it('should display help when help command is used', async () => {
+    const result = await $`xdxd-backup help`;
+
+    expect(result.stdout).toContain('Usage:');
+    expect(result.exitCode).toBe(0);
+  });
 });

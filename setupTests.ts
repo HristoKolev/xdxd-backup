@@ -4,7 +4,7 @@ import os from 'node:os';
 import dotenv from 'dotenv';
 import { $, usePowerShell } from 'zx';
 
-import { isDetailedLoggingEnabled } from './tests/helpers/env-helpers.js';
+import { isCIDebugEnabled } from './testing/env-helpers.js';
 
 const fileNames = ['.env.local', '.env'];
 const availableFileNames = fileNames.filter(fsSync.existsSync);
@@ -31,6 +31,8 @@ if (os.platform() === 'win32') {
   usePowerShell();
 }
 
-$.verbose = isDetailedLoggingEnabled();
-$.quiet = !isDetailedLoggingEnabled();
-$.env.FORCE_COLOR = '3';
+$.verbose = isCIDebugEnabled();
+$.quiet = !isCIDebugEnabled();
+
+// Don't format command arguments
+$.quote = (arg) => arg;

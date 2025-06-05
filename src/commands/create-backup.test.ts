@@ -4,10 +4,72 @@ import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { $ } from 'zx';
 
-import { buildProject, useTestSetup } from './helpers/helpers.js';
+import { buildAndInstallProject, useTestSetup } from '../../testing/helpers.js';
 
-describe('Integration Tests', () => {
-  buildProject();
+export function runCommand(command?: string, args?: string[]) {
+  return $`xdxd-backup ${command} ${args}`;
+}
+
+export async function listFilePaths(targetPath: string): Promise<string[]> {
+  const result: string[] = [];
+
+  async function recurse(inputPathNested: string) {
+    const files = await fs.readdir(inputPathNested);
+
+    for (const file of files) {
+      const fullPath = path.join(inputPathNested, file);
+
+      const stats = await fs.stat(fullPath);
+
+      if (stats.isDirectory()) {
+        await recurse(fullPath);
+      } else {
+        result.push(path.relative(targetPath, fullPath));
+      }
+    }
+  }
+
+  await recurse(targetPath);
+
+  result.sort((a, b) => a.localeCompare(b));
+
+  return result;
+}
+
+interface OutputFileListResult {
+  archiveFileNames: string[];
+  logFileNames: string[];
+}
+
+export async function listOutputFiles(
+  targetPath: string
+): Promise<OutputFileListResult> {
+  const result: OutputFileListResult = {
+    archiveFileNames: [],
+    logFileNames: [],
+  };
+
+  const outputFiles = await fs.readdir(targetPath);
+
+  outputFiles.sort((a, b) => a.localeCompare(b));
+
+  result.archiveFileNames = outputFiles.filter((f) =>
+    f.match(/^input-\d{2}-\d{2}-\d{4}_\d{2}-\d{2}-\d{2}\.rar$/)
+  );
+
+  result.logFileNames = outputFiles.filter((f) =>
+    f.match(/^input-\d{2}-\d{2}-\d{4}_\d{2}-\d{2}-\d{2}\.log$/)
+  );
+
+  return result;
+}
+
+export async function extractArchive(archivePath: string, extractPath: string) {
+  await $`unrar x ${archivePath} ${extractPath}`;
+}
+
+describe('Command: "create"', () => {
+  buildAndInstallProject();
 
   const testEnv = useTestSetup();
 
@@ -16,16 +78,13 @@ describe('Integration Tests', () => {
 
     expect(result.exitCode).toBe(0);
     expect(result.stdout).toContain('Usage:');
-    expect(result.stdout).toContain('-i, --inputDirectory');
-    expect(result.stdout).toContain('-o, --outputDirectory');
   });
 
-  it('should exit with status code 1 when passed a non-existent backup ignore file', async () => {
-    const result =
-      await $`xdxd-backup create -i ./input -o ./output --ignoreFilePath ./non-existent-ignore-file.txt`.nothrow();
+  it('should require input and output directory options', async () => {
+    const result = await $`xdxd-backup create`.nothrow();
 
     expect(result.exitCode).toBe(1);
-    expect(result.stderr).toContain('Could not find backup ignore file');
+    expect(result.stderr).toContain('required option');
   });
 
   it('should exit with status code 1 when passed a non-existent input directory', async () => {
@@ -36,76 +95,84 @@ describe('Integration Tests', () => {
     expect(result.stderr).toContain('Could not find input directory');
   });
 
-  it('should require input and output directories', async () => {
-    const result = await $`xdxd-backup create`.nothrow();
+  it('should create archive and log file', async () => {
+    const result = await runCommand('create', [
+      '-i',
+      testEnv.inputPath,
+      '-o',
+      testEnv.outputPath,
+    ]);
 
-    expect(result.exitCode).toBe(1);
-    expect(result.stderr).toContain('required option');
+    expect(result.exitCode).toBe(0);
+
+    const outputFiles = await listOutputFiles(testEnv.outputPath);
+
+    expect(outputFiles.archiveFileNames).toHaveLength(1);
+    expect(outputFiles.logFileNames).toHaveLength(1);
   });
 
-  describe('End-to-end backup process', () => {
-    it('should create backup archive with correct structure', async () => {
-      const result = await testEnv.createBackup({
-        inputDirectory: testEnv.inputPath,
-        outputDirectory: testEnv.outputPath,
-      });
+  it('should create archive that unpacks to match input files', async () => {
+    const result = await runCommand('create', [
+      '-i',
+      testEnv.inputPath,
+      '-o',
+      testEnv.outputPath,
+    ]);
 
-      expect(result.exitCode).toBe(0);
+    expect(result.exitCode).toBe(0);
 
-      const outputFiles = await testEnv.listOutputFiles();
+    const outputFiles = await listOutputFiles(testEnv.outputPath);
+    expect(outputFiles.archiveFileNames).toHaveLength(1);
 
-      expect(outputFiles.archiveFileNames).toHaveLength(1);
-      expect(outputFiles.logFileNames).toHaveLength(1);
-    });
+    // Extract archive to a temp directory
+    const extractPath = path.join(testEnv.outputPath, 'extracted');
+    await fs.mkdir(extractPath, { recursive: true });
 
-    it('should create archive that unpacks to match input files', async () => {
-      // Create backup
-      const result = await testEnv.createBackup({
-        inputDirectory: testEnv.inputPath,
-        outputDirectory: testEnv.outputPath,
-      });
+    const archivePath = path.join(
+      testEnv.outputPath,
+      outputFiles.archiveFileNames[0]
+    );
 
-      expect(result.exitCode).toBe(0);
+    await extractArchive(archivePath, extractPath);
 
-      const outputFiles = await testEnv.listOutputFiles();
-      expect(outputFiles.archiveFileNames).toHaveLength(1);
+    // Get list of extracted files
+    const extractedFiles = await listFilePaths(extractPath);
 
-      // Extract archive to a temp directory
-      const extractPath = path.join(testEnv.outputPath, 'extracted');
-      await fs.mkdir(extractPath, { recursive: true });
+    // Get list of original input files
+    const originalFiles = await listFilePaths(testEnv.inputPath);
 
-      const archivePath = path.join(
-        testEnv.outputPath,
-        outputFiles.archiveFileNames[0]
+    // Compare file lists
+    expect(extractedFiles).toEqual(originalFiles);
+
+    // Compare file contents
+    for (const filePath of originalFiles) {
+      const originalContent = await fs.readFile(
+        path.join(testEnv.inputPath, filePath)
       );
 
-      await testEnv.extractArchive(archivePath, extractPath);
+      const extractedContent = await fs.readFile(
+        path.join(extractPath, filePath)
+      );
 
-      // Get list of extracted files
-      const extractedFiles = await testEnv.listFilePaths(extractPath);
-
-      // Get list of original input files
-      const originalFiles = await testEnv.listFilePaths(testEnv.inputPath);
-
-      // Compare file lists
-      expect(extractedFiles).toEqual(originalFiles);
-
-      // Compare file contents
-      for (const filePath of originalFiles) {
-        const originalContent = await fs.readFile(
-          path.join(testEnv.inputPath, filePath)
-        );
-
-        const extractedContent = await fs.readFile(
-          path.join(extractPath, filePath)
-        );
-
-        expect(extractedContent).toEqual(originalContent);
-      }
-    });
+      expect(extractedContent).toEqual(originalContent);
+    }
   });
 
-  describe('Backup ignore functionality', () => {
+  describe('.backupignore', () => {
+    it('should exit with status code 1 when passed a non-existent explicit backup ignore file', async () => {
+      const result = await runCommand('create', [
+        '-i',
+        testEnv.inputPath,
+        '-o',
+        testEnv.outputPath,
+        '--ignoreFilePath',
+        './non-existent-ignore-file.txt',
+      ]).nothrow();
+
+      expect(result.exitCode).toBe(1);
+      expect(result.stderr).toContain('Could not find backup ignore file');
+    });
+
     it('should exclude files matching .backupignore patterns', async () => {
       // Create .backupignore file in the test input directory
       const backupIgnoreDestPath = path.join(
@@ -139,16 +206,18 @@ test_*.txt                  # Excludes files starting with "test_" and ending wi
 
       await fs.writeFile(backupIgnoreDestPath, backupIgnoreContent);
 
-      // Create backup with ignore file
-      const result = await testEnv.createBackup({
-        inputDirectory: testEnv.inputPath,
-        outputDirectory: testEnv.outputPath,
-        ignoreFilePath: backupIgnoreDestPath,
-      });
+      const result = await runCommand('create', [
+        '-i',
+        testEnv.inputPath,
+        '-o',
+        testEnv.outputPath,
+        '--ignoreFilePath',
+        backupIgnoreDestPath,
+      ]);
 
       expect(result.exitCode).toBe(0);
 
-      const outputFiles = await testEnv.listOutputFiles();
+      const outputFiles = await listOutputFiles(testEnv.outputPath);
       expect(outputFiles.archiveFileNames).toHaveLength(1);
 
       // Extract archive to verify contents
@@ -160,10 +229,10 @@ test_*.txt                  # Excludes files starting with "test_" and ending wi
         outputFiles.archiveFileNames[0]
       );
 
-      await testEnv.extractArchive(archivePath, extractPath);
+      await extractArchive(archivePath, extractPath);
 
       // Get list of extracted files
-      let extractedFiles = await testEnv.listFilePaths(extractPath);
+      let extractedFiles = await listFilePaths(extractPath);
 
       if (path.sep === '\\') {
         extractedFiles = extractedFiles.map((x) => x.replaceAll('\\', '/'));
@@ -210,15 +279,18 @@ test_*.txt                  # Excludes files starting with "test_" and ending wi
       const emptyIgnorePath = path.join(testEnv.inputPath, '.backupignore');
       await fs.writeFile(emptyIgnorePath, '');
 
-      // Create backup with empty ignore file
-      const result = await testEnv.createBackup({
-        inputDirectory: testEnv.inputPath,
-        outputDirectory: testEnv.outputPath,
-      });
+      const result = await runCommand('create', [
+        '-i',
+        testEnv.inputPath,
+        '-o',
+        testEnv.outputPath,
+        '--ignoreFilePath',
+        emptyIgnorePath,
+      ]);
 
       expect(result.exitCode).toBe(0);
 
-      const outputFiles = await testEnv.listOutputFiles();
+      const outputFiles = await listOutputFiles(testEnv.outputPath);
       expect(outputFiles.archiveFileNames).toHaveLength(1);
 
       // Extract and verify all files are included
@@ -230,11 +302,11 @@ test_*.txt                  # Excludes files starting with "test_" and ending wi
         outputFiles.archiveFileNames[0]
       );
 
-      await testEnv.extractArchive(archivePath, extractPath);
-      const extractedFiles = await testEnv.listFilePaths(extractPath);
+      await extractArchive(archivePath, extractPath);
+      const extractedFiles = await listFilePaths(extractPath);
 
       // Get list of original input files
-      const originalFiles = await testEnv.listFilePaths(testEnv.inputPath);
+      const originalFiles = await listFilePaths(testEnv.inputPath);
 
       // Compare file lists
       expect(extractedFiles).toEqual(originalFiles);

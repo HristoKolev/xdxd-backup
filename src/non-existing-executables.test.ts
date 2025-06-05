@@ -3,8 +3,8 @@ import fs from 'node:fs/promises';
 import { describe, expect, it } from 'vitest';
 import { $ } from 'zx';
 
-import { runNonExistingExecutableTests } from './helpers/env-helpers.js';
-import { useTempDir } from './helpers/helpers.js';
+import { runNonExistingExecutableTests } from '../testing/env-helpers.js';
+import { useTempDir } from '../testing/temp-dir.js';
 
 if (runNonExistingExecutableTests()) {
   describe('Check for non existing executables', () => {

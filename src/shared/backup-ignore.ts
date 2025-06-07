@@ -2,6 +2,7 @@ import fsSync from 'node:fs';
 import path from 'node:path';
 import readline from 'node:readline';
 
+import { fail } from './helpers.js';
 import { getLogger } from './logging.js';
 
 export async function readBackupIgnoreFile(
@@ -10,39 +11,79 @@ export async function readBackupIgnoreFile(
 ): Promise<string[] | undefined> {
   const logger = getLogger();
 
-  let backupIgnorePath = explicitIgnoreFilePath;
-
   if (explicitIgnoreFilePath) {
-    backupIgnorePath = path.resolve(explicitIgnoreFilePath);
-  } else {
-    const defaultBackupignorePath = path.join(
-      path.resolve(inputPath),
-      '.backupignore'
-    );
+    const fullPath = path.resolve(explicitIgnoreFilePath);
 
-    if (fsSync.existsSync(defaultBackupignorePath)) {
-      backupIgnorePath = defaultBackupignorePath;
-    } else {
-      // The default, optional.
-      logger.log('No backup ignore file found.');
-      return undefined;
+    let lineStream;
+
+    try {
+      lineStream = readline.createInterface({
+        input: fsSync.createReadStream(fullPath),
+        crlfDelay: Infinity,
+      });
+
+      const result: string[] = [];
+
+      for await (const line of lineStream) {
+        result.push(line);
+      }
+
+      logger.log(`Using backup ignore file: "${fullPath}"`);
+      return result;
+
+      // eslint-disable-next-line @arabasta/javascript/report-caught-error
+    } catch (error: unknown) {
+      // eslint-disable-next-line no-undef
+      const typedError = error as NodeJS.ErrnoException;
+
+      if (typedError.code === 'ENOENT') {
+        fail(`Could not find backup ignore file "${fullPath}".`);
+      }
+
+      throw error;
+    } finally {
+      lineStream?.close();
+      lineStream?.removeAllListeners();
     }
   }
 
-  logger.log(`Using backup ignore file: "${backupIgnorePath}"`);
+  const defaultBackupIgnoreFilePath = path.join(
+    path.resolve(inputPath),
+    '.backupignore'
+  );
 
-  const lineStream = readline.createInterface({
-    input: fsSync.createReadStream(backupIgnorePath),
-    crlfDelay: Infinity,
-  });
+  let lineStream;
 
-  const result: string[] = [];
+  try {
+    lineStream = readline.createInterface({
+      input: fsSync.createReadStream(defaultBackupIgnoreFilePath),
+      crlfDelay: Infinity,
+    });
 
-  for await (const line of lineStream) {
-    result.push(line);
+    const result: string[] = [];
+
+    for await (const line of lineStream) {
+      result.push(line);
+    }
+
+    logger.log(`Using backup ignore file: "${defaultBackupIgnoreFilePath}"`);
+    return result;
+
+    // eslint-disable-next-line @arabasta/javascript/report-caught-error
+  } catch (error: unknown) {
+    // eslint-disable-next-line no-undef
+    const typedError = error as NodeJS.ErrnoException;
+
+    if (typedError.code === 'ENOENT') {
+      logger.log('No backup ignore file found.');
+      return undefined;
+    }
+
+    throw error;
+  } finally {
+    lineStream?.close();
+    lineStream?.removeAllListeners();
   }
-
-  return result;
 }
 
 function removeComment(input: string): string {

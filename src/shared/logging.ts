@@ -56,9 +56,3 @@ export function getLogger(
 export function getErrorLogger(category: 'error' | 'errorClean' = 'error') {
   return log4js.getLogger(category);
 }
-
-export function fail(message: string, ...args: unknown[]): never {
-  const logger = getErrorLogger();
-  logger.fatal(message, ...args);
-  process.exit(1);
-}

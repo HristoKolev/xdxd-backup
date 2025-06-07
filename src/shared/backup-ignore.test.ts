@@ -58,7 +58,7 @@ describe('Backup ignore functionality', () => {
     expect(lines).toEqual(data.split('\n').filter(Boolean));
   });
 
-  it('should return undefined if backup file could not be found', async () => {
+  it('should return undefined if implicit backup file could not be found', async () => {
     const lines = await readBackupIgnoreFile('./input');
 
     expect(lines).toEqual(undefined);

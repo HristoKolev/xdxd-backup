@@ -10,8 +10,8 @@ import {
   parseBackupIgnore,
   readBackupIgnoreFile,
 } from '../shared/backup-ignore.js';
-import { generateDateString, isExecutableInPath } from '../shared/helpers.js';
-import { fail } from '../shared/logging.js';
+import { generateDateString } from '../shared/date.js';
+import { fail, isExecutableInPath } from '../shared/helpers.js';
 import { pipeStreamsToFile } from '../shared/zx.js';
 
 export interface CreateBackupCommandOptions {
@@ -45,23 +45,7 @@ export function registerCreateBackupCommand(program: Command) {
       '-o, --outputDirectory <outputDirectory>',
       'Output directory'
     )
-    .option(
-      '--ignoreFilePath <ignoreFilePath>',
-      'Backup ignore file path',
-      (value) => {
-        if (value) {
-          const resolvedFilePath = path.resolve(value);
-
-          if (!fsSync.existsSync(resolvedFilePath)) {
-            fail(`Could not find backup ignore file "${resolvedFilePath}".`);
-          }
-
-          return resolvedFilePath;
-        }
-
-        return undefined;
-      }
-    )
+    .option('--ignoreFilePath <ignoreFilePath>', 'Backup ignore file path')
     .action(async (options: CreateBackupCommandOptions) => {
       if (!(await isExecutableInPath('rar'))) {
         fail('The "rar" executable in not in PATH.');
@@ -69,7 +53,7 @@ export function registerCreateBackupCommand(program: Command) {
 
       const inputPath = path.resolve(options.inputDirectory);
 
-      const dateString = generateDateString();
+      const dateString = generateDateString(new Date());
 
       await fs.mkdir(path.resolve(options.outputDirectory), {
         recursive: true,

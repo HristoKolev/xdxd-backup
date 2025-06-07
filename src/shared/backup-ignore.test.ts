@@ -1,33 +1,28 @@
-import fs from 'node:fs';
+import fs from 'node:fs/promises';
 import path from 'node:path';
 
 import { describe, expect, it } from 'vitest';
 
-import { parseBackupIgnore } from './backup-ignore.js';
+import { parseBackupIgnore, readBackupIgnoreFile } from './backup-ignore.js';
 import { useTempDir } from '../testing/temp-dir.js';
 
 describe('Backup ignore functionality', () => {
-  const getTempDir = useTempDir();
+  useTempDir();
 
-  // TODO: remove the fs requirement for this test
-  it('should parse basic ignore patterns', async () => {
-    const ignoreFile = path.join(getTempDir(), '.backupignore');
-    fs.writeFileSync(
-      ignoreFile,
-      [
-        '# This is a comment',
-        '',
-        ' ',
-        '        \t     ',
-        'node_modules/',
-        '*.log',
-        'temp',
-        '/absolute/path',
-        '!important.log',
-      ].join('\n')
-    );
+  it('should parse basic ignore patterns', () => {
+    const ignoreLines = [
+      '# This is a comment',
+      '',
+      ' ',
+      '        \t     ',
+      'node_modules/# This is a comment',
+      '*.log',
+      'temp',
+      '/absolute/path',
+      '!important.log',
+    ];
 
-    let result = await parseBackupIgnore(ignoreFile, '');
+    let result = parseBackupIgnore(ignoreLines);
 
     if (path.sep === '\\') {
       result = result.map((x) => x.replaceAll('\\', '/'));
@@ -41,16 +36,31 @@ describe('Backup ignore functionality', () => {
     ]);
   });
 
-  it('should handle directory patterns correctly', async () => {
-    const ignoreFile = path.join(getTempDir(), '.backupignore');
-    fs.writeFileSync(ignoreFile, 'build/\ndist/');
+  it('should read explicit backup ignore file', async () => {
+    const data = 'dir1\ndir2\n';
+    const explicitIgnoreFile = '.explicit-backupignore';
 
-    let result = await parseBackupIgnore(ignoreFile, '');
+    await fs.writeFile(explicitIgnoreFile, data);
+    const lines = await readBackupIgnoreFile('./input', explicitIgnoreFile);
 
-    if (path.sep === '\\') {
-      result = result.map((x) => x.replaceAll('\\', '/'));
-    }
+    expect(lines).toEqual(data.split('\n').filter(Boolean));
+  });
 
-    expect(result).toEqual(['-x"build/*"', '-x"dist/*"']);
+  it('should read implicit backup ignore file', async () => {
+    await fs.mkdir('./input');
+
+    const data = 'dir1\ndir2\n';
+    const implicitBackupIgnoreFile = './input/.backupignore';
+
+    await fs.writeFile(implicitBackupIgnoreFile, data);
+    const lines = await readBackupIgnoreFile('./input');
+
+    expect(lines).toEqual(data.split('\n').filter(Boolean));
+  });
+
+  it('should return undefined if backup file could not be found', async () => {
+    const lines = await readBackupIgnoreFile('./input');
+
+    expect(lines).toEqual(undefined);
   });
 });

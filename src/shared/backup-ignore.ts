@@ -4,63 +4,28 @@ import readline from 'node:readline';
 
 import { getLogger } from './logging.js';
 
-function removeComment(input: string): string {
-  const hashIndex = input.indexOf('#');
-  return hashIndex === -1 ? input : input.substring(0, hashIndex);
-}
-
-function convertGitignoreToRarExclusion(pattern: string) {
-  // Remove leading slash if present
-  if (pattern.startsWith('/')) {
-    pattern = pattern.slice(1);
-  }
-
-  // Handle directory patterns (ending with /)
-  if (pattern.endsWith('/')) {
-    // For directories, exclude the directory and all its contents
-    return `${pattern}*`;
-  }
-
-  // Handle negation patterns (starting with !)
-  if (pattern.startsWith('!')) {
-    // RAR doesn't support negation directly, skip these patterns
-    return undefined;
-  }
-
-  // Handle wildcard patterns
-  if (pattern.includes('*') || pattern.includes('?')) {
-    return pattern;
-  }
-
-  // For exact file/directory names, add wildcard to match anywhere in path
-  if (!pattern.includes('/')) {
-    return `*${pattern}*`;
-  }
-
-  // For path patterns, use as-is
-  return pattern;
-}
-
-// TODO: remove the direct fs access
-export async function parseBackupIgnore(
-  ignoreFilePath: string | undefined,
-  fullInputPath: string
-) {
+export async function readBackupIgnoreFile(
+  inputPath: string,
+  explicitIgnoreFilePath?: string
+): Promise<string[] | undefined> {
   const logger = getLogger();
 
-  let backupIgnorePath = ignoreFilePath;
+  let backupIgnorePath = explicitIgnoreFilePath;
 
-  if (ignoreFilePath) {
-    backupIgnorePath = ignoreFilePath;
+  if (explicitIgnoreFilePath) {
+    backupIgnorePath = path.resolve(explicitIgnoreFilePath);
   } else {
-    const defaultBackupignorePath = path.join(fullInputPath, '.backupignore');
+    const defaultBackupignorePath = path.join(
+      path.resolve(inputPath),
+      '.backupignore'
+    );
 
     if (fsSync.existsSync(defaultBackupignorePath)) {
       backupIgnorePath = defaultBackupignorePath;
     } else {
       // The default, optional.
       logger.log('No backup ignore file found.');
-      return [];
+      return undefined;
     }
   }
 
@@ -71,28 +36,65 @@ export async function parseBackupIgnore(
     crlfDelay: Infinity,
   });
 
-  const result = [];
+  const result: string[] = [];
 
   for await (const line of lineStream) {
-    const cleanLine = removeComment(line).trim();
-
-    // Skip empty lines and comments
-    if (!cleanLine) {
-      // eslint-disable-next-line no-continue
-      continue;
-    }
-
-    // Convert gitignore pattern to RAR exclusion argument
-    let rarExclusion = convertGitignoreToRarExclusion(cleanLine);
-
-    if (rarExclusion) {
-      if (path.sep === '\\') {
-        rarExclusion = rarExclusion.replaceAll('/', '\\');
-      }
-
-      result.push(`-x"${rarExclusion}"`);
-    }
+    result.push(line);
   }
 
   return result;
+}
+
+function removeComment(input: string): string {
+  const hashIndex = input.indexOf('#');
+  return hashIndex === -1 ? input : input.substring(0, hashIndex);
+}
+
+function convertPattern(line: string) {
+  let pattern = removeComment(line).trim();
+
+  // Skip empty lines and comments
+  if (!pattern) {
+    return undefined;
+  }
+
+  // Remove leading slash if present
+  if (pattern.startsWith('/')) {
+    pattern = pattern.slice(1);
+  }
+
+  let resultPattern: string;
+
+  // Handle directory patterns (ending with /)
+  if (pattern.endsWith('/')) {
+    // For directories, exclude the directory and all its contents
+    resultPattern = `${pattern}*`;
+
+    // Handle negation patterns (starting with !)
+  } else if (pattern.startsWith('!')) {
+    // RAR doesn't support negation directly, skip these patterns
+    return undefined;
+
+    // Handle wildcard patterns
+  } else if (pattern.includes('*') || pattern.includes('?')) {
+    resultPattern = pattern;
+
+    // For exact file/directory names, add wildcard to match anywhere in path
+  } else if (!pattern.includes('/')) {
+    resultPattern = `*${pattern}*`;
+
+    // For path patterns, use as-is
+  } else {
+    resultPattern = pattern;
+  }
+
+  if (path.sep === '\\') {
+    resultPattern = resultPattern.replaceAll('/', '\\');
+  }
+
+  return `-x"${resultPattern}"`;
+}
+
+export function parseBackupIgnore(lines: string[]) {
+  return lines.map(convertPattern).filter(Boolean) as string[];
 }

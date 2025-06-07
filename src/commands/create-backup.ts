@@ -2,12 +2,14 @@ import fsSync from 'node:fs';
 import fs from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
-import process from 'node:process';
 
 import type { Command } from 'commander';
 import { $ } from 'zx';
 
-import { parseBackupIgnore } from '../shared/backup-ignore.js';
+import {
+  parseBackupIgnore,
+  readBackupIgnoreFile,
+} from '../shared/backup-ignore.js';
 import { generateDateString, isExecutableInPath } from '../shared/helpers.js';
 import { fail } from '../shared/logging.js';
 import { pipeStreamsToFile } from '../shared/zx.js';
@@ -95,11 +97,15 @@ export function registerCreateBackupCommand(program: Command) {
       commandArgs.push('-ep1');
 
       // Add ignore list
-      const ignoreList = await parseBackupIgnore(
-        options.ignoreFilePath,
-        inputPath
+      const ignoreLines = await readBackupIgnoreFile(
+        options.inputDirectory,
+        options.ignoreFilePath
       );
-      commandArgs.push(...ignoreList);
+
+      if (ignoreLines) {
+        const rarIgnoreArguments = parseBackupIgnore(ignoreLines);
+        commandArgs.push(...rarIgnoreArguments);
+      }
 
       // Output path
       commandArgs.push(`"${outputArchivePath}"`);
@@ -112,12 +118,11 @@ export function registerCreateBackupCommand(program: Command) {
 
       const result = await proc;
 
-      if (result.exitCode !== 0) {
-        process.exit(1);
-      } else if (os.platform() === 'win32' && result.stderr.trim()) {
-        // On windows, sometimes we don't get an exit code
-        // in these cases `zx` assumes exit code of `0`.
-        process.exit(1);
+      if (
+        result.exitCode !== 0 ||
+        (os.platform() === 'win32' && result.stderr.trim())
+      ) {
+        fail('rar failed.');
       }
     });
 }

@@ -6,7 +6,7 @@ import process from 'node:process';
 import { afterEach, beforeEach } from 'vitest';
 import { $ } from 'zx';
 
-export function useTempDir(prefix: string = 'useTempDir-') {
+export function useTempDir(prefix: string = 'useTempDir') {
   let oldWd: string;
   let oldZxWd: string;
 
@@ -16,7 +16,7 @@ export function useTempDir(prefix: string = 'useTempDir-') {
     oldWd = process.cwd();
     oldZxWd = $.cwd!;
 
-    tempDir = await fs.mkdtemp(path.join(os.tmpdir(), prefix));
+    tempDir = await fs.mkdtemp(path.join(os.tmpdir(), `${prefix}-`));
 
     process.chdir(tempDir);
     $.cwd = tempDir;
@@ -30,10 +30,4 @@ export function useTempDir(prefix: string = 'useTempDir-') {
       await fs.rm(tempDir, { recursive: true, force: true });
     }
   });
-
-  function getTempDir() {
-    return tempDir;
-  }
-
-  return getTempDir;
 }

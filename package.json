@@ -1,6 +1,6 @@
 {
   "name": "xdxd-backup",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "description": "Cross-platform command-line tool for creating backups with .gitignore-like ignore file support.",
   "type": "module",
   "bin": {

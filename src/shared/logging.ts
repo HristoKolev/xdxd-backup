@@ -1,6 +1,8 @@
 import log4js from 'log4js';
 
 export function configureLogging() {
+  const defaultLogLevel = 'info';
+
   const patternLayout = {
     type: 'pattern',
     pattern: '%[%p%] %m',
@@ -40,17 +42,21 @@ export function configureLogging() {
     categories: {
       default: {
         appenders: ['nonErrorAppender', 'errorAppender'],
-        level: 'info',
+        level: defaultLogLevel,
       },
       clean: {
         appenders: ['cleanNonErrorAppender', 'cleanErrorAppender'],
-        level: 'info',
+        level: defaultLogLevel,
       },
     },
   });
 }
 
 export function getLogger(category = 'xdxd-backup') {
+  if (!log4js.isConfigured()) {
+    configureLogging();
+  }
+
   return log4js.getLogger(category);
 }
 

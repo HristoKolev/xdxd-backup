@@ -1,12 +1,15 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
+import process from 'node:process';
 
 import { describe, expect, it } from 'vitest';
 import { $ } from 'zx';
 
 import { listOutputFiles } from '../shared/list-output-files.js';
 import { useTestInputData } from '../testing/helpers.js';
+import { useMockHomeDir } from '../testing/mock-home-dir.js';
 import { runCommand } from '../testing/run-command.js';
+import { useTempDir } from '../testing/temp-dir.js';
 
 export async function listFilePaths(targetPath: string): Promise<string[]> {
   const result: string[] = [];
@@ -39,7 +42,9 @@ export async function extractArchive(archivePath: string, extractPath: string) {
 }
 
 describe('Command: "create"', () => {
+  useTempDir();
   useTestInputData();
+  useMockHomeDir();
 
   it('should show help when --help is used', async () => {
     const result = await runCommand('create', ['--help']);
@@ -55,11 +60,20 @@ describe('Command: "create"', () => {
     expect(result.stdout).toContain('Usage:');
   });
 
-  it('should require input and output directory options', async () => {
+  it('should require input directory option', async () => {
     const result = await runCommand('create').nothrow();
 
     expect(result.exitCode).toBe(1);
     expect(result.stderr).toContain('required option');
+  });
+
+  it('should fail when no output directory is provided and no default is set in settings', async () => {
+    const result = await runCommand('create', ['-i', './input']).nothrow();
+
+    expect(result.exitCode).toBe(1);
+    expect(result.stderr).toContain(
+      'Output directory must be specified either via --outputDirectory option or in the settings file.'
+    );
   });
 
   it('should exit with status code 1 when passed a non-existent input directory', async () => {
@@ -409,5 +423,27 @@ test_*.txt                  # Excludes files starting with "test_" and ending wi
       // Compare file lists
       expect(extractedFiles).toEqual(originalFiles);
     });
+  });
+
+  it('should use default output directory from settings file when not specified', async () => {
+    // Create a settings file in the temp directory
+    const settingsPath = path.join(process.cwd(), 'xdxd-backup.json');
+    const settings = {
+      defaults: {
+        outputDirectory: './default-output',
+      },
+    };
+
+    await fs.writeFile(settingsPath, JSON.stringify(settings, null, 2));
+
+    // Run command without --outputDirectory option
+    const result = await runCommand('create', ['-i', './input']);
+
+    expect(result.exitCode).toBe(0);
+
+    // Check that files were created in the default directory
+    const outputFiles = await listOutputFiles('./default-output');
+    expect(outputFiles.archiveFileNames).toHaveLength(1);
+    expect(outputFiles.logFileNames).toHaveLength(1);
   });
 });

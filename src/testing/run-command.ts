@@ -12,8 +12,17 @@ export function runCommand(command?: string, args?: string[]) {
 
   if (isDebuggerAttached()) {
     const toolPath = path.resolve(__dirname, '..', '..', 'dist', 'cli.js');
-    return $`node --inspect=127.0.0.1:0 "${toolPath}" ${commandArg} ${args}`;
+
+    if (args && args.length > 0) {
+      return $`node --inspect=127.0.0.1:0 "${toolPath}" ${commandArg} ${args}`;
+    }
+
+    return $`node --inspect=127.0.0.1:0 "${toolPath}" ${commandArg}`;
   }
 
-  return $`xdxd-backup ${commandArg} ${args}`;
+  if (args && args.length > 0) {
+    return $`xdxd-backup ${commandArg} ${args}`;
+  }
+
+  return $`xdxd-backup ${commandArg}`;
 }

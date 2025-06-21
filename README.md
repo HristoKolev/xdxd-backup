@@ -55,7 +55,7 @@ xdxd-backup create -i <input-directory> -o <output-directory>
 **Options:**
 
 - `-i, --inputDirectory <path>` - Directory to backup (required, validates existence)
-- `-o, --outputDirectory <path>` - Directory where archive will be saved (required)
+- `-o, --outputDirectory <path>` - Directory where archive will be saved (optional if default is set in settings file)
 - `--ignoreFilePath <path>` - Custom ignore file path (validates existence)
 
 #### List Archives
@@ -68,7 +68,7 @@ xdxd-backup list-archives -o <output-directory>
 
 **Options:**
 
-- `-o, --outputDirectory <path>` - Directory to search for archives (required)
+- `-o, --outputDirectory <path>` - Directory to search for archives (optional if default is set in settings file)
 
 #### Global Options
 
@@ -204,6 +204,48 @@ rar
 ```
 
 You should see RAR command-line help information.
+
+## Configuration
+
+You can configure default settings by creating a `xdxd-backup.json` file in your home directory (`~` on Unix-like systems, `%USERPROFILE%` on Windows).
+
+### Settings File Format
+
+```json
+{
+  "defaults": {
+    "outputDirectory": "/path/to/default/output/directory"
+  }
+}
+```
+
+### Available Settings
+
+- `defaults.outputDirectory` - Default output directory for backup operations. When set, the `-o, --outputDirectory` option becomes optional for both `create` and `list-archives` commands.
+
+### Example
+
+Create a settings file to always save backups to a specific directory:
+
+**Unix/Linux/macOS:**
+
+```bash
+echo '{"defaults":{"outputDirectory":"~/backups"}}' > ~/xdxd-backup.json
+```
+
+**Windows:**
+
+```cmd
+echo {"defaults":{"outputDirectory":"C:\\Backups"}} > %USERPROFILE%\xdxd-backup.json
+```
+
+After setting up the configuration file, you can run commands without specifying the output directory:
+
+```bash
+# This will use the default output directory from settings
+xdxd-backup create -i ./my-project
+xdxd-backup list-archives
+```
 
 ## Development
 

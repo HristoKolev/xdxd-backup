@@ -13,11 +13,13 @@ import {
 import { generateDateString } from '../shared/helpers/date.js';
 import { fail } from '../shared/helpers/fail.js';
 import { isExecutableInPath } from '../shared/helpers/is-executable-in-path.js';
+import { getLogger } from '../shared/helpers/logging.js';
+import { readBackupSettings } from '../shared/helpers/read-backup-settings.js';
 import { pipeStreamsToFile } from '../shared/helpers/zx.js';
 
 export interface CreateBackupCommandOptions {
   inputDirectory: string;
-  outputDirectory: string;
+  outputDirectory?: string;
   ignoreFilePath?: string;
 }
 
@@ -42,31 +44,50 @@ export function registerCreateBackupCommand(program: Command) {
         return undefined;
       }
     )
-    .requiredOption(
+    .option(
       '-o, --outputDirectory <outputDirectory>',
-      'Output directory'
+      'Output directory (uses default from settings if not specified)'
     )
     .option('--ignoreFilePath <ignoreFilePath>', 'Backup ignore file path')
     .action(async (options: CreateBackupCommandOptions) => {
+      const logger = getLogger();
+
       if (!(await isExecutableInPath('rar'))) {
         fail('The "rar" executable in not in PATH.');
       }
 
       const inputPath = path.resolve(options.inputDirectory);
 
+      // Get output directory from options or fallback to settings
+      let outputDirectory = options.outputDirectory;
+      if (!outputDirectory) {
+        const settings = await readBackupSettings();
+        outputDirectory = settings.defaults?.outputDirectory;
+
+        if (!outputDirectory) {
+          fail(
+            'Output directory must be specified either via --outputDirectory option or in the settings file.'
+          );
+        }
+
+        logger.debug(
+          `Using default output directory from settings: ${outputDirectory}`
+        );
+      }
+
       const dateString = generateDateString(new Date());
 
-      await fs.mkdir(path.resolve(options.outputDirectory), {
+      await fs.mkdir(path.resolve(outputDirectory), {
         recursive: true,
       });
 
       const outputArchivePath = path.join(
-        path.resolve(options.outputDirectory),
+        path.resolve(outputDirectory),
         `${path.basename(inputPath)}-${dateString}.rar`
       );
 
       const outputLogPath = path.join(
-        path.resolve(options.outputDirectory),
+        path.resolve(outputDirectory),
         `${path.basename(inputPath)}-${dateString}.log`
       );
 

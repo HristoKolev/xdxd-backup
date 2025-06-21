@@ -4,11 +4,14 @@ import process from 'node:process';
 
 import { describe, expect, it } from 'vitest';
 
+import { useMockHomeDir } from '../testing/mock-home-dir.js';
 import { runCommand } from '../testing/run-command.js';
 import { useTempDir } from '../testing/temp-dir.js';
 
 describe('Command: "list-archives"', () => {
   useTempDir();
+
+  useMockHomeDir();
 
   it('should show help when --help is used', async () => {
     const result = await runCommand('list-archives', ['--help']);
@@ -17,11 +20,13 @@ describe('Command: "list-archives"', () => {
     expect(result.stdout).toContain('Usage:');
   });
 
-  it('should require output directory option', async () => {
+  it('should fail when no output directory is provided and no default is set in settings', async () => {
     const result = await runCommand('list-archives').nothrow();
 
     expect(result.exitCode).toBe(1);
-    expect(result.stderr).toContain('required option');
+    expect(result.stderr).toContain(
+      'Output directory must be specified either via --outputDirectory option or in the settings file.'
+    );
   });
 
   it('should list archives in output directory', async () => {
@@ -87,5 +92,37 @@ describe('Command: "list-archives"', () => {
 
     expect(result.exitCode).toBe(1);
     expect(result.stderr).toContain('is not a directory');
+  });
+
+  it('should use default output directory from settings file when not specified', async () => {
+    // Create a settings file in the temp directory
+    const settingsPath = path.join(process.cwd(), 'xdxd-backup.json');
+    const settings = {
+      defaults: {
+        outputDirectory: './default-output',
+      },
+    };
+
+    await fs.writeFile(settingsPath, JSON.stringify(settings, null, 2));
+
+    // Create the default output directory and add some test files
+    await fs.mkdir('./default-output', { recursive: true });
+
+    const archive1 = 'input-15-06-2024_14-30-45.rar';
+    const archive2 = 'input-16-06-2024_09-15-30.rar';
+
+    await fs.writeFile(path.join('./default-output', archive1), 'test content');
+    await fs.writeFile(
+      path.join('./default-output', archive2),
+      'test content 2'
+    );
+
+    // Run command without --outputDirectory option
+    const result = await runCommand('list-archives');
+
+    expect(result.exitCode).toBe(0);
+    expect(result.stdout).toContain('Found 2 archive(s)');
+    expect(result.stdout).toContain(archive1);
+    expect(result.stdout).toContain(archive2);
   });
 });

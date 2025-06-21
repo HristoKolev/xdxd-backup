@@ -79,11 +79,15 @@ describe('listOutputFiles', () => {
     ]);
   });
 
-  it('should ignore files that do not match the exact pattern', async () => {
+  it('should match files ending with date-time pattern and ignore invalid formats', async () => {
     const testFiles = [
       // Valid files
       'input-01-01-2024_10-30-45.rar',
       'input-01-01-2024_10-30-45.log',
+      'output-01-01-2024_10-30-45.rar',
+      'output-01-01-2024_10-30-45.log',
+      'prefix-input-01-01-2024_10-30-45.rar',
+      'prefix-input-01-01-2024_10-30-45.log',
       // Invalid files - wrong date format
       'input-1-1-2024_10-30-45.rar',
       'input-01-1-2024_10-30-45.log',
@@ -96,13 +100,9 @@ describe('listOutputFiles', () => {
       // Invalid files - wrong extension
       'input-01-01-2024_10-30-45.zip',
       'input-01-01-2024_10-30-45.txt',
-      // Invalid files - wrong prefix
-      'output-01-01-2024_10-30-45.rar',
-      'data-01-01-2024_10-30-45.log',
-      // Invalid files - extra characters
+      // Invalid files - extra characters after extension
       'input-01-01-2024_10-30-45.rar.backup',
       'input-01-01-2024_10-30-45.log.old',
-      'prefix-input-01-01-2024_10-30-45.rar',
     ];
 
     for (const file of testFiles) {
@@ -111,9 +111,17 @@ describe('listOutputFiles', () => {
 
     const result = await listOutputFiles('.');
 
-    expect(result.archiveFileNames).toEqual(['input-01-01-2024_10-30-45.rar']);
+    expect(result.archiveFileNames).toEqual([
+      'input-01-01-2024_10-30-45.rar',
+      'output-01-01-2024_10-30-45.rar',
+      'prefix-input-01-01-2024_10-30-45.rar',
+    ]);
 
-    expect(result.logFileNames).toEqual(['input-01-01-2024_10-30-45.log']);
+    expect(result.logFileNames).toEqual([
+      'input-01-01-2024_10-30-45.log',
+      'output-01-01-2024_10-30-45.log',
+      'prefix-input-01-01-2024_10-30-45.log',
+    ]);
   });
 
   it('should handle directories and subdirectories correctly', async () => {

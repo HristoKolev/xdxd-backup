@@ -5,24 +5,42 @@ import type { Command } from 'commander';
 
 import { fail } from '../shared/helpers/fail.js';
 import { getLogger } from '../shared/helpers/logging.js';
+import { readBackupSettings } from '../shared/helpers/read-backup-settings.js';
 import { listOutputFiles } from '../shared/list-output-files.js';
 
 export interface ListArchivesCommandOptions {
-  outputDirectory: string;
+  outputDirectory?: string;
 }
 
 export function registerListArchivesCommand(program: Command) {
   program
     .command('list-archives')
     .description('Lists found archives in the output directory')
-    .requiredOption(
+    .option(
       '-o, --outputDirectory <outputDirectory>',
-      'Output directory to search for archives'
+      'Output directory to search for archives (uses default from settings if not specified)'
     )
     .action(async (options: ListArchivesCommandOptions) => {
       const logger = getLogger();
 
-      const outputPath = path.resolve(options.outputDirectory);
+      // Get output directory from options or fallback to settings
+      let outputDirectory = options.outputDirectory;
+      if (!outputDirectory) {
+        const settings = await readBackupSettings();
+        outputDirectory = settings.defaults?.outputDirectory;
+
+        if (!outputDirectory) {
+          fail(
+            'Output directory must be specified either via --outputDirectory option or in the settings file.'
+          );
+        }
+
+        logger.debug(
+          `Using default output directory from settings: ${outputDirectory}`
+        );
+      }
+
+      const outputPath = path.resolve(outputDirectory);
 
       try {
         const stats = await fs.stat(outputPath);

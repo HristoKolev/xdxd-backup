@@ -4,13 +4,9 @@ import url from 'node:url';
 
 import { beforeEach } from 'vitest';
 
-import { useTempDir } from './temp-dir.js';
-
 const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
 
 export function useTestInputData() {
-  useTempDir();
-
   beforeEach(async () => {
     await fs.mkdir('./input', { recursive: true });
     await fs.mkdir('./output', { recursive: true });

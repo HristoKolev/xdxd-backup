@@ -30,7 +30,7 @@ describe('Top-level command', () => {
   it('should display help when help command is used', async () => {
     const result = await runCommand('help').nothrow();
 
-    expect(result.stderr).toContain('Usage:');
-    expect(result.exitCode).toBe(1);
+    expect(result.stdout).toContain('Usage:');
+    expect(result.exitCode).toBe(0);
   });
 });

@@ -20,13 +20,23 @@ export function pipeStreamsToFile(proc: ProcessPromise, outputLogPath: string) {
     { flags: 'a' }
   );
 
+  let closedStreams = 0;
+  const totalStreams = 2;
+
+  const closeFileStream = () => {
+    closedStreams += 1;
+    if (closedStreams >= totalStreams && logFileStream) {
+      logFileStream.close();
+      logFileStream = undefined;
+    }
+  };
+
   stdoutStream.on('line', (line) => {
     logFileStream?.write(line + os.EOL);
   });
 
   stdoutStream.on('close', () => {
-    logFileStream?.close();
-    logFileStream = undefined;
+    closeFileStream();
   });
 
   stderrStream.on('line', (line) => {
@@ -34,8 +44,7 @@ export function pipeStreamsToFile(proc: ProcessPromise, outputLogPath: string) {
   });
 
   stderrStream.on('close', () => {
-    logFileStream?.close();
-    logFileStream = undefined;
+    closeFileStream();
   });
 }
 

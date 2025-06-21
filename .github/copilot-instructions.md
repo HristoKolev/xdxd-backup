@@ -34,7 +34,8 @@ When working on JavaScript (`.js`) or TypeScript (`.ts`) files:
 
 ### Logging and error handling
 
-- When trying to log an error log the entire error object, not just the error message. Use `logger.error(error)` instead of `logger.error(error.message)`. You should still log descriptive messages before logging the error object, e.g. `logger.error('An error occurred:', error)`.
+- When trying to log an error log the entire error object, not just the error message. Use `logger.error(error)` instead of `logger.error(error.message)`. You should still log descriptive messages before logging the error object, e.g. `logger.error('An error occurred:', error)`. This applies when logging errors with other logigng levels as well.
+- Every time you see `error.message` being logged, replace it with `error` to log the entire error object.
 - When logging fatal errors use `logger.fatal` instead of `logger.error`. A fatal error is an error that cannot be recovered from and the script should exit immediately.
 
 # JS script files
@@ -44,9 +45,13 @@ When working on JavaScript (`.js`) files in the `scripts` folder:
 - Look at the other scripts in the `scripts` folder to see how they are structured.
 - Whenever possible use helper functions from the `scripts/helpers` folder.
 - Each script should be self-contained and not depend on other scripts.
-- Each script should be documented with comments explaining the purpose of the script and its main functions. Script headers should only include short description and usage instructions.
-- The script documentation (file header) should be after the `import` statements, not before.
 - Each script should be present in the `package.json`.
+
+## Documentation
+
+- Each script should be documented with comments explaining the purpose of the script.
+- The script headers should **ONLY** include short description, usage section and requirements section (if necessary).
+- The script documentation (file header) should be after the `import` statements, not before.
 
 # Project commands
 

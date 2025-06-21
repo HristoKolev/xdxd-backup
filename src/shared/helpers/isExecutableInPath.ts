@@ -1,6 +1,8 @@
+import { exec } from 'node:child_process';
 import process from 'node:process';
+import { promisify } from 'node:util';
 
-import { $ } from 'zx';
+const execAsync = promisify(exec);
 
 /**
  * Checks if an executable exists in the system PATH.
@@ -11,11 +13,15 @@ export async function isExecutableInPath(executable: string): Promise<boolean> {
     return false;
   }
 
-  if (process.platform === 'win32') {
-    const result = await $`get-command ${executable}`.nothrow();
-    return result.exitCode === 0 && Boolean(result.stdout.trim());
-  }
+  try {
+    if (process.platform === 'win32') {
+      await execAsync(`get-command ${executable}`, { shell: 'powershell' });
+      return true;
+    }
 
-  const result = await $`which ${executable}`.nothrow();
-  return result.exitCode === 0;
+    await execAsync(`which ${executable}`);
+    return true;
+  } catch (_error) {
+    return false;
+  }
 }

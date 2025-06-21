@@ -39,7 +39,7 @@ export function pipeStreamsToFile(proc: ProcessPromise, outputLogPath: string) {
   });
 }
 
-export function setupZx() {
+export function configureZx() {
   if (os.platform() === 'win32') {
     usePowerShell();
   }

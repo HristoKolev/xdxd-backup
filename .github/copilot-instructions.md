@@ -35,6 +35,34 @@ This section applies to JavaScript and TypeScript files.
 - Always import global object `console` explicitly. Do not use `console` without importing it first.
 - Do not use the `rimraf` package for anything. Use `fs.rm()` instead.
 
+## JS script files
+
+This section applies to JavaScript files in the `scripts` folder.
+
+- Look at the other scripts in the `scripts` folder to see how they are structured.
+- Whenever possible use helper functions from the `scripts/helpers` folder.
+- Each script should be self-contained and not depend on other scripts.
+- Each script should be present in the `package.json`.
+
+### JS script documentation
+
+- Each script should be documented with comments explaining the purpose of the script.
+- The script headers should **ONLY** include short description, usage section and requirements section (if necessary).
+- The script documentation (file header) should be after the `import` statements, not before.
+
+## Commands
+
+This section applies to commands in the `src/commands` folder.
+- Look at the other commands in the `src/commands` folder to see how they are structured.
+- Each command should be self-contained and not depend on other commands.
+- Look at the `src/shared` folder for shared code that can be used in commands.
+- Each command should be registered in the `src/cli.ts` file.
+
+### Command tests
+- Each command should have a test file next to it.
+- Look at the tests for other commands to see how they are structured.
+- Look at the `src/testing` folder for shared code that can be used in command tests.
+
 # NPM scripts
 
 All of the below NPM scripts should be run when trying to check if a change works:
@@ -62,18 +90,3 @@ When working on Powershell (`.ps1`) files:
 When working on Shell script (`.sh`) files:
 
 - Make sure they work cross-platform (on linux and macOS) and can be executed by the `sh` command and not only by `bash`.
-
-# JS script files
-
-When working on JavaScript (`.js`) files in the `scripts` folder:
-
-- Look at the other scripts in the `scripts` folder to see how they are structured.
-- Whenever possible use helper functions from the `scripts/helpers` folder.
-- Each script should be self-contained and not depend on other scripts.
-- Each script should be present in the `package.json`.
-
-## Documentation
-
-- Each script should be documented with comments explaining the purpose of the script.
-- The script headers should **ONLY** include short description, usage section and requirements section (if necessary).
-- The script documentation (file header) should be after the `import` statements, not before.

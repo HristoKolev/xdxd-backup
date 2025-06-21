@@ -7,12 +7,10 @@ import { Command } from 'commander';
 import { registerCreateBackupCommand } from './commands/create-backup.js';
 import { configureLogging, getCleanLogger } from './shared/logging.js';
 import { readPackageJson } from './shared/read-package-json.js';
-import { setupZx } from './shared/zx.js';
+import { configureZx } from './shared/zx.js';
 
 configureLogging();
-setupZx();
-
-const cleanLogger = getCleanLogger();
+configureZx();
 
 const packageJSON = readPackageJson();
 
@@ -26,9 +24,11 @@ const program = new Command()
   )
   .configureOutput({
     writeOut(str: string) {
+      const cleanLogger = getCleanLogger();
       cleanLogger.info(str);
     },
     writeErr: (str: string) => {
+      const cleanLogger = getCleanLogger();
       cleanLogger.error(str);
     },
   });

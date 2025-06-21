@@ -75,9 +75,7 @@ describe('isExecutableInPath', () => {
       );
       expect(result).toBe(false);
     });
-  });
 
-  describe('Node.js availability', () => {
     it('should return true for node command', async () => {
       // Node.js should be available since we're running the tests with it
       const result = await isExecutableInPath('node');

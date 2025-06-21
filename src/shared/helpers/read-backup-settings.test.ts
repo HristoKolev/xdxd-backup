@@ -47,6 +47,7 @@ describe('readBackupSettings', () => {
     const settings: BackupSettings = {
       defaults: {
         outputDirectory: '/path/to/backups',
+        compressionLevel: 3,
       },
     };
 
@@ -64,14 +65,26 @@ describe('readBackupSettings', () => {
     await fs.writeFile(settingsPath, JSON.stringify(settings, null, 2));
 
     const result = await readBackupSettings();
-    expect(result).toEqual(settings);
+    // Should merge with defaults even when user settings have empty defaults
+    expect(result).toEqual({
+      defaults: {
+        outputDirectory: undefined,
+        compressionLevel: 5,
+      },
+    });
   });
 
   it('should handle empty JSON object', async () => {
     await fs.writeFile(settingsPath, '{}');
 
     const result = await readBackupSettings();
-    expect(result).toEqual({});
+    // Should merge with defaults even when user settings are empty
+    expect(result).toEqual({
+      defaults: {
+        outputDirectory: undefined,
+        compressionLevel: 5,
+      },
+    });
   });
 
   it('should return default settings when JSON is malformed', async () => {
@@ -93,6 +106,7 @@ describe('readBackupSettings', () => {
     const settingsWithExtra = {
       defaults: {
         outputDirectory: '/path/to/backups',
+        compressionLevel: 2,
       },
       // Additional properties that aren't in the type definition
       extraProperty: 'value',
@@ -105,5 +119,25 @@ describe('readBackupSettings', () => {
 
     const result = await readBackupSettings();
     expect(result.defaults?.outputDirectory).toBe('/path/to/backups');
+    expect(result.defaults?.compressionLevel).toBe(2);
+  });
+
+  it('should merge defaults with partial user settings', async () => {
+    const partialSettings: BackupSettings = {
+      defaults: {
+        outputDirectory: '/custom/output',
+        // compressionLevel is missing, should use default
+      },
+    };
+
+    await fs.writeFile(settingsPath, JSON.stringify(partialSettings, null, 2));
+
+    const result = await readBackupSettings();
+    expect(result).toEqual({
+      defaults: {
+        outputDirectory: '/custom/output',
+        compressionLevel: 5, // Should use default value
+      },
+    });
   });
 });

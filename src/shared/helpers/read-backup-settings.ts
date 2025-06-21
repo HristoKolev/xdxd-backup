@@ -9,12 +9,14 @@ const logger = getLogger();
 export interface BackupSettings {
   defaults?: {
     outputDirectory?: string;
+    compressionLevel?: number;
   };
 }
 
 export const defaultBackupSettings: BackupSettings = {
   defaults: {
     outputDirectory: undefined,
+    compressionLevel: 5,
   },
 };
 
@@ -29,10 +31,26 @@ function getUserProfilePath(): string | undefined {
 }
 
 /**
+ * Merges default settings with user-provided settings
+ */
+function mergeWithDefaults(userSettings: BackupSettings): BackupSettings {
+  return {
+    defaults: {
+      outputDirectory:
+        userSettings.defaults?.outputDirectory ??
+        defaultBackupSettings.defaults?.outputDirectory,
+      compressionLevel:
+        userSettings.defaults?.compressionLevel ??
+        defaultBackupSettings.defaults?.compressionLevel,
+    },
+  };
+}
+
+/**
  * Reads and parses the xdxd-backup.json configuration file from the user's profile folder.
- * Returns an empty object if the file doesn't exist or cannot be read.
+ * Returns default settings merged with user settings if file exists, or default settings if file doesn't exist.
  *
- * @returns The parsed backup settings or an empty object if file doesn't exist
+ * @returns The merged backup settings with defaults applied
  */
 export async function readBackupSettings(): Promise<BackupSettings> {
   const userProfilePath = getUserProfilePath();
@@ -54,7 +72,7 @@ export async function readBackupSettings(): Promise<BackupSettings> {
     const parsed = JSON.parse(fileContents) as BackupSettings;
 
     logger.debug(`Successfully read backup settings from ${settingsPath}`);
-    return parsed;
+    return mergeWithDefaults(parsed);
   } catch (error) {
     if (error instanceof Error && 'code' in error && error.code === 'ENOENT') {
       // File doesn't exist, return default settings

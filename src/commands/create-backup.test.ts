@@ -446,4 +446,125 @@ test_*.txt                  # Excludes files starting with "test_" and ending wi
     expect(outputFiles.archiveFileNames).toHaveLength(1);
     expect(outputFiles.logFileNames).toHaveLength(1);
   });
+
+  describe('compression level option', () => {
+    it('should accept valid compression levels (0-5)', async () => {
+      const validLevels = [0, 1, 2, 3, 4, 5];
+
+      for (const level of validLevels) {
+        const result = await runCommand('create', [
+          '-i',
+          './input',
+          '-o',
+          './output',
+          '--compressionLevel',
+          level.toString(),
+        ]);
+
+        expect(result.exitCode).toBe(0);
+      }
+    });
+
+    it('should reject invalid compression levels', async () => {
+      const invalidLevels = ['-1', '6', '10', 'abc', '2.5'];
+
+      for (const level of invalidLevels) {
+        const result = await runCommand('create', [
+          '-i',
+          './input',
+          '-o',
+          './output',
+          '--compressionLevel',
+          level,
+        ]).nothrow();
+
+        expect(result.exitCode).toBe(1);
+        expect(result.stderr).toMatch(
+          /Compression level must be a number between 0 and 5/
+        );
+      }
+    });
+
+    it('should use compression level from settings when not specified in options', async () => {
+      // Create a settings file with compression level
+      const settingsPath = path.join(process.cwd(), 'xdxd-backup.json');
+      const settings = {
+        defaults: {
+          outputDirectory: './settings-output',
+          compressionLevel: 3,
+        },
+      };
+
+      await fs.writeFile(settingsPath, JSON.stringify(settings, null, 2));
+
+      // Run command without --compressionLevel option
+      const result = await runCommand('create', ['-i', './input']);
+
+      expect(result.exitCode).toBe(0);
+
+      // Verify that compression level 3 from settings was actually used
+      expect(result.stderr).toContain('-m3'); // Verify compression level 3 was used
+
+      // Check that files were created
+      const outputFiles = await listOutputFiles('./settings-output');
+      expect(outputFiles.archiveFileNames).toHaveLength(1);
+      expect(outputFiles.logFileNames).toHaveLength(1);
+    });
+
+    it('should use option compression level over settings default', async () => {
+      // Create a settings file with different compression level
+      const settingsPath = path.join(process.cwd(), 'xdxd-backup.json');
+      const settings = {
+        defaults: {
+          outputDirectory: './settings-output',
+          compressionLevel: 1,
+        },
+      };
+
+      await fs.writeFile(settingsPath, JSON.stringify(settings, null, 2));
+
+      // Run command with explicit compression level that differs from settings
+      const result = await runCommand('create', [
+        '-i',
+        './input',
+        '--compressionLevel',
+        '4',
+      ]);
+
+      expect(result.exitCode).toBe(0);
+
+      // Verify that compression level 4 was actually used by checking the command in stderr
+      expect(result.stderr).toContain('-m4'); // Verify compression level 4 was used in the RAR command
+
+      // Check that files were created
+      const outputFiles = await listOutputFiles('./settings-output');
+      expect(outputFiles.archiveFileNames).toHaveLength(1);
+      expect(outputFiles.logFileNames).toHaveLength(1);
+    });
+
+    it('should default to compression level 5 when not specified in options or settings', async () => {
+      // Create a settings file without compression level
+      const settingsPath = path.join(process.cwd(), 'xdxd-backup.json');
+      const settings = {
+        defaults: {
+          outputDirectory: './settings-output',
+        },
+      };
+
+      await fs.writeFile(settingsPath, JSON.stringify(settings, null, 2));
+
+      // Run command without --compressionLevel option
+      const result = await runCommand('create', ['-i', './input']);
+
+      expect(result.exitCode).toBe(0);
+
+      // Verify that compression level 5 was actually used (the default)
+      expect(result.stderr).toContain('-m5'); // Verify compression level 5 was used
+
+      // Check that files were created
+      const outputFiles = await listOutputFiles('./settings-output');
+      expect(outputFiles.archiveFileNames).toHaveLength(1);
+      expect(outputFiles.logFileNames).toHaveLength(1);
+    });
+  });
 });

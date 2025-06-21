@@ -57,6 +57,7 @@ xdxd-backup create -i <input-directory> -o <output-directory>
 - `-i, --inputDirectory <path>` - Directory to backup (required, validates existence)
 - `-o, --outputDirectory <path>` - Directory where archive will be saved (optional if default is set in settings file)
 - `--ignoreFilePath <path>` - Custom ignore file path (validates existence)
+- `--compressionLevel <level>` - Compression level (0-5, uses default from settings if not specified)
 
 #### List Archives
 
@@ -81,6 +82,12 @@ xdxd-backup list-archives -o <output-directory>
 
 ```bash
 xdxd-backup create -i ./my-project -o ./backups
+```
+
+**Backup with custom compression level:**
+
+```bash
+xdxd-backup create -i ./my-project -o ./backups --compressionLevel 3
 ```
 
 **Backup with custom ignore file:**
@@ -214,7 +221,8 @@ You can configure default settings by creating a `xdxd-backup.json` file in your
 ```json
 {
   "defaults": {
-    "outputDirectory": "/path/to/default/output/directory"
+    "outputDirectory": "/path/to/default/output/directory",
+    "compressionLevel": 5
   }
 }
 ```
@@ -222,27 +230,28 @@ You can configure default settings by creating a `xdxd-backup.json` file in your
 ### Available Settings
 
 - `defaults.outputDirectory` - Default output directory for backup operations. When set, the `-o, --outputDirectory` option becomes optional for both `create` and `list-archives` commands.
+- `defaults.compressionLevel` - Default compression level (0-5) for backup operations. When set, the `--compressionLevel` option becomes optional for `create` command. Defaults to 5 if not specified.
 
 ### Example
 
-Create a settings file to always save backups to a specific directory:
+Create a settings file to always save backups to a specific directory with custom compression:
 
 **Unix/Linux/macOS:**
 
 ```bash
-echo '{"defaults":{"outputDirectory":"~/backups"}}' > ~/xdxd-backup.json
+echo '{"defaults":{"outputDirectory":"~/backups","compressionLevel":3}}' > ~/xdxd-backup.json
 ```
 
 **Windows:**
 
 ```cmd
-echo {"defaults":{"outputDirectory":"C:\\Backups"}} > %USERPROFILE%\xdxd-backup.json
+echo {"defaults":{"outputDirectory":"C:\\Backups","compressionLevel":3}} > %USERPROFILE%\xdxd-backup.json
 ```
 
-After setting up the configuration file, you can run commands without specifying the output directory:
+After setting up the configuration file, you can run commands without specifying configured options:
 
 ```bash
-# This will use the default output directory from settings
+# This will use the default output directory and compression level from settings
 xdxd-backup create -i ./my-project
 xdxd-backup list-archives
 ```

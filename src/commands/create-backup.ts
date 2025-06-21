@@ -21,6 +21,7 @@ export interface CreateBackupCommandOptions {
   inputDirectory: string;
   outputDirectory?: string;
   ignoreFilePath?: string;
+  compressionLevel?: number;
 }
 
 export function registerCreateBackupCommand(program: Command) {
@@ -49,8 +50,28 @@ export function registerCreateBackupCommand(program: Command) {
       'Output directory (uses default from settings if not specified)'
     )
     .option('--ignoreFilePath <ignoreFilePath>', 'Backup ignore file path')
+    .option(
+      '--compressionLevel <compressionLevel>',
+      'Compression level (0-5, uses default from settings if not specified)',
+      (value) => {
+        const numValue = Number(value);
+        if (
+          !Number.isFinite(numValue) ||
+          !Number.isInteger(numValue) ||
+          numValue < 0 ||
+          numValue > 5
+        ) {
+          throw new Error(
+            'Compression level must be a number between 0 and 5.'
+          );
+        }
+        return numValue;
+      }
+    )
     .action(async (options: CreateBackupCommandOptions) => {
       const logger = getLogger();
+
+      const settings = await readBackupSettings();
 
       if (!(await isExecutableInPath('rar'))) {
         fail('The "rar" executable in not in PATH.');
@@ -58,10 +79,9 @@ export function registerCreateBackupCommand(program: Command) {
 
       const inputPath = path.resolve(options.inputDirectory);
 
-      // Get output directory from options or fallback to settings
       let outputDirectory = options.outputDirectory;
+
       if (!outputDirectory) {
-        const settings = await readBackupSettings();
         outputDirectory = settings.defaults?.outputDirectory;
 
         if (!outputDirectory) {
@@ -72,6 +92,16 @@ export function registerCreateBackupCommand(program: Command) {
 
         logger.debug(
           `Using default output directory from settings: ${outputDirectory}`
+        );
+      }
+
+      let compressionLevel = options.compressionLevel;
+
+      if (!Number.isFinite(compressionLevel)) {
+        compressionLevel = settings.defaults?.compressionLevel;
+
+        logger.debug(
+          `Using default compression level from settings: ${compressionLevel}`
         );
       }
 
@@ -102,8 +132,8 @@ export function registerCreateBackupCommand(program: Command) {
       // Do not store the path entered at the command line in archive. Exclude base folder from names.
       commandArgs.push('-ep1');
 
-      // Set compression level to maximum
-      commandArgs.push('-m5');
+      // Set compression level
+      commandArgs.push(`-m${compressionLevel}`);
 
       // Add ignore list
       const ignoreLines = await readBackupIgnoreFile(

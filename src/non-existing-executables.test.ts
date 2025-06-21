@@ -6,8 +6,9 @@ import { runNonExistingExecutableTests } from './testing/env-helpers.js';
 import { runCommand } from './testing/run-command.js';
 import { useTempDir } from './testing/temp-dir.js';
 
-if (runNonExistingExecutableTests()) {
-  describe('Check for non existing executables', () => {
+describe.skipIf(!runNonExistingExecutableTests())(
+  'Check for non existing executables',
+  () => {
     useTempDir();
 
     it('Exits with status code 1 when the rar executable in not in PATH', async () => {
@@ -23,5 +24,5 @@ if (runNonExistingExecutableTests()) {
       expect(result.exitCode).toBe(1);
       expect(result.stderr).toContain('The "rar" executable in not in PATH.');
     });
-  });
-}
+  }
+);

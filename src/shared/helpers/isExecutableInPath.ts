@@ -6,9 +6,14 @@ import { $ } from 'zx';
  * Checks if an executable exists in the system PATH.
  */
 export async function isExecutableInPath(executable: string): Promise<boolean> {
+  // Handle edge cases
+  if (!executable || !executable.trim()) {
+    return false;
+  }
+
   if (process.platform === 'win32') {
     const result = await $`get-command ${executable}`.nothrow();
-    return Boolean(result.stdout.trim());
+    return result.exitCode === 0 && Boolean(result.stdout.trim());
   }
 
   const result = await $`which ${executable}`.nothrow();

@@ -9,7 +9,7 @@ let cachedPackageJSON: Record<string, unknown> | undefined;
 export function readPackageJson(): Record<string, unknown> {
   if (!cachedPackageJSON) {
     const fileContents = fsSync
-      .readFileSync(path.resolve(__dirname, '../../package.json'))
+      .readFileSync(path.resolve(__dirname, '../../../package.json'))
       .toString();
 
     const parsed = JSON.parse(fileContents) as Record<string, unknown>;

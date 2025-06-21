@@ -10,9 +10,10 @@ import {
   parseBackupIgnore,
   readBackupIgnoreFile,
 } from '../shared/backup-ignore.js';
-import { generateDateString } from '../shared/date.js';
-import { fail, isExecutableInPath } from '../shared/helpers.js';
-import { pipeStreamsToFile } from '../shared/zx.js';
+import { generateDateString } from '../shared/helpers/date.js';
+import { fail } from '../shared/helpers/fail.js';
+import { isExecutableInPath } from '../shared/helpers/isExecutableInPath.js';
+import { pipeStreamsToFile } from '../shared/helpers/zx.js';
 
 export interface CreateBackupCommandOptions {
   inputDirectory: string;

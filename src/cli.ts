@@ -6,9 +6,9 @@ import { Command } from 'commander';
 
 import { registerCreateBackupCommand } from './commands/create-backup.js';
 import { registerListArchivesCommand } from './commands/list-archives.js';
-import { configureLogging, getCleanLogger } from './shared/logging.js';
-import { readPackageJson } from './shared/read-package-json.js';
-import { configureZx } from './shared/zx.js';
+import { configureLogging, getCleanLogger } from './shared/helpers/logging.js';
+import { readPackageJson } from './shared/helpers/read-package-json.js';
+import { configureZx } from './shared/helpers/zx.js';
 
 configureLogging();
 configureZx();

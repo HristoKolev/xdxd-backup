@@ -2,8 +2,8 @@ import fsSync from 'node:fs';
 import path from 'node:path';
 import readline from 'node:readline';
 
-import { fail } from './helpers.js';
-import { getLogger } from './logging.js';
+import { fail } from './helpers/fail.js';
+import { getLogger } from './helpers/logging.js';
 
 export async function readBackupIgnoreFile(
   inputPath: string,

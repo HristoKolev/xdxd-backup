@@ -27,9 +27,7 @@ try {
     directories.map(async (directory) => {
       try {
         await fs.rm(directory, { recursive: true, force: true });
-        console.info(
-          `\x1b[32m[INFO] Successfully deleted directory "${directory}"\x1b[0m`
-        );
+        // Should not log success messages.
       } catch (error) {
         console.warn(
           `\x1b[33m[WARNING] Failed to delete directory "${directory}":\x1b[0m`,

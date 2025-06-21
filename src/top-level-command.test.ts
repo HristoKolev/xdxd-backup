@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { readPackageJson } from './shared/read-package-json.js';
+import { readPackageJson } from './shared/helpers/read-package-json.js';
 import { runCommand } from './testing/run-command.js';
 
 const packageJSON = readPackageJson();

@@ -1,3 +1,49 @@
+# JS / TS files
+
+This section applies to JavaScript and TypeScript files.
+
+# General guidelines
+
+- Check each usage of `str.replace()` and replace it with `str.replaceAll()` if possible.
+- When using `str.replaceAll()`, try not to use regex if possible.
+
+## Command line interface (CLI)
+
+- Use the `commander` package for command line arguments parsing and any command line interactions.
+- Use `new Command()` to create the default command
+- Use `command.parse(process.argv)` to parse the command line arguments.
+
+## Logging
+
+- Use `log4js` for logging instead of `console`.
+- Look for the closest function `configureLogging` in the codebase to see how to configure `log4js`.
+- When trying to log an error log the entire error object, not just the error message. Every time you see `error.message` being logged, replace it with `error` to log the entire error object.
+- When logging fatal errors use `logger.fatal` instead of `logger.error`. A fatal error is an error that cannot be recovered from and the script should exit immediately.
+
+## Running commands from the code
+
+- Use `zx` for shell commands execution.
+- Look for the closest function `configureZx` in the codebase to see how to configure `zx`.
+
+## Node.js
+
+- When importing nodejs built-in modules, use the `node:` prefix.
+- When using IO operations always use async functions.
+- When importing `fs` use `import fs from 'node:fs/promises'` to use the promise-based API.
+- When needing to use functions from `fs` that are not available in the promise-based API, use `import fsSync from 'node:fs'`.
+- Always import global object `process` explicitly. Do not use `process` without importing it first.
+- Always import global object `console` explicitly. Do not use `console` without importing it first.
+- Do not use the `rimraf` package for anything. Use `fs.rm()` instead.
+
+# NPM scripts
+
+All of the below NPM scripts should be run when trying to check if a change works:
+
+- Use `npm run format` to format the code when necessary.
+- Use `npm run lint` and `npm run lint:package` to lint the code when necessary.
+- Use `npm run test` to run the tests when necessary.
+- Use `npm run build` to build the project when necessary.
+
 # Script files (`.sh` or `.ps1`)
 
 When working on script files `.ps1` or `.sh` files:
@@ -17,27 +63,6 @@ When working on Shell script (`.sh`) files:
 
 - Make sure they work cross-platform (on linux and macOS) and can be executed by the `sh` command and not only by `bash`.
 
-# JS / TS files
-
-When working on JavaScript (`.js`) or TypeScript (`.ts`) files:
-
-- Use the `commander` package for command line arguments parsing and any command line interactions. Use `new Command()` to create the default command and `command.parse(process.argv)` to parse the command line arguments.
-- Use `log4js` for logging instead of `console.log`. Look for the closest function `configureLogging` in the codebase to see how to configure it.
-- Use `zx` for shell commands execution. Look for the closest function `configureZx` in the codebase to see how to configure it.
-- Check each usage of `str.replace()` and replace it with `str.replaceAll()` if possible.
-- Do not use `rimraf` for anything. use `fs.rm()` instead.
-- When importing nodejs built-in modules, use the `node:` prefix, e.g. `import fs from 'node:fs'`.
-- When using io operations always use async version of the function, e.g. `fs.readFileSync()` instead of `fs.readFile()`.
-- When importing `fs` use `import fs from 'node:fs/promises'` to use the promise-based API.
-- When needing to use functions from `fs` that are not available in the promise-based API, use `import fsSync from 'node:fs'`.
-- Always import global objects like `process` and `console` using the `node:` prefix, e.g. `import process from 'node:process'`.
-
-### Logging and error handling
-
-- When trying to log an error log the entire error object, not just the error message. Use `logger.error(error)` instead of `logger.error(error.message)`. You should still log descriptive messages before logging the error object, e.g. `logger.error('An error occurred:', error)`. This applies when logging errors with other logigng levels as well.
-- Every time you see `error.message` being logged, replace it with `error` to log the entire error object.
-- When logging fatal errors use `logger.fatal` instead of `logger.error`. A fatal error is an error that cannot be recovered from and the script should exit immediately.
-
 # JS script files
 
 When working on JavaScript (`.js`) files in the `scripts` folder:
@@ -52,12 +77,3 @@ When working on JavaScript (`.js`) files in the `scripts` folder:
 - Each script should be documented with comments explaining the purpose of the script.
 - The script headers should **ONLY** include short description, usage section and requirements section (if necessary).
 - The script documentation (file header) should be after the `import` statements, not before.
-
-# Project commands
-
-All of the below commands should be run when trying to check if a change works:
-
-- Use `npm run format` to format the code when necessary.
-- Use `npm run lint` and `npm run lint:package` to lint the code when necessary.
-- Use `npm run test` to run the tests when necessary.
-- Use `npm run build` to build the project when necessary.

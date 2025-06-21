@@ -96,7 +96,7 @@ command
       // Step 3: Extract the new version number from package.json
       // We need this to create the GitHub release with the correct tag
       const npmVersionOutput = await $`npm pkg get version`;
-      const npmVersion = npmVersionOutput.stdout.trim().replaceAll(/"/g, '');
+      const npmVersion = npmVersionOutput.stdout.trim().replaceAll('"', '');
 
       if (!npmVersion) {
         logger.error('Failed to extract version from package.json');

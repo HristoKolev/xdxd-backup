@@ -1,5 +1,4 @@
-/* eslint-disable @eslint-community/eslint-comments/disable-enable-pair */
-/* eslint-disable no-console */
+import console from 'node:console';
 import fs from 'node:fs/promises';
 import process from 'node:process';
 

@@ -20,7 +20,6 @@ if (availableFileNames.length) {
       // noinspection ExceptionCaughtLocallyJS
       throw result.error;
     }
-    // eslint-disable-next-line @arabasta/javascript/report-caught-error
   } catch (error) {
     throw new Error(
       'An error occurred while loading environment variables from files.',

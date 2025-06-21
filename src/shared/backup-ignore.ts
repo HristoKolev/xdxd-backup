@@ -30,8 +30,6 @@ export async function readBackupIgnoreFile(
 
       logger.log(`Using backup ignore file: "${fullPath}"`);
       return result;
-
-      // eslint-disable-next-line @arabasta/javascript/report-caught-error
     } catch (error: unknown) {
       // eslint-disable-next-line no-undef
       const typedError = error as NodeJS.ErrnoException;
@@ -68,8 +66,6 @@ export async function readBackupIgnoreFile(
 
     logger.log(`Using backup ignore file: "${defaultBackupIgnoreFilePath}"`);
     return result;
-
-    // eslint-disable-next-line @arabasta/javascript/report-caught-error
   } catch (error: unknown) {
     // eslint-disable-next-line no-undef
     const typedError = error as NodeJS.ErrnoException;

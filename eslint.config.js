@@ -55,6 +55,7 @@ export default tseslint.config(
     rules: {
       'prefer-destructuring': 'off',
       'no-restricted-imports': 'off',
+      '@arabasta/javascript/report-caught-error': 'off',
       'import/no-restricted-paths': [
         'error',
         {
@@ -98,6 +99,22 @@ export default tseslint.config(
       '@typescript-eslint/no-invalid-void-type': 'off',
       '@typescript-eslint/no-unnecessary-type-parameters': 'off',
       '@typescript-eslint/restrict-template-expressions': 'off',
+      '@typescript-eslint/naming-convention': [
+        'error',
+        {
+          format: ['camelCase', 'PascalCase', 'UPPER_CASE'],
+          leadingUnderscore: 'allow',
+          selector: 'variable',
+        },
+        {
+          selector: 'variable',
+          filter: {
+            regex: '^(__filename|__dirname)$',
+            match: true,
+          },
+          format: null,
+        },
+      ],
     },
   }),
 
@@ -144,9 +161,18 @@ export default tseslint.config(
 
   ...tseslint.config({
     name: 'NodeJS project',
-    files: [`src/**/*.+(${allExtensions.join('|')})`],
+    files: [
+      `src/**/*.+(${allExtensions.join('|')})`,
+      `scripts/**/*.+(${allExtensions.join('|')})`,
+    ],
     rules: {
       'import/no-nodejs-modules': 'off',
+      'no-underscore-dangle': [
+        'error',
+        {
+          allow: ['__dirname', '__filename'],
+        },
+      ],
     },
   }),
 

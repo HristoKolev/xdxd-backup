@@ -2,7 +2,6 @@ import fsSync from 'node:fs';
 import path from 'node:path';
 import url from 'node:url';
 
-// eslint-disable-next-line no-underscore-dangle,@typescript-eslint/naming-convention
 const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
 
 let cachedPackageJSON: Record<string, unknown> | undefined;

@@ -5,7 +5,6 @@ import { $ } from 'zx';
 
 import { isDebuggerAttached } from './env-helpers.js';
 
-// eslint-disable-next-line no-underscore-dangle,@typescript-eslint/naming-convention
 const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
 
 export function runCommand(command?: string, args?: string[]) {

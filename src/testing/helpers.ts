@@ -6,7 +6,6 @@ import { beforeEach } from 'vitest';
 
 import { useTempDir } from './temp-dir.js';
 
-// eslint-disable-next-line no-underscore-dangle,@typescript-eslint/naming-convention
 const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
 
 export function useTestInputData() {

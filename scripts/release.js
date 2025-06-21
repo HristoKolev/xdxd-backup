@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+import path from 'node:path';
 import process from 'node:process';
 
 import { program } from 'commander';
@@ -41,7 +42,7 @@ const __filename = new URL(import.meta.url).pathname;
 
 configureZx();
 
-const logger = configureLogging(__filename);
+const logger = configureLogging(path.basename(__filename));
 
 program
   .description('Release script for creating npm versions and GitHub releases')

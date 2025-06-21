@@ -4,7 +4,7 @@ import path from 'node:path';
 import process from 'node:process';
 import { fileURLToPath } from 'node:url';
 
-import { program } from 'commander';
+import { Command } from 'commander';
 import { $, chalk } from 'zx';
 
 import { getLogger } from './helpers/logging.js';
@@ -33,7 +33,9 @@ configureZx();
 
 const logger = getLogger(path.basename(__filename));
 
-program
+const command = new Command();
+
+command
   .description('Release script for creating npm versions and GitHub releases')
   .argument(
     '[version-type]',
@@ -119,4 +121,4 @@ program
     }
   });
 
-program.parse();
+command.parse(process.argv);

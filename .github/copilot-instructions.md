@@ -21,7 +21,7 @@ When working on Shell script (`.sh`) files:
 
 When working on JavaScript (`.js`) or TypeScript (`.ts`) files:
 
-- Use the `commander` package for command line arguments parsing and any command line interactions.
+- Use the `commander` package for command line arguments parsing and any command line interactions. Use `new Command()` to create the default command and `command.parse(process.argv)` to parse the command line arguments.
 - Use `log4js` for logging instead of `console.log`. Look for the closest function `configureLogging` in the codebase to see how to configure it.
 - Use `zx` for shell commands execution. Look for the closest function `configureZx` in the codebase to see how to configure it.
 - Check each usage of `str.replace()` and replace it with `str.replaceAll()` if possible.

@@ -94,5 +94,6 @@ When working on Shell script (`.sh`) files:
 - Make sure they work cross-platform (on linux and macOS) and can be executed by the `sh` command and not only by `bash`.
 
 # The "README.md" file
+
 - The `README.md` should include usage instructions for each command.
 - The `README.md` file should be updated when commands are added, removed or changed.

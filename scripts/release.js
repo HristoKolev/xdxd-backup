@@ -30,13 +30,6 @@ import { configureZx } from './helpers/zx.js';
  * - GitHub CLI (gh) must be installed and authenticated
  * - Git repository must be clean and up to date
  * - Must have push access to the repository
- *
- * Error Handling:
- * - Validates version type arguments
- * - Checks for git repository status
- * - Verifies working directory is clean
- * - Ensures GitHub CLI is available
- * - Handles all command execution failures with detailed error messages
  */
 
 const __filename = fileURLToPath(import.meta.url);

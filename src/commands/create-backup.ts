@@ -80,6 +80,9 @@ export function registerCreateBackupCommand(program: Command) {
       // Do not store the path entered at the command line in archive. Exclude base folder from names.
       commandArgs.push('-ep1');
 
+      // Set compression level to maximum
+      commandArgs.push('-m5');
+
       // Add ignore list
       const ignoreLines = await readBackupIgnoreFile(
         options.inputDirectory,

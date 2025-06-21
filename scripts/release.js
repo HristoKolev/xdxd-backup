@@ -2,6 +2,7 @@
 
 import path from 'node:path';
 import process from 'node:process';
+import { fileURLToPath } from 'node:url';
 
 import { program } from 'commander';
 import { $, chalk } from 'zx';
@@ -38,7 +39,7 @@ import { configureZx } from './helpers/zx.js';
  * - Handles all command execution failures with detailed error messages
  */
 
-const __filename = new URL(import.meta.url).pathname;
+const __filename = fileURLToPath(import.meta.url);
 
 configureZx();
 

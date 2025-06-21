@@ -3,6 +3,7 @@
 import fs from 'node:fs/promises';
 
 // This script should not import any other modules and should not be included in package.json scripts.
+// This file should not use log4js logging and instead use console logging.
 
 const directories = process.argv.slice(2);
 

@@ -7,7 +7,7 @@ import { fileURLToPath } from 'node:url';
 import { program } from 'commander';
 import { $, chalk } from 'zx';
 
-import { configureLogging } from './helpers/logging.js';
+import { getLogger } from './helpers/logging.js';
 import { configureZx } from './helpers/zx.js';
 
 /**
@@ -43,7 +43,7 @@ const __filename = fileURLToPath(import.meta.url);
 
 configureZx();
 
-const logger = configureLogging(path.basename(__filename));
+const logger = getLogger(path.basename(__filename));
 
 program
   .description('Release script for creating npm versions and GitHub releases')

@@ -8,12 +8,29 @@ export function configureLogging(scriptName) {
 
   log4js.configure({
     appenders: {
-      out: { type: 'stdout' },
-      err: { type: 'stderr' },
+      out: {
+        type: 'stdout',
+        layout: { type: 'colored' },
+      },
+      err: {
+        type: 'stderr',
+        layout: { type: 'colored' },
+      },
+      combined: {
+        type: 'logLevelFilter',
+        appender: 'err',
+        level: 'error',
+      },
+      info: {
+        type: 'logLevelFilter',
+        appender: 'out',
+        level: 'trace',
+        maxLevel: 'warn',
+      },
     },
     categories: {
       default: {
-        appenders: ['out'],
+        appenders: ['info', 'combined'],
         level: process.env.SCRIPT_LOG_LEVEL || 'info',
       },
     },

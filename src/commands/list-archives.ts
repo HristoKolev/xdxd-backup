@@ -5,7 +5,7 @@ import type { Command } from 'commander';
 
 import { fail } from '../shared/helpers/fail.js';
 import { getLogger } from '../shared/helpers/logging.js';
-import { listOutputFiles } from '../shared/listOutputFiles.js';
+import { listOutputFiles } from '../shared/list-output-files.js';
 
 export interface ListArchivesCommandOptions {
   outputDirectory: string;

@@ -4,7 +4,7 @@ import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { $ } from 'zx';
 
-import { listOutputFiles } from '../shared/listOutputFiles.js';
+import { listOutputFiles } from '../shared/list-output-files.js';
 import { useTestInputData } from '../testing/helpers.js';
 import { runCommand } from '../testing/run-command.js';
 

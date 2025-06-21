@@ -12,7 +12,7 @@ import {
 } from '../shared/backup-ignore.js';
 import { generateDateString } from '../shared/helpers/date.js';
 import { fail } from '../shared/helpers/fail.js';
-import { isExecutableInPath } from '../shared/helpers/isExecutableInPath.js';
+import { isExecutableInPath } from '../shared/helpers/is-executable-in-path.js';
 import { pipeStreamsToFile } from '../shared/helpers/zx.js';
 
 export interface CreateBackupCommandOptions {

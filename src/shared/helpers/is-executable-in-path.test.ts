@@ -2,7 +2,7 @@ import process from 'node:process';
 
 import { describe, expect, it } from 'vitest';
 
-import { isExecutableInPath } from './isExecutableInPath.js';
+import { isExecutableInPath } from './is-executable-in-path.js';
 
 describe('isExecutableInPath', () => {
   describe.skipIf(process.platform !== 'win32')('on Windows', () => {

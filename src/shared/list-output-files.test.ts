@@ -2,7 +2,7 @@ import fs from 'node:fs/promises';
 
 import { describe, expect, it } from 'vitest';
 
-import { listOutputFiles } from './listOutputFiles.js';
+import { listOutputFiles } from './list-output-files.js';
 import { useTempDir } from '../testing/temp-dir.js';
 
 describe('listOutputFiles', () => {

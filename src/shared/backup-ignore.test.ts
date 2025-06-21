@@ -4,10 +4,12 @@ import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 
 import { parseBackupIgnore, readBackupIgnoreFile } from './backup-ignore.js';
+import { useMockedSTDIO } from '../testing/mock-stdio.js';
 import { useTempDir } from '../testing/temp-dir.js';
 
 describe('Backup ignore functionality', () => {
   useTempDir();
+  useMockedSTDIO();
 
   it('should parse basic ignore patterns', () => {
     const ignoreLines = [

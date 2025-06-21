@@ -53,6 +53,7 @@ xdxd-backup create -i <input-directory> -o <output-directory>
 ```
 
 **Options:**
+
 - `-i, --inputDirectory <path>` - Directory to backup (required, validates existence)
 - `-o, --outputDirectory <path>` - Directory where archive will be saved (required)
 - `--ignoreFilePath <path>` - Custom ignore file path (validates existence)
@@ -66,6 +67,7 @@ xdxd-backup list-archives -o <output-directory>
 ```
 
 **Options:**
+
 - `-o, --outputDirectory <path>` - Directory to search for archives (required)
 
 #### Global Options
@@ -214,7 +216,7 @@ npm install
 npm run build
 ```
 
-### Running Tests
+### NPM commands
 
 ```bash
 # Run all tests

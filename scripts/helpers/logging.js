@@ -1,32 +1,25 @@
 import log4js from 'log4js';
 
 export function configureLogging() {
+  const patternLayout = {
+    type: 'pattern',
+    pattern: '%[[%p] %c -%] %m',
+  };
+
   log4js.configure({
     appenders: {
-      out: {
-        type: 'stdout',
-        layout: {
-          type: 'pattern',
-          pattern: '%[[%p] %c -%] %m',
-        },
-      },
-      err: {
-        type: 'stderr',
-        layout: {
-          type: 'pattern',
-          pattern: '%[[%p] %c -%] %m',
-        },
-      },
-      errorAppender: {
-        type: 'logLevelFilter',
-        appender: 'err',
-        level: 'error',
-      },
+      out: { type: 'stdout', layout: patternLayout },
+      err: { type: 'stderr', layout: patternLayout },
       nonErrorAppender: {
         type: 'logLevelFilter',
         appender: 'out',
         level: 'trace',
         maxLevel: 'warn',
+      },
+      errorAppender: {
+        type: 'logLevelFilter',
+        appender: 'err',
+        level: 'error',
       },
     },
     categories: {

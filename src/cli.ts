@@ -5,16 +5,14 @@ import process from 'node:process';
 import { Command } from 'commander';
 
 import { registerCreateBackupCommand } from './commands/create-backup.js';
-import {
-  configureLogging,
-  getErrorLogger,
-  getLogger,
-} from './shared/logging.js';
+import { configureLogging, getCleanLogger } from './shared/logging.js';
 import { readPackageJson } from './shared/read-package-json.js';
 import { setupZx } from './shared/zx.js';
 
 configureLogging();
 setupZx();
+
+const cleanLogger = getCleanLogger();
 
 const packageJSON = readPackageJson();
 
@@ -28,15 +26,14 @@ const program = new Command()
   )
   .configureOutput({
     writeOut(str: string) {
-      const logger = getLogger('outClean');
-      logger.info(str);
+      cleanLogger.info(str);
     },
     writeErr: (str: string) => {
-      const logger = getErrorLogger('errorClean');
-      logger.error(str);
+      cleanLogger.error(str);
     },
   });
 
+// Register all commands here.
 registerCreateBackupCommand(program);
 
 program.parse(process.argv);

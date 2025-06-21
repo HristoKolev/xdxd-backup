@@ -2,7 +2,7 @@ import process from 'node:process';
 
 import { $ } from 'zx';
 
-import { getErrorLogger } from './logging.js';
+import { getLogger } from './logging.js';
 
 /**
  * Checks if an executable exists in the system PATH.
@@ -18,7 +18,7 @@ export async function isExecutableInPath(executable: string): Promise<boolean> {
 }
 
 export function fail(message: string, ...args: unknown[]): never {
-  const logger = getErrorLogger();
+  const logger = getLogger();
   logger.fatal(message, ...args);
   process.exit(1);
 }

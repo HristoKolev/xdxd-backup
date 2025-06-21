@@ -1,58 +1,59 @@
 import log4js from 'log4js';
 
 export function configureLogging() {
+  const patternLayout = {
+    type: 'pattern',
+    pattern: '%[%p%] %m',
+  };
+
+  const cleanLayout = { type: 'messagePassThrough' };
+
   log4js.configure({
     appenders: {
-      out: {
-        type: 'stdout',
-        layout: {
-          type: 'pattern',
-          pattern: '%[%p%] %m',
-        },
+      out: { type: 'stdout', layout: patternLayout },
+      err: { type: 'stderr', layout: patternLayout },
+      outClean: { type: 'stdout', layout: cleanLayout },
+      errClean: { type: 'stderr', layout: cleanLayout },
+      nonErrorAppender: {
+        type: 'logLevelFilter',
+        appender: 'out',
+        level: 'trace',
+        maxLevel: 'warn',
       },
-      outClean: {
-        type: 'stdout',
-        layout: { type: 'messagePassThrough' },
+      errorAppender: {
+        type: 'logLevelFilter',
+        appender: 'err',
+        level: 'error',
       },
-      error: {
-        type: 'stderr',
-        layout: {
-          type: 'pattern',
-          pattern: '%[%p%] %m',
-        },
+      cleanNonErrorAppender: {
+        type: 'logLevelFilter',
+        appender: 'outClean',
+        level: 'trace',
+        maxLevel: 'warn',
       },
-      errorClean: {
-        type: 'stderr',
-        layout: { type: 'messagePassThrough' },
+      cleanErrorAppender: {
+        type: 'logLevelFilter',
+        appender: 'errClean',
+        level: 'error',
       },
     },
     categories: {
       default: {
-        appenders: ['out'],
+        appenders: ['nonErrorAppender', 'errorAppender'],
         level: 'info',
       },
-      outClean: {
-        appenders: ['outClean'],
+      clean: {
+        appenders: ['cleanNonErrorAppender', 'cleanErrorAppender'],
         level: 'info',
-      },
-      error: {
-        appenders: ['error'],
-        level: 'error',
-      },
-      errorClean: {
-        appenders: ['errorClean'],
-        level: 'error',
       },
     },
   });
 }
 
-export function getLogger(
-  category: 'xdxd-backup' | 'outClean' = 'xdxd-backup'
-) {
+export function getLogger(category = 'xdxd-backup') {
   return log4js.getLogger(category);
 }
 
-export function getErrorLogger(category: 'error' | 'errorClean' = 'error') {
-  return log4js.getLogger(category);
+export function getCleanLogger() {
+  return getLogger('clean');
 }

@@ -30,29 +30,46 @@ npm install -g xdxd-backup
 ### Using npx (No Installation Required)
 
 ```bash
-npx xdxd-backup -i <input-directory> -o <output-directory>
+npx xdxd-backup create -i <input-directory> -o <output-directory>
 ```
 
 ### Local Installation
 
 ```bash
 npm install xdxd-backup
-npx xdxd-backup -i <input-directory> -o <output-directory>
+npx xdxd-backup create -i <input-directory> -o <output-directory>
 ```
 
 ## Usage
 
-### Basic Usage
+### Available Commands
+
+#### Create Backup
+
+Creates a timestamped RAR backup of a directory.
 
 ```bash
-xdxd-backup -i <input-directory> -o <output-directory>
+xdxd-backup create -i <input-directory> -o <output-directory>
 ```
 
-### Command-Line Options
-
+**Options:**
 - `-i, --inputDirectory <path>` - Directory to backup (required, validates existence)
 - `-o, --outputDirectory <path>` - Directory where archive will be saved (required)
 - `--ignoreFilePath <path>` - Custom ignore file path (validates existence)
+
+#### List Archives
+
+Lists all backup archives found in the output directory.
+
+```bash
+xdxd-backup list-archives -o <output-directory>
+```
+
+**Options:**
+- `-o, --outputDirectory <path>` - Directory to search for archives (required)
+
+#### Global Options
+
 - `-v, --version` - Display version number
 - `--help` - Show help information
 
@@ -61,19 +78,25 @@ xdxd-backup -i <input-directory> -o <output-directory>
 **Backup a project directory:**
 
 ```bash
-xdxd-backup -i ./my-project -o ./backups
+xdxd-backup create -i ./my-project -o ./backups
 ```
 
 **Backup with custom ignore file:**
 
 ```bash
-xdxd-backup -i ./documents -o ./backups --ignoreFilePath ./custom-ignore.txt
+xdxd-backup create -i ./documents -o ./backups --ignoreFilePath ./custom-ignore.txt
 ```
 
 **Backup current directory:**
 
 ```bash
-xdxd-backup -i . -o ../backups
+xdxd-backup create -i . -o ../backups
+```
+
+**List existing backup archives:**
+
+```bash
+xdxd-backup list-archives -o ./backups
 ```
 
 ## Backup Ignore File
@@ -195,26 +218,63 @@ npm run build
 
 ```bash
 # Run all tests
-npm test
+npm run test
 
-# Run tests in watch mode
-npm run test:watch
+# Run tests for non-existing executables
+npm run test:non-existing-executables
 
 # Run linting
 npm run lint
 
-# Run type checking
-npm run typecheck
+# Fix linting issues automatically
+npm run lint:fix
+
+# Run package linting
+npm run lint:package
+
+# Format code
+npm run format
+
+# Check formatting
+npm run format-check
+
+# Run complete pipeline (build, format-check, lint, lint:package, test)
+npm run all
 ```
 
-### Project Scripts
+### Development Scripts
 
-- `npm run build` - Build the project
-- `npm run test` - Run test suite
-- `npm run lint` - Run ESLint
+- `npm run build` - Build the TypeScript project to JavaScript
+- `npm run clean` - Remove dist, node_modules, and package-lock.json
+- `npm run start` - Build and run the CLI
+- `npm run install:local` - Build and link locally for testing
 - `npm run format` - Format code with Prettier
-- `npm run typecheck` - Run TypeScript type checking
-- `npm run all` - Run build, lint, and test pipeline
+- `npm run format-check` - Check if code is properly formatted
+- `npm run lint` - Run ESLint with maximum 0 warnings
+- `npm run lint:fix` - Fix ESLint issues automatically
+- `npm run lint:package` - Run package validation with publint
+- `npm run test` - Run the complete test suite
+- `npm run test:non-existing-executables` - Run tests for non-existing executables
+- `npm run release` - Create a release
+- `npm run all` - Run the complete development pipeline
+
+### Quality Assurance
+
+When making changes to the project, run these scripts to ensure code quality:
+
+```bash
+npm run format     # Format the code
+npm run lint       # Check for linting issues
+npm run lint:package  # Validate package structure
+npm run test       # Run all tests
+npm run build      # Ensure the project builds successfully
+```
+
+Or run the complete pipeline:
+
+```bash
+npm run all        # Runs build, format-check, lint, lint:package, and test
+```
 
 ## License
 

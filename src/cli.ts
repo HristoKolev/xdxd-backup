@@ -5,6 +5,7 @@ import process from 'node:process';
 import { Command } from 'commander';
 
 import { registerCreateBackupCommand } from './commands/create-backup.js';
+import { registerListArchivesCommand } from './commands/list-archives.js';
 import { configureLogging, getCleanLogger } from './shared/logging.js';
 import { readPackageJson } from './shared/read-package-json.js';
 import { configureZx } from './shared/zx.js';
@@ -35,5 +36,6 @@ const program = new Command()
 
 // Register all commands here.
 registerCreateBackupCommand(program);
+registerListArchivesCommand(program);
 
 program.parse(process.argv);

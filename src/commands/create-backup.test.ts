@@ -4,6 +4,7 @@ import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { $ } from 'zx';
 
+import { listOutputFiles } from '../shared/listOutputFiles.js';
 import { useTestInputData } from '../testing/helpers.js';
 import { runCommand } from '../testing/run-command.js';
 
@@ -29,34 +30,6 @@ export async function listFilePaths(targetPath: string): Promise<string[]> {
   await recurse(targetPath);
 
   result.sort((a, b) => a.localeCompare(b));
-
-  return result;
-}
-
-interface OutputFileListResult {
-  archiveFileNames: string[];
-  logFileNames: string[];
-}
-
-export async function listOutputFiles(
-  targetPath: string
-): Promise<OutputFileListResult> {
-  const result: OutputFileListResult = {
-    archiveFileNames: [],
-    logFileNames: [],
-  };
-
-  const outputFiles = await fs.readdir(targetPath);
-
-  outputFiles.sort((a, b) => a.localeCompare(b));
-
-  result.archiveFileNames = outputFiles.filter((f) =>
-    f.match(/^input-\d{2}-\d{2}-\d{4}_\d{2}-\d{2}-\d{2}\.rar$/)
-  );
-
-  result.logFileNames = outputFiles.filter((f) =>
-    f.match(/^input-\d{2}-\d{2}-\d{4}_\d{2}-\d{2}-\d{2}\.log$/)
-  );
 
   return result;
 }

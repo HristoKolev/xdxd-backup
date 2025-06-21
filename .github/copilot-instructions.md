@@ -53,12 +53,14 @@ This section applies to JavaScript files in the `scripts` folder.
 ## Commands
 
 This section applies to commands in the `src/commands` folder.
+
 - Look at the other commands in the `src/commands` folder to see how they are structured.
 - Each command should be self-contained and not depend on other commands.
 - Look at the `src/shared` folder for shared code that can be used in commands.
 - Each command should be registered in the `src/cli.ts` file.
 
 ### Command tests
+
 - Each command should have a test file next to it.
 - Look at the tests for other commands to see how they are structured.
 - Look at the `src/testing` folder for shared code that can be used in command tests.
@@ -90,3 +92,7 @@ When working on Powershell (`.ps1`) files:
 When working on Shell script (`.sh`) files:
 
 - Make sure they work cross-platform (on linux and macOS) and can be executed by the `sh` command and not only by `bash`.
+
+# The "README.md" file
+- The `README.md` should include usage instructions for each command.
+- The `README.md` file should be updated when commands are added, removed or changed.

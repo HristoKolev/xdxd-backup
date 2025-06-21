@@ -16,11 +16,6 @@ import { configureZx } from './helpers/zx.js';
  * This script automates the release process for the xdxd-backup package.
  * It handles version bumping, git operations, and GitHub release creation.
  *
- * Features:
- * - Bumps npm package version (patch, minor, or major)
- * - Commits and pushes the version change to git
- * - Creates a corresponding GitHub release
- *
  * Usage:
  *   npm run release        # Creates a patch release
  *   npm run release minor  # Creates a minor release

@@ -42,8 +42,12 @@ describe('zx helpers', () => {
 
       writeStream = pipeStreamsToFile(proc, logFilePath);
 
-      // Wait for the process to complete
-      await proc;
+      try {
+        // Wait for the process to complete
+        await proc;
+      } finally {
+        writeStream?.end();
+      }
 
       // Check if file exists and contains expected content
       const fileExists = fsSync.existsSync(logFilePath);
@@ -63,11 +67,13 @@ describe('zx helpers', () => {
 
       writeStream = pipeStreamsToFile(proc, logFilePath);
 
-      // Wait for the process to complete (might exit with error code)
       try {
+        // Wait for the process to complete (might exit with error code)
         await proc;
       } catch (_error) {
         // Expected for stderr commands, ignore
+      } finally {
+        writeStream?.end();
       }
 
       // Check if file exists and contains expected content
@@ -88,11 +94,13 @@ describe('zx helpers', () => {
 
       writeStream = pipeStreamsToFile(proc, logFilePath);
 
-      // Wait for the process to complete (might exit with error code)
       try {
+        // Wait for the process to complete (might exit with error code)
         await proc;
       } catch (_error) {
         // Expected for stderr commands, ignore
+      } finally {
+        writeStream?.end();
       }
 
       // Check if file exists and contains both messages
@@ -114,8 +122,12 @@ describe('zx helpers', () => {
 
       writeStream = pipeStreamsToFile(proc, logFilePath);
 
-      // Wait for the process to complete
-      await proc;
+      try {
+        // Wait for the process to complete
+        await proc;
+      } finally {
+        writeStream?.end();
+      }
 
       // Check if file contains both initial and appended content
       const content = await fs.readFile(logFilePath, 'utf-8');
@@ -132,8 +144,12 @@ describe('zx helpers', () => {
 
       writeStream = pipeStreamsToFile(proc, logFilePath);
 
-      // Wait for the process to complete
-      await proc;
+      try {
+        // Wait for the process to complete
+        await proc;
+      } finally {
+        writeStream?.end();
+      }
 
       // Check if file contains all lines
       const content = await fs.readFile(logFilePath, 'utf-8');
@@ -159,8 +175,12 @@ describe('zx helpers', () => {
 
       writeStream = pipeStreamsToFile(proc, logFilePath);
 
-      // Wait for the process to complete
-      await proc;
+      try {
+        // Wait for the process to complete
+        await proc;
+      } finally {
+        writeStream?.end();
+      }
 
       // File should exist but be empty (or contain only minimal content)
       const fileExists = fsSync.existsSync(logFilePath);
@@ -179,8 +199,12 @@ describe('zx helpers', () => {
 
       writeStream = pipeStreamsToFile(proc, logFilePath);
 
-      // Wait for the process to complete
-      await proc;
+      try {
+        // Wait for the process to complete
+        await proc;
+      } finally {
+        writeStream?.end();
+      }
 
       // Check if output was captured despite quick execution
       const content = await fs.readFile(logFilePath, 'utf-8');

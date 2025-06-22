@@ -16,12 +16,5 @@
     "pretty": true,
     "resolveJsonModule": true
   },
-  "include": ["src"],
-  "exclude": [
-    "src/testing",
-    "src/**/*.test.ts",
-    "src/**/*.spec.ts",
-    "node_modules",
-    "dist"
-  ]
+  "include": ["src", "vite.config.ts", "setupTests.ts"]
 }

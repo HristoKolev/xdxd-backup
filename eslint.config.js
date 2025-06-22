@@ -148,11 +148,6 @@ export default tseslint.config(
       'setupTests.ts',
       'vitest.config.ts',
     ],
-    languageOptions: {
-      parserOptions: {
-        project: './tsconfig.vitest.json',
-      },
-    },
     extends: [...vitestConfig],
     rules: {
       'import/no-nodejs-modules': 'off',

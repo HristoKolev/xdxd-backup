@@ -32,7 +32,7 @@
   ],
   "scripts": {
     "start": "npm run build && node ./dist/cli.js",
-    "build": "node scripts/delete.js dist && tsc",
+    "build": "node scripts/delete.js dist && tsc -p tsconfig.build.json",
     "clean": "node scripts/delete.js dist node_modules package-lock.json",
     "install:local": "run-script-os",
     "install:local:nix": "npm run build && chmod +x dist/cli.js && npm link",

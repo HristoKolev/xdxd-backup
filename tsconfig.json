@@ -16,5 +16,5 @@
     "pretty": true,
     "resolveJsonModule": true
   },
-  "include": ["src", "vite.config.ts", "setupTests.ts"]
+  "include": ["src", "vitest.config.ts", "setupTests.ts"]
 }

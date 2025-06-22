@@ -15,6 +15,7 @@ import { fail } from '../shared/helpers/fail.js';
 import { isExecutableInPath } from '../shared/helpers/is-executable-in-path.js';
 import { getLogger } from '../shared/helpers/logging.js';
 import { readBackupSettings } from '../shared/helpers/read-backup-settings.js';
+import { closeWriteStream } from '../shared/helpers/stream-helpers.js';
 import { pipeStreamsToFile } from '../shared/helpers/zx.js';
 
 export interface CreateBackupCommandOptions {
@@ -160,7 +161,7 @@ export function registerCreateBackupCommand(program: Command) {
       try {
         result = await proc;
       } finally {
-        logsStream.end();
+        await closeWriteStream(logsStream);
       }
 
       if (

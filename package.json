@@ -23,7 +23,7 @@
     "command-line"
   ],
   "engines": {
-    "node": ">=20.0.0"
+    "node": ">=18.0.0"
   },
   "files": [
     "dist",
@@ -55,7 +55,7 @@
   },
   "devDependencies": {
     "@arabasta/eslint-config": "^1.0.8",
-    "@types/node": "^20.17.58",
+    "@types/node": "^18.19.67",
     "cross-env": "^7.0.3",
     "dotenv": "^16.5.0",
     "eslint": "^8.57.1",

@@ -1,18 +1,22 @@
 {
+  // Turn on format on save for this workspace
+  "editor.formatOnSave": true,
+
+  // Prettier settings
   "prettier.useEditorConfig": true,
   "prettier.requireConfig": true,
   "prettier.configPath": ".prettierrc",
-  "editor.formatOnSave": true,
-
   "[javascript][typescript][json][jsonc][yaml][yml][markdown]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
-    "editor.formatOnSave": true
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
 
+  // ESLint settings
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": "explicit"
   },
   "eslint.validate": ["typescript", "typescriptreact"],
   "eslint.lintTask.enable": true,
+
+  // Excplicitly set the TypeScript SDK path
   "typescript.tsdk": "node_modules/typescript/lib"
 }

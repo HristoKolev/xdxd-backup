@@ -1,5 +1,8 @@
 # TODO
 
-## Archive logic
+- Fix the typescript sutiation.
+- Add support for more Node.js versions.
 
-## Upload logic
+# Research legacy behavior
+- Upload
+  - B2

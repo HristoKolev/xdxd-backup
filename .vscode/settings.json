@@ -3,7 +3,7 @@
   "prettier.requireConfig": true,
   "prettier.configPath": ".prettierrc",
 
-  "[javascript][typescript][json][yaml]": {
+  "[javascript][typescript][json][yaml][markdown]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode",
     "editor.formatOnSave": true
   },

@@ -153,9 +153,15 @@ export function registerCreateBackupCommand(program: Command) {
       commandArgs.push(`"${inputPath}${path.sep}*"`);
 
       const proc = $`rar ${commandArgs}`.nothrow();
-      pipeStreamsToFile(proc, outputLogPath);
+      const logsStream = pipeStreamsToFile(proc, outputLogPath);
 
-      const result = await proc;
+      let result;
+
+      try {
+        result = await proc;
+      } finally {
+        logsStream.end();
+      }
 
       if (
         result.exitCode !== 0 ||

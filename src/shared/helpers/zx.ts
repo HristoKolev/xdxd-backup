@@ -15,37 +15,19 @@ export function pipeStreamsToFile(proc: ProcessPromise, outputLogPath: string) {
     crlfDelay: Infinity,
   });
 
-  let logFileStream: WriteStream | undefined = fsSync.createWriteStream(
-    outputLogPath,
-    { flags: 'a' }
-  );
-
-  let closedStreams = 0;
-  const totalStreams = 2;
-
-  const closeFileStream = () => {
-    closedStreams += 1;
-    if (closedStreams >= totalStreams && logFileStream) {
-      logFileStream.close();
-      logFileStream = undefined;
-    }
-  };
-
-  stdoutStream.on('line', (line) => {
-    logFileStream?.write(line + os.EOL);
+  const logFileStream: WriteStream = fsSync.createWriteStream(outputLogPath, {
+    flags: 'a',
   });
 
-  stdoutStream.on('close', () => {
-    closeFileStream();
+  stdoutStream.on('line', (line) => {
+    logFileStream.write(line + os.EOL);
   });
 
   stderrStream.on('line', (line) => {
-    logFileStream?.write(line + os.EOL);
+    logFileStream.write(line + os.EOL);
   });
 
-  stderrStream.on('close', () => {
-    closeFileStream();
-  });
+  return logFileStream;
 }
 
 export function configureZx() {

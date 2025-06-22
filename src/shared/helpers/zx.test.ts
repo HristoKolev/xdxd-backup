@@ -1,4 +1,4 @@
-import fsSync from 'node:fs';
+import fsSync, { type WriteStream } from 'node:fs';
 import fs from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
@@ -19,12 +19,15 @@ describe('zx helpers', () => {
     });
 
     let logFilePath: string;
+    let writeStream: WriteStream | undefined;
 
     beforeEach(() => {
       logFilePath = path.join(process.cwd(), 'test-output.log');
     });
 
     afterEach(async () => {
+      writeStream?.end();
+
       // Clean up log file if it exists
       try {
         await fs.rm(logFilePath, { recursive: true, force: true });
@@ -37,7 +40,7 @@ describe('zx helpers', () => {
       // Create a simple command that outputs to stdout
       const proc = $`echo "Hello from stdout"`;
 
-      pipeStreamsToFile(proc, logFilePath);
+      writeStream = pipeStreamsToFile(proc, logFilePath);
 
       // Wait for the process to complete
       await proc;
@@ -58,7 +61,7 @@ describe('zx helpers', () => {
           ? $`powershell -Command "Write-Error 'Hello from stderr' -ErrorAction Continue"`
           : $`sh -c "echo 'Hello from stderr' >&2"`;
 
-      pipeStreamsToFile(proc, logFilePath);
+      writeStream = pipeStreamsToFile(proc, logFilePath);
 
       // Wait for the process to complete (might exit with error code)
       try {
@@ -83,7 +86,7 @@ describe('zx helpers', () => {
           ? $`powershell -Command "Write-Output 'stdout message'; Write-Error 'stderr message' -ErrorAction Continue"`
           : $`sh -c "echo 'stdout message'; echo 'stderr message' >&2"`;
 
-      pipeStreamsToFile(proc, logFilePath);
+      writeStream = pipeStreamsToFile(proc, logFilePath);
 
       // Wait for the process to complete (might exit with error code)
       try {
@@ -109,7 +112,7 @@ describe('zx helpers', () => {
       // Create a command and pipe its output
       const proc = $`echo "Appended content"`;
 
-      pipeStreamsToFile(proc, logFilePath);
+      writeStream = pipeStreamsToFile(proc, logFilePath);
 
       // Wait for the process to complete
       await proc;
@@ -127,7 +130,7 @@ describe('zx helpers', () => {
           ? $`powershell -Command "Write-Output 'Line 1'; Write-Output 'Line 2'; Write-Output 'Line 3'; Write-Output 'Line 4'; Write-Output 'Line 5'"`
           : $`printf "Line 1\nLine 2\nLine 3\nLine 4\nLine 5\n"`;
 
-      pipeStreamsToFile(proc, logFilePath);
+      writeStream = pipeStreamsToFile(proc, logFilePath);
 
       // Wait for the process to complete
       await proc;
@@ -154,7 +157,7 @@ describe('zx helpers', () => {
           ? $`powershell -Command "# No output"`
           : $`sh -c ":"`;
 
-      pipeStreamsToFile(proc, logFilePath);
+      writeStream = pipeStreamsToFile(proc, logFilePath);
 
       // Wait for the process to complete
       await proc;
@@ -174,7 +177,7 @@ describe('zx helpers', () => {
           ? $`powershell -Command "Write-Output 'Quick output'"`
           : $`echo "Quick output"`;
 
-      pipeStreamsToFile(proc, logFilePath);
+      writeStream = pipeStreamsToFile(proc, logFilePath);
 
       // Wait for the process to complete
       await proc;

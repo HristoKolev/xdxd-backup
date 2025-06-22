@@ -448,10 +448,10 @@ test_*.txt                  # Excludes files starting with "test_" and ending wi
   });
 
   describe('compression level option', () => {
-    it('should accept valid compression levels (0-5)', async () => {
-      const validLevels = [0, 1, 2, 3, 4, 5];
+    const validLevels = [0, 1, 2, 3, 4, 5];
 
-      for (const level of validLevels) {
+    for (const level of validLevels) {
+      it(`should accept valid compression level ${level}`, async () => {
         const result = await runCommand('create', [
           '-i',
           './input',
@@ -462,13 +462,13 @@ test_*.txt                  # Excludes files starting with "test_" and ending wi
         ]);
 
         expect(result.exitCode).toBe(0);
-      }
-    });
+      });
+    }
 
-    it('should reject invalid compression levels', async () => {
-      const invalidLevels = ['-1', '6', '10', 'abc', '2.5'];
+    const invalidLevels = ['-1', '6', '10', 'abc', '2.5'];
 
-      for (const level of invalidLevels) {
+    for (const level of invalidLevels) {
+      it(`should reject invalid compression level ${level}`, async () => {
         const result = await runCommand('create', [
           '-i',
           './input',
@@ -482,8 +482,8 @@ test_*.txt                  # Excludes files starting with "test_" and ending wi
         expect(result.stderr).toMatch(
           /Compression level must be a number between 0 and 5/
         );
-      }
-    });
+      });
+    }
 
     it('should use compression level from settings when not specified in options', async () => {
       // Create a settings file with compression level

@@ -142,7 +142,7 @@ describe('pipeStreamsToFile', () => {
     const proc =
       process.platform === 'win32'
         ? $`powershell -Command "Write-Output 'Line 1'; Write-Output 'Line 2'; Write-Output 'Line 3'; Write-Output 'Line 4'; Write-Output 'Line 5'"`
-        : $`printf "Line 1${os.EOL}Line 2${os.EOL}Line 3${os.EOL}Line 4${os.EOL}Line 5${os.EOL}"`;
+        : $`printf "Line 1\nLine 2\nLine 3\nLine 4\nLine 5\n"`;
 
     writeStream = pipeStreamsToFile(proc, logFilePath);
 

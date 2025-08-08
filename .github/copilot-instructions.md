@@ -66,22 +66,6 @@ This section applies to commands in the `src/commands` folder.
 - Look at the tests for other commands to see how they are structured.
 - Look at the `src/testing` folder for shared code that can be used in command tests.
 
-## Cross-platform considerations
-
-This project (including the tests) is cross-platform and should work on Windows, macOS, and Linux.
-
-- Use `path.join()` or `path.resolve()` to construct file paths in a cross-platform way.
-- When writing text files, always use the appropriate line endings for the OS. Use `os.EOL` in Node.Js context.
-- When reading text files, read them in such a way so that it works with all line endings even on a platform that is different from the current one.
-- Use `zx` for shell commands execution and try to use cli commands that are available on all platforms. If that is not possible run conditional checks for the operating system and adjust the commands accordingly.
-- `\n` or `\r\n` must not be hardcoded in string literals. Always import os from `node:os` and use `os.EOL` for multi-line strings.
-- Build multi-line content as arrays and join with `os.EOL` (e.g., `['a','b'].join(os.EOL)`).
-- When asserting against output or file content, normalize line endings first:
-- Prefer `replaceAll('\r\n', '\n')` or compare arrays via `split(/\r?\n/)`.
-- Don’t use regex with `replaceAll` unless necessary; use plain `replaceAll` where possible.
-- When splitting lines, always use `text.split(/\r?\n/)`. Don’t split on `\n`.
-- When trimming trailing newlines in assertions, use `trimEnd()` instead of slicing literals.
-
 # NPM scripts
 
 All of the below NPM scripts should be run when trying to check if a change works:

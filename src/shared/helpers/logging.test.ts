@@ -225,9 +225,9 @@ describe('logging helpers', () => {
       cleanLogger.error('plain error message');
 
       expect(stdoutOutput).toHaveLength(1);
-  expect(stdoutOutput[0].replaceAll('\r\n', '\n')).toBe('plain info message\n');
+      expect(stdoutOutput[0]).toBe('plain info message\n');
       expect(stderrOutput).toHaveLength(1);
-  expect(stderrOutput[0].replaceAll('\r\n', '\n')).toBe('plain error message\n');
+      expect(stderrOutput[0]).toBe('plain error message\n');
     });
 
     it('should format regular logger messages with pattern', () => {
@@ -238,7 +238,7 @@ describe('logging helpers', () => {
       expect(stdoutOutput).toHaveLength(1);
       // Should contain formatted pattern with INFO prefix (may include ANSI color codes)
       expect(stdoutOutput[0]).toMatch(/INFO.*formatted message/);
-  expect(stdoutOutput[0].replaceAll('\r\n', '\n')).not.toBe('formatted message\n');
+      expect(stdoutOutput[0]).not.toBe('formatted message\n');
     });
 
     it('should handle different log levels correctly', () => {
@@ -277,12 +277,12 @@ describe('logging helpers', () => {
       cleanLogger.fatal('clean fatal');
 
       expect(stdoutOutput).toHaveLength(2);
-  expect(stdoutOutput[0].replaceAll('\r\n', '\n')).toBe('clean info\n');
-  expect(stdoutOutput[1].replaceAll('\r\n', '\n')).toBe('clean warn\n');
+      expect(stdoutOutput[0]).toBe('clean info\n');
+      expect(stdoutOutput[1]).toBe('clean warn\n');
 
       expect(stderrOutput).toHaveLength(2);
-  expect(stderrOutput[0].replaceAll('\r\n', '\n')).toBe('clean error\n');
-  expect(stderrOutput[1].replaceAll('\r\n', '\n')).toBe('clean fatal\n');
+      expect(stderrOutput[0]).toBe('clean error\n');
+      expect(stderrOutput[1]).toBe('clean fatal\n');
     });
 
     it('should filter out trace and debug messages when log level is info', () => {

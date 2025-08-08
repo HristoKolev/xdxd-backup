@@ -87,12 +87,12 @@ This project (including the tests) is cross-platform and should work on Windows,
 
 # NPM scripts
 
-All of the below NPM scripts should be run when trying to check if a change works:
+Always run the following NPM scripts, in this exact order, when verifying a change:
 
-- Use `npm run format` to format the code when necessary.
-- Use `npm run lint` and `npm run lint:package` to lint the code when necessary.
-- Use `npm run test` to run the tests when necessary.
-- Use `npm run build` to build the project when necessary.
+1. `npm run format` — format the code.
+2. `npm run build` — build the project.
+3. `npm run lint` — lint the codebase.
+4. `npm run test` — run the tests.
 
 # Script files (`.sh` or `.ps1`)
 

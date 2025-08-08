@@ -233,7 +233,7 @@ describe('Command: "clean-failed-archives"', () => {
     await fs.writeFile(path.join(outputDir, archive), 'archive content');
 
     // Create short log with "Done" in one of the lines
-  const logContent = ['Start', 'Done', 'End'].join(os.EOL);
+    const logContent = ['Start', 'Done', 'End'].join(os.EOL);
     await fs.writeFile(path.join(outputDir, log), logContent);
 
     const result = await runCommand('clean-failed-archives', [
@@ -311,12 +311,12 @@ describe('Command: "clean-failed-archives"', () => {
 
     await fs.writeFile(path.join(outputDir, archive), 'archive content');
 
-  const crlfLogContent = [
+    const crlfLogContent = [
       'Start of operation',
       'some step',
       'another step',
       '  DoNe  ',
-  ].join('\r\n');
+    ].join('\r\n');
 
     await fs.writeFile(path.join(outputDir, log), crlfLogContent);
 

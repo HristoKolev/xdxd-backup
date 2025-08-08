@@ -40,25 +40,25 @@ describe('Backup ignore functionality', () => {
   });
 
   it('should read explicit backup ignore file', async () => {
-  const data = ['dir1', 'dir2', ''].join(os.EOL);
+    const data = ['dir1', 'dir2', ''].join(os.EOL);
     const explicitIgnoreFile = '.explicit-backupignore';
 
     await fs.writeFile(explicitIgnoreFile, data);
     const lines = await readBackupIgnoreFile('./input', explicitIgnoreFile);
 
-  expect(lines).toEqual(data.split(/\r?\n/).filter(Boolean));
+    expect(lines).toEqual(data.split(/\r?\n/).filter(Boolean));
   });
 
   it('should read implicit backup ignore file', async () => {
     await fs.mkdir('./input');
 
-  const data = ['dir1', 'dir2', ''].join(os.EOL);
+    const data = ['dir1', 'dir2', ''].join(os.EOL);
     const implicitBackupIgnoreFile = './input/.backupignore';
 
     await fs.writeFile(implicitBackupIgnoreFile, data);
     const lines = await readBackupIgnoreFile('./input');
 
-  expect(lines).toEqual(data.split(/\r?\n/).filter(Boolean));
+    expect(lines).toEqual(data.split(/\r?\n/).filter(Boolean));
   });
 
   it('should return undefined if implicit backup file could not be found', async () => {

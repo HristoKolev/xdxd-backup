@@ -25,6 +25,11 @@ declare global {
        * If set to `true` means that the non existing executables tests should be run.
        */
       RUN_NON_EXISTING_EXECUTABLES_TESTS?: 'true';
+
+      /**
+       * Number of retries for failing tests. Defaults to 2 when not set.
+       */
+      TEST_RETRIES?: string;
     }
   }
 }

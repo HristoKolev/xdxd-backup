@@ -7,6 +7,9 @@ This section applies to JavaScript and TypeScript files.
 - Check each usage of `str.replace()` and replace it with `str.replaceAll()` if possible.
 - When using `str.replaceAll()`, try not to use regex if possible.
 - When modifing a file, run any test that is related to the file to ensure that the changes do not break anything.
+- When parsing numbers use `Number()` instead of `parseInt()` or `parseFloat()`.
+- When checking if a number is a valid number use `Number.isFinite()` instead of `isNaN()` or `Number.isNaN()`.
+- When trying to set default values for strings use `||` instead of `??` to ensure that empty strings are also considered as falsy values.
 
 ## Command line interface (CLI)
 

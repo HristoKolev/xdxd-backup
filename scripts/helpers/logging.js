@@ -1,3 +1,5 @@
+import process from 'node:process';
+
 import log4js from 'log4js';
 
 export function configureLogging() {

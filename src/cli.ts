@@ -4,6 +4,7 @@ import process from 'node:process';
 
 import { Command } from 'commander';
 
+import { registerCleanFailedArchivesCommand } from './commands/clean-failed-archives.js';
 import { registerCreateBackupCommand } from './commands/create-backup.js';
 import { registerListArchivesCommand } from './commands/list-archives.js';
 import { configureLogging, getCleanLogger } from './shared/helpers/logging.js';
@@ -35,6 +36,7 @@ const program = new Command()
   });
 
 // Register all commands here.
+registerCleanFailedArchivesCommand(program);
 registerCreateBackupCommand(program);
 registerListArchivesCommand(program);
 

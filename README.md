@@ -71,6 +71,19 @@ xdxd-backup list-archives -o <output-directory>
 
 - `-o, --outputDirectory <path>` - Directory to search for archives (optional if default is set in settings file)
 
+#### Clean Failed Archives
+
+Removes failed backup archives and their logs from the output directory. An archive is considered failed if its corresponding log file does not contain the word "Done" in the last 5 lines.
+
+```bash
+xdxd-backup clean-failed-archives -o <output-directory>
+```
+
+**Options:**
+
+- `-o, --outputDirectory <path>` - Directory to clean (optional if default is set in settings file)
+- `--dry-run` - Show what would be deleted without actually deleting anything
+
 #### Global Options
 
 - `-v, --version` - Display version number
@@ -106,6 +119,18 @@ xdxd-backup create -i . -o ../backups
 
 ```bash
 xdxd-backup list-archives -o ./backups
+```
+
+**Clean failed archives:**
+
+```bash
+xdxd-backup clean-failed-archives -o ./backups
+```
+
+**Preview what would be cleaned (dry run):**
+
+```bash
+xdxd-backup clean-failed-archives -o ./backups --dry-run
 ```
 
 ## Backup Ignore File

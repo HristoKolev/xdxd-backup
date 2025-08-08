@@ -1,6 +1,6 @@
 import fs from 'node:fs/promises';
 
-interface OutputFileListResult {
+export interface OutputFileListResult {
   archiveFileNames: string[];
   logFileNames: string[];
 }

@@ -16,23 +16,22 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-        node-version: [18, 19, 20, 21, 22, 23, 24]
 
     runs-on: ${{ matrix.os }}
     timeout-minutes: 30
 
     concurrency:
-      group: '${{ github.workflow }}-lint-${{ matrix.os }}-${{ matrix.node-version }} ✨ ${{ github.event.pull_request.head.label || github.head_ref || github.ref }}'
+      group: '${{ github.workflow }}-lint-${{ matrix.os }} ✨ ${{ github.event.pull_request.head.label || github.head_ref || github.ref }}'
       cancel-in-progress: true
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Node.js ${{ matrix.node-version }}
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: 22 #  Use the latest active LTS version
 
       - name: Output Node and NPM versions
         run: |

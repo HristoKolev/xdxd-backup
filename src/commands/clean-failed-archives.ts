@@ -3,21 +3,49 @@ import path from 'node:path';
 
 import type { Command } from 'commander';
 
+import { getErrorMessage } from '../shared/helpers/error.js';
 import { fail } from '../shared/helpers/fail.js';
 import { getLogger } from '../shared/helpers/logging.js';
-import {
-  type BackupSettings,
-  readBackupSettings,
-} from '../shared/helpers/read-backup-settings.js';
+import { readBackupSettings } from '../shared/helpers/read-backup-settings.js';
 import {
   type OutputFileListResult,
   listOutputFiles,
 } from '../shared/list-output-files.js';
 
+type FileToDeleteType = 'archive' | 'log';
+
+type DeleteReason =
+  | 'Archive_NoLogFound'
+  | 'Log_NoArchiveFound'
+  | 'Archive_IncompleteLog'
+  | 'Log_IncompleteLog'
+  | 'Archive_CouldNotReadLog'
+  | 'Log_ColudNotReadLog';
+
 interface FileToDelete {
   fileName: string;
-  reason: string;
-  type: 'archive' | 'log';
+  reason: DeleteReason;
+  reasonMessage?: string;
+  type: FileToDeleteType;
+}
+
+const REASON_MESSAGES = {
+  Archive_NoLogFound: 'No corresponding log file found.',
+  Log_NoArchiveFound: 'No corresponding archive file found.',
+  Archive_IncompleteLog: 'No "Done" found in last 5 lines of log.',
+  Log_IncompleteLog: 'No "Done" found in last 5 lines of log.',
+  Archive_CouldNotReadLog: 'Could not read corresponding log file.',
+  Log_ColudNotReadLog: 'Could not be read.',
+} as const satisfies Record<DeleteReason, string>;
+
+function getReasonMessage(fileToDelete: FileToDelete): string {
+  let result = REASON_MESSAGES[fileToDelete.reason];
+
+  if (fileToDelete.reasonMessage) {
+    result += ` ${fileToDelete.reasonMessage}`;
+  }
+
+  return result;
 }
 
 /**
@@ -63,28 +91,20 @@ async function readLastLines(
   }
 }
 
-/**
- * Analyzes the output directory and determines which files should be deleted
- */
-async function analyzeFilesForDeletion(
+async function pickFilesForDeletion(
   outputPath: string,
   outputFileList: OutputFileListResult
 ): Promise<FileToDelete[]> {
-  const logger = getLogger();
   const filesToDelete: FileToDelete[] = [];
 
   for (const archiveFile of outputFileList.archiveFileNames) {
     const logFileName = `${archiveFile.endsWith('.rar') ? archiveFile.slice(0, -4) : archiveFile}.log`;
 
     if (!outputFileList.logFileNames.includes(logFileName)) {
-      logger.info(
-        `No log file found for archive "${archiveFile}" - marking as failed.`
-      );
-
       filesToDelete.push({
         type: 'archive',
         fileName: archiveFile,
-        reason: 'No corresponding log file found',
+        reason: 'Archive_NoLogFound',
       });
     } else {
       const logFilePath = path.join(outputPath, logFileName);
@@ -97,40 +117,30 @@ async function analyzeFilesForDeletion(
         );
 
         if (!isCompleteLog) {
-          logger.info(
-            `Archive "${archiveFile}" appears to have failed - no "Done" found in last 5 lines of log.`
-          );
-
           filesToDelete.push({
             type: 'archive',
             fileName: archiveFile,
-            reason: 'No "Done" found in last 5 lines of log',
+            reason: 'Archive_IncompleteLog',
           });
 
           filesToDelete.push({
             type: 'log',
             fileName: logFileName,
-            reason: 'Corresponding archive failed',
+            reason: 'Log_IncompleteLog',
           });
-        } else {
-          logger.debug(`Archive "${archiveFile}" completed successfully.`);
         }
       } catch (error) {
-        logger.warn(
-          `Could not read log file "${logFileName}" for archive "${archiveFile}" - marking as failed.`,
-          error
-        );
-
         filesToDelete.push({
           type: 'archive',
           fileName: archiveFile,
-          reason: 'Could not read corresponding log file',
+          reason: 'Archive_CouldNotReadLog',
+          reasonMessage: getErrorMessage(error),
         });
 
         filesToDelete.push({
           type: 'log',
           fileName: logFileName,
-          reason: 'Could not be read - corresponding archive marked as failed',
+          reason: 'Log_ColudNotReadLog',
         });
       }
     }
@@ -140,13 +150,9 @@ async function analyzeFilesForDeletion(
     const archiveFileName = `${logFileName.endsWith('.log') ? logFileName.slice(0, -4) : logFileName}.rar`;
 
     if (!outputFileList.archiveFileNames.includes(archiveFileName)) {
-      logger.info(
-        `No archive found for log file "${logFileName}" - marking as orphan.`
-      );
-
       filesToDelete.push({
         fileName: logFileName,
-        reason: 'No corresponding archive file found',
+        reason: 'Log_NoArchiveFound',
         type: 'log',
       });
     }
@@ -155,88 +161,68 @@ async function analyzeFilesForDeletion(
   return filesToDelete;
 }
 
-/**
- * Executes the deletion of files or shows what would be deleted in dry-run mode
- */
-async function executeCleanupActions(
+async function deleteFiles(
   outputPath: string,
   filesToDelete: FileToDelete[],
   isDryRun: boolean
 ): Promise<void> {
   const logger = getLogger();
 
-  if (filesToDelete.length === 0) {
-    logger.info('No failed archives or orphan log files found.');
+  if (!filesToDelete.length) {
     return;
   }
 
-  const failedArchiveCount = filesToDelete.filter(
-    (f) => f.type === 'archive'
-  ).length;
-
-  const orphanLogCount = filesToDelete.filter(
-    (f) =>
-      f.type === 'log' && f.reason === 'No corresponding archive file found'
-  ).length;
-
-  if (failedArchiveCount > 0) {
-    logger.info(`Found ${failedArchiveCount} failed archive(s).`);
-  }
-
-  if (orphanLogCount > 0) {
-    logger.info(`Found ${orphanLogCount} orphan log file(s).`);
-  }
+  const archiveCount = filesToDelete.filter((f) => f.type === 'archive').length;
+  const logCount = filesToDelete.filter((f) => f.type === 'log').length;
 
   if (isDryRun) {
     logger.info('Dry run mode - showing what would be deleted:');
 
     for (const fileToDelete of filesToDelete) {
       logger.info(
-        `  Would delete: ${fileToDelete.fileName} (${fileToDelete.reason})`
+        `* Would delete ${fileToDelete.type} "${fileToDelete.fileName}" - ${getReasonMessage(fileToDelete)}`
       );
     }
 
-    return;
-  }
+    logger.info(
+      `${archiveCount} archive(s) and ${logCount} log file(s) would have been deleted.`
+    );
+  } else {
+    let deletedArchiveCount = 0;
+    let deletedLogCount = 0;
 
-  // Delete all files in the list
-  let deletedArchiveCount = 0;
-  let deletedLogCount = 0;
+    for (const fileToDelete of filesToDelete) {
+      try {
+        await fs.rm(path.resolve(outputPath, fileToDelete.fileName), {
+          force: true,
+        });
 
-  for (const fileToDelete of filesToDelete) {
-    try {
-      await fs.rm(path.resolve(outputPath, fileToDelete.fileName));
-      logger.info(`Deleted ${fileToDelete.type}: ${fileToDelete.fileName}`);
+        logger.info(
+          `* Deleted ${fileToDelete.type} "${fileToDelete.fileName}" - ${getReasonMessage(fileToDelete)}`
+        );
 
-      if (fileToDelete.type === 'archive') {
-        deletedArchiveCount += 1;
-      } else {
-        deletedLogCount += 1;
+        if (fileToDelete.type === 'archive') {
+          deletedArchiveCount += 1;
+        } else {
+          deletedLogCount += 1;
+        }
+      } catch (error) {
+        logger.warn(
+          `Could not delete ${fileToDelete.type} "${fileToDelete.fileName}".`,
+          error
+        );
       }
-    } catch (error) {
-      logger.error(
-        `Could not delete ${fileToDelete.type} "${fileToDelete.fileName}".`,
-        error
-      );
     }
+
+    logger.info(
+      `${deletedArchiveCount} archive(s) and ${deletedLogCount} log file(s) were deleted.`
+    );
   }
-
-  const totalDeletedMessage = [];
-
-  if (deletedArchiveCount > 0) {
-    totalDeletedMessage.push(`${deletedArchiveCount} failed archive(s)`);
-  }
-
-  if (deletedLogCount > 0) {
-    totalDeletedMessage.push(`${deletedLogCount} log file(s)`);
-  }
-
-  logger.info(`Successfully deleted ${totalDeletedMessage.join(' and ')}.`);
 }
 
 export interface CleanFailedArchivesCommandOptions {
   outputDirectory?: string;
-  dryRun?: boolean;
+  dryRun: boolean;
 }
 
 export function registerCleanFailedArchivesCommand(program: Command) {
@@ -251,15 +237,17 @@ export function registerCleanFailedArchivesCommand(program: Command) {
     )
     .option(
       '--dry-run',
-      'Show what would be deleted without actually deleting anything'
+      'Show what would be deleted without actually deleting anything',
+      false
     )
     .action(async (options: CleanFailedArchivesCommandOptions) => {
       const logger = getLogger();
 
       // Get output directory from options or fallback to settings
       let outputDirectory = options.outputDirectory;
+
       if (!outputDirectory) {
-        const settings: BackupSettings = await readBackupSettings();
+        const settings = await readBackupSettings();
         outputDirectory = settings.defaults.outputDirectory;
 
         if (!outputDirectory) {
@@ -287,24 +275,12 @@ export function registerCleanFailedArchivesCommand(program: Command) {
       try {
         const outputFileList = await listOutputFiles(outputPath);
 
-        if (outputFileList.archiveFileNames.length === 0) {
-          logger.info(`No archives found in "${outputPath}".`);
-        } else {
-          logger.info(
-            `Found ${outputFileList.archiveFileNames.length} archive(s) in "${outputPath}".`
-          );
-        }
-
-        const filesToDelete = await analyzeFilesForDeletion(
+        const filesToDelete = await pickFilesForDeletion(
           outputPath,
           outputFileList
         );
 
-        await executeCleanupActions(
-          outputPath,
-          filesToDelete,
-          options.dryRun || false
-        );
+        await deleteFiles(outputPath, filesToDelete, options.dryRun);
       } catch (error) {
         fail(`Could not read output directory "${outputPath}".`, error);
       }

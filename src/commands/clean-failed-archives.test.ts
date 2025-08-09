@@ -40,7 +40,8 @@ describe('Command: "clean-failed-archives"', () => {
     ]);
 
     expect(result.exitCode).toBe(0);
-    expect(result.stdout).toContain('No archives found');
+    // No output is expected when there is nothing to delete
+    expect(result.stdout).toBe('');
   });
 
   it('should handle non-existent directory', async () => {
@@ -121,10 +122,14 @@ describe('Command: "clean-failed-archives"', () => {
     ]);
 
     expect(result.exitCode).toBe(0);
-    expect(result.stdout).toContain('Found 2 archive(s)');
-    expect(result.stdout).toContain('Found 1 failed archive(s)');
     expect(result.stdout).toContain(
-      'Successfully deleted 1 failed archive(s) and 1 log file(s)'
+      `* Deleted archive "${failedArchive}" - No "Done" found in last 5 lines of log.`
+    );
+    expect(result.stdout).toContain(
+      `* Deleted log "${failedLog}" - No "Done" found in last 5 lines of log.`
+    );
+    expect(result.stdout).toContain(
+      '1 archive(s) and 1 log file(s) were deleted.'
     );
 
     // Check that the successful archive and log still exist
@@ -187,9 +192,15 @@ describe('Command: "clean-failed-archives"', () => {
 
     expect(result.exitCode).toBe(0);
     expect(result.stdout).toContain('Dry run mode');
-    expect(result.stdout).toContain('Would delete');
-    expect(result.stdout).toContain(failedArchive);
-    expect(result.stdout).toContain(failedLog);
+    expect(result.stdout).toContain(
+      `* Would delete archive "${failedArchive}" - No "Done" found in last 5 lines of log.`
+    );
+    expect(result.stdout).toContain(
+      `* Would delete log "${failedLog}" - No "Done" found in last 5 lines of log.`
+    );
+    expect(result.stdout).toContain(
+      '1 archive(s) and 1 log file(s) would have been deleted.'
+    );
 
     // Check that files still exist
     expect(
@@ -219,8 +230,12 @@ describe('Command: "clean-failed-archives"', () => {
     ]);
 
     expect(result.exitCode).toBe(0);
-    expect(result.stdout).toContain('No log file found for archive');
-    expect(result.stdout).toContain('Found 1 failed archive(s)');
+    expect(result.stdout).toContain(
+      `* Deleted archive "${orphanArchive}" - No corresponding log file found.`
+    );
+    expect(result.stdout).toContain(
+      '1 archive(s) and 0 log file(s) were deleted.'
+    );
   });
 
   it('should handle logs with fewer than 5 lines', async () => {
@@ -242,9 +257,8 @@ describe('Command: "clean-failed-archives"', () => {
     ]);
 
     expect(result.exitCode).toBe(0);
-    expect(result.stdout).toContain(
-      'No failed archives or orphan log files found'
-    );
+    // When logs indicate success, nothing is deleted and no output is printed
+    expect(result.stdout).toBe('');
 
     // Archive should still exist
     expect(
@@ -272,7 +286,7 @@ describe('Command: "clean-failed-archives"', () => {
     const result = await runCommand('clean-failed-archives');
 
     expect(result.exitCode).toBe(0);
-    expect(result.stdout).toContain('No archives found');
+    expect(result.stdout).toBe('');
   });
 
   it('should identify and delete orphan log files when no matching archive exists', async () => {
@@ -291,8 +305,12 @@ describe('Command: "clean-failed-archives"', () => {
     ]);
 
     expect(result.exitCode).toBe(0);
-    expect(result.stdout).toContain('No archive found for log file');
-    expect(result.stdout).toContain('Successfully deleted 1 log file(s)');
+    expect(result.stdout).toContain(
+      `* Deleted log "${orphanLog}" - No corresponding archive file found.`
+    );
+    expect(result.stdout).toContain(
+      '0 archive(s) and 1 log file(s) were deleted.'
+    );
 
     // Orphan log should be deleted
     const exists = await fs
@@ -326,7 +344,8 @@ describe('Command: "clean-failed-archives"', () => {
     ]);
 
     expect(result.exitCode).toBe(0);
-    expect(result.stdout).toContain('Found 1 archive(s)');
+    // No deletions should occur; no output expected
+    expect(result.stdout).toBe('');
 
     // Files should remain
     const archiveExists = await fs
@@ -382,11 +401,26 @@ describe('Command: "clean-failed-archives"', () => {
     ]);
 
     expect(result.exitCode).toBe(0);
-    expect(result.stdout).toContain('Found 3 archive(s)');
-    expect(result.stdout).toContain('Found 2 failed archive(s)');
-    expect(result.stdout).toContain('Found 2 orphan log file(s)');
     expect(result.stdout).toContain(
-      'Successfully deleted 2 failed archive(s) and 4 log file(s)'
+      `* Deleted archive "${failA1}" - No "Done" found in last 5 lines of log.`
+    );
+    expect(result.stdout).toContain(
+      `* Deleted log "${failL1}" - No "Done" found in last 5 lines of log.`
+    );
+    expect(result.stdout).toContain(
+      `* Deleted archive "${failA2}" - No "Done" found in last 5 lines of log.`
+    );
+    expect(result.stdout).toContain(
+      `* Deleted log "${failL2}" - No "Done" found in last 5 lines of log.`
+    );
+    expect(result.stdout).toContain(
+      `* Deleted log "${orphanL1}" - No corresponding archive file found.`
+    );
+    expect(result.stdout).toContain(
+      `* Deleted log "${orphanL2}" - No corresponding archive file found.`
+    );
+    expect(result.stdout).toContain(
+      '2 archive(s) and 4 log file(s) were deleted.'
     );
 
     // Kept

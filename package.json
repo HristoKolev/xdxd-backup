@@ -38,6 +38,7 @@
     "install:local": "run-script-os",
     "install:local:nix": "npm run build && chmod +x dist/cli.js && npm link",
     "install:local:windows": "npm run build && npm link",
+    "typecheck": "tsc",
     "format": "prettier --cache --write .",
     "format-check": "prettier --cache --check .",
     "lint": "eslint ./ --max-warnings 0",
@@ -46,12 +47,14 @@
     "test": "npm run install:local && vitest run --passWithNoTests",
     "test:non-existing-executables": "npm run install:local && cross-env RUN_NON_EXISTING_EXECUTABLES_TESTS=true vitest run non-existing-executables",
     "release": "node scripts/release.js",
-    "prepublishOnly": "npm run build && npm run format-check && npm run lint && npm run lint:package",
-    "all": "npm run build && npm run format-check && npm run lint && npm run lint:package && npm run test"
+    "prepublishOnly": "npm run build && npm run lint:package",
+    "all": "npm run format && npm run typecheck && npm run lint:fix && npm run build && npm run lint:package && npm run test"
   },
   "dependencies": {
     "commander": "^14.0.0",
     "log4js": "^6.9.1",
+    "zod": "^4.0.15",
+    "zod-validation-error": "^4.0.1",
     "zx": "^8.8.0"
   },
   "devDependencies": {

@@ -90,9 +90,11 @@ This project (including the tests) is cross-platform and should work on Windows,
 Always run the following NPM scripts, in this exact order, when verifying a change:
 
 1. `npm run format` — format the code.
-2. `npm run build` — build the project.
-3. `npm run lint` — lint the codebase.
-4. `npm run test` — run the tests.
+2. `npm run typecheck` — Run TypeScript on the codebase.
+3. `npm run lint:fix` — lint the codebase.
+4. `npm run build` — build the project.
+5. `npm run lint:package` — lint the package.
+6. `npm run test` — run the tests.
 
 # Script files (`.sh` or `.ps1`)
 

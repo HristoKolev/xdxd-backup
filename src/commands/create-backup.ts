@@ -14,7 +14,10 @@ import { generateDateString } from '../shared/helpers/date.js';
 import { fail } from '../shared/helpers/fail.js';
 import { isExecutableInPath } from '../shared/helpers/is-executable-in-path.js';
 import { getLogger } from '../shared/helpers/logging.js';
-import { readBackupSettings } from '../shared/helpers/read-backup-settings.js';
+import {
+  type BackupSettings,
+  readBackupSettings,
+} from '../shared/helpers/read-backup-settings.js';
 import { closeWriteStream } from '../shared/helpers/stream-helpers.js';
 import { pipeStreamsToFile } from '../shared/helpers/zx.js';
 
@@ -72,7 +75,7 @@ export function registerCreateBackupCommand(program: Command) {
     .action(async (options: CreateBackupCommandOptions) => {
       const logger = getLogger();
 
-      const settings = await readBackupSettings();
+      const settings: BackupSettings = await readBackupSettings();
 
       if (!(await isExecutableInPath('rar'))) {
         fail('The "rar" executable in not in PATH.');
@@ -83,7 +86,7 @@ export function registerCreateBackupCommand(program: Command) {
       let outputDirectory = options.outputDirectory;
 
       if (!outputDirectory) {
-        outputDirectory = settings.defaults?.outputDirectory;
+        outputDirectory = settings.defaults.outputDirectory;
 
         if (!outputDirectory) {
           fail(
@@ -99,7 +102,7 @@ export function registerCreateBackupCommand(program: Command) {
       let compressionLevel = options.compressionLevel;
 
       if (!Number.isFinite(compressionLevel)) {
-        compressionLevel = settings.defaults?.compressionLevel;
+        compressionLevel = settings.defaults.compressionLevel;
 
         logger.debug(
           `Using default compression level from settings: ${compressionLevel}`

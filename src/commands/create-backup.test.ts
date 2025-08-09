@@ -121,7 +121,7 @@ describe('Command: "create"', () => {
     const extractPath = path.join('./output', 'extracted');
     await fs.mkdir(extractPath, { recursive: true });
 
-    const archivePath = path.join('./output', outputFiles.archiveFileNames[0]);
+    const archivePath = path.join('./output', outputFiles.archiveFileNames[0]!);
 
     await extractArchive(archivePath, extractPath);
 
@@ -210,7 +210,7 @@ test_*.txt                  # Excludes files starting with "test_" and ending wi
 
       const archivePath = path.join(
         './output',
-        outputFiles.archiveFileNames[0]
+        outputFiles.archiveFileNames[0]!
       );
 
       await extractArchive(archivePath, extractPath);
@@ -306,7 +306,7 @@ test_*.txt                  # Excludes files starting with "test_" and ending wi
 
       const archivePath = path.join(
         './output',
-        outputFiles.archiveFileNames[0]
+        outputFiles.archiveFileNames[0]!
       );
 
       await extractArchive(archivePath, extractPath);
@@ -379,7 +379,7 @@ test_*.txt                  # Excludes files starting with "test_" and ending wi
 
       const archivePath = path.join(
         './output',
-        outputFiles.archiveFileNames[0]
+        outputFiles.archiveFileNames[0]!
       );
 
       await extractArchive(archivePath, extractPath);
@@ -411,7 +411,7 @@ test_*.txt                  # Excludes files starting with "test_" and ending wi
 
       const archivePath = path.join(
         './output',
-        outputFiles.archiveFileNames[0]
+        outputFiles.archiveFileNames[0]!
       );
 
       await extractArchive(archivePath, extractPath);

@@ -1,89 +1,89 @@
 import fs from 'node:fs/promises';
+import os from 'node:os';
 import path from 'node:path';
-import process from 'node:process';
 
+import { z } from 'zod';
+import { fromError } from 'zod-validation-error';
+
+import { isFsNotFoundError } from './fs.js';
 import { getLogger } from './logging.js';
 
 const logger = getLogger();
 
-export interface BackupSettings {
-  defaults?: {
-    outputDirectory?: string;
-    compressionLevel?: number;
-  };
+export const BackupSettingsSchema = z.object({
+  defaults: z
+    .object({
+      outputDirectory: z.string().min(1).optional(),
+      compressionLevel: z.number().int().min(0).max(5).optional().default(5),
+    })
+    .optional()
+    .prefault({}),
+});
+
+export type BackupSettings = z.infer<typeof BackupSettingsSchema>;
+
+async function parseBackupSettings(input: unknown): Promise<BackupSettings> {
+  return BackupSettingsSchema.parseAsync(input, { reportInput: true });
 }
 
-export const defaultBackupSettings: BackupSettings = {
-  defaults: {
-    outputDirectory: undefined,
-    compressionLevel: 5,
-  },
-};
-
-/**
- * Gets the path to the user's profile folder
- */
-function getUserProfilePath(): string | undefined {
-  // On Windows: %USERPROFILE%
-  // On Unix-like systems: $HOME
-
-  return process.env.USERPROFILE || process.env.HOME;
+export async function getDefaultBackupSettings() {
+  return parseBackupSettings({});
 }
 
-/**
- * Merges default settings with user-provided settings
- */
-function mergeWithDefaults(userSettings: BackupSettings): BackupSettings {
-  return {
-    defaults: {
-      outputDirectory:
-        userSettings.defaults?.outputDirectory ??
-        defaultBackupSettings.defaults?.outputDirectory,
-      compressionLevel:
-        userSettings.defaults?.compressionLevel ??
-        defaultBackupSettings.defaults?.compressionLevel,
-    },
-  };
-}
-
-/**
- * Reads and parses the xdxd-backup.json configuration file from the user's profile folder.
- * Returns default settings merged with user settings if file exists, or default settings if file doesn't exist.
- *
- * @returns The merged backup settings with defaults applied
- */
-export async function readBackupSettings(): Promise<BackupSettings> {
-  const userProfilePath = getUserProfilePath();
+export async function readBackupSettings() {
+  const userProfilePath = os.homedir();
 
   if (!userProfilePath) {
     logger.warn(
       'Could not determine user profile path. Using default settings.'
     );
-    return defaultBackupSettings;
+
+    return getDefaultBackupSettings();
   }
 
-  const settingsPath = path.join(userProfilePath, 'xdxd-backup.json');
+  const settingsFilePath = path.resolve(userProfilePath, 'xdxd-backup.json');
 
   try {
-    // Check if file exists first
-    await fs.access(settingsPath);
+    const settingsFileContents = await fs.readFile(settingsFilePath, 'utf-8');
+    const settingsFileJSON = JSON.parse(settingsFileContents) as unknown;
 
-    const fileContents = await fs.readFile(settingsPath, 'utf-8');
-    const parsed = JSON.parse(fileContents) as BackupSettings;
+    const parsed = await parseBackupSettings(settingsFileJSON);
 
-    logger.debug(`Successfully read backup settings from ${settingsPath}`);
-    return mergeWithDefaults(parsed);
+    logger.debug(`Successfully read backup settings from ${settingsFilePath}`);
+
+    return parsed;
   } catch (error) {
-    if (error instanceof Error && 'code' in error && error.code === 'ENOENT') {
-      // File doesn't exist, return default settings
+    if (isFsNotFoundError(error)) {
       logger.debug(
-        `Backup settings file not found at ${settingsPath}, using default settings`
+        `Backup settings file not found at ${settingsFilePath}, using default settings`
       );
-      return defaultBackupSettings;
+
+      return getDefaultBackupSettings();
+    }
+
+    if (error instanceof z.ZodError) {
+      let reportedError;
+
+      try {
+        reportedError = fromError(error);
+      } catch {
+        reportedError = error;
+      }
+
+      logger.warn(
+        `Invalid backup settings found at ${settingsFilePath}. Falling back to defaults. Details:`,
+        reportedError
+      );
+
+      return getDefaultBackupSettings();
     }
 
     // For other errors (permission issues, malformed JSON, etc.), log and return default settings
-    logger.warn(`Failed to read backup settings from ${settingsPath}:`, error);
-    return defaultBackupSettings;
+    logger.warn(
+      `Failed to read backup settings from ${settingsFilePath}:`,
+      error
+    );
+
+    return getDefaultBackupSettings();
   }
 }

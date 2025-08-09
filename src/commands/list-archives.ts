@@ -5,7 +5,10 @@ import type { Command } from 'commander';
 
 import { fail } from '../shared/helpers/fail.js';
 import { getLogger } from '../shared/helpers/logging.js';
-import { readBackupSettings } from '../shared/helpers/read-backup-settings.js';
+import {
+  type BackupSettings,
+  readBackupSettings,
+} from '../shared/helpers/read-backup-settings.js';
 import { listOutputFiles } from '../shared/list-output-files.js';
 
 export interface ListArchivesCommandOptions {
@@ -26,8 +29,8 @@ export function registerListArchivesCommand(program: Command) {
       // Get output directory from options or fallback to settings
       let outputDirectory = options.outputDirectory;
       if (!outputDirectory) {
-        const settings = await readBackupSettings();
-        outputDirectory = settings.defaults?.outputDirectory;
+        const settings: BackupSettings = await readBackupSettings();
+        outputDirectory = settings.defaults.outputDirectory;
 
         if (!outputDirectory) {
           fail(

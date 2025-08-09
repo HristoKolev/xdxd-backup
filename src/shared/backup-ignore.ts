@@ -3,6 +3,7 @@ import path from 'node:path';
 import readline from 'node:readline';
 
 import { fail } from './helpers/fail.js';
+import { isFsNotFoundError } from './helpers/fs.js';
 import { getLogger } from './helpers/logging.js';
 
 export async function readBackupIgnoreFile(
@@ -31,10 +32,7 @@ export async function readBackupIgnoreFile(
       logger.log(`Using backup ignore file: "${fullPath}"`);
       return result;
     } catch (error: unknown) {
-      // eslint-disable-next-line no-undef
-      const typedError = error as NodeJS.ErrnoException;
-
-      if (typedError.code === 'ENOENT') {
+      if (isFsNotFoundError(error)) {
         fail(`Could not find backup ignore file "${fullPath}".`);
       }
 
@@ -67,10 +65,7 @@ export async function readBackupIgnoreFile(
     logger.log(`Using backup ignore file: "${defaultBackupIgnoreFilePath}"`);
     return result;
   } catch (error: unknown) {
-    // eslint-disable-next-line no-undef
-    const typedError = error as NodeJS.ErrnoException;
-
-    if (typedError.code === 'ENOENT') {
+    if (isFsNotFoundError(error)) {
       logger.log('No backup ignore file found.');
       return undefined;
     }

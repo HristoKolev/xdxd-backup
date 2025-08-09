@@ -9,10 +9,12 @@ import { registerCreateBackupCommand } from './commands/create-backup.js';
 import { registerListArchivesCommand } from './commands/list-archives.js';
 import { configureLogging, getCleanLogger } from './shared/helpers/logging.js';
 import { readPackageJson } from './shared/helpers/read-package-json.js';
+import { configureZod } from './shared/helpers/zod.js';
 import { configureZx } from './shared/helpers/zx.js';
 
 configureLogging();
 configureZx();
+configureZod();
 
 const packageJSON = readPackageJson();
 

@@ -87,6 +87,7 @@ export default tseslint.config(
           return acc;
         }, {}),
       ],
+      'es/no-optional-catch-binding': 'off',
     },
   }),
 

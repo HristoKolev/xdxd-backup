@@ -10,11 +10,10 @@ import { useTempDir } from '../testing/temp-dir.js';
 
 describe('Command: "list-archives"', () => {
   useTempDir();
-
   useMockHomeDir();
 
   it('should show help when --help is used', async () => {
-    const result = await runCommand('list-archives', ['--help']);
+    const result = await runCommand('list-archives', '--help');
 
     expect(result.exitCode).toBe(0);
     expect(result.stdout).toContain('Usage:');
@@ -44,10 +43,11 @@ describe('Command: "list-archives"', () => {
       'not an archive'
     );
 
-    const result = await runCommand('list-archives', [
+    const result = await runCommand(
+      'list-archives',
       '--outputDirectory',
-      outputDir,
-    ]);
+      outputDir
+    );
 
     expect(result.exitCode).toBe(0);
     expect(result.stdout).toContain('Found 2 archive(s)');
@@ -60,10 +60,11 @@ describe('Command: "list-archives"', () => {
     const outputDir = path.join(process.cwd(), 'output');
     await fs.mkdir(outputDir, { recursive: true });
 
-    const result = await runCommand('list-archives', [
+    const result = await runCommand(
+      'list-archives',
       '--outputDirectory',
-      outputDir,
-    ]);
+      outputDir
+    );
 
     expect(result.exitCode).toBe(0);
     expect(result.stdout).toContain('No archives found');
@@ -72,10 +73,11 @@ describe('Command: "list-archives"', () => {
   it('should handle non-existent directory', async () => {
     const nonExistentDir = path.join(process.cwd(), 'nonexistent');
 
-    const result = await runCommand('list-archives', [
+    const result = await runCommand(
+      'list-archives',
       '--outputDirectory',
-      nonExistentDir,
-    ]).nothrow();
+      nonExistentDir
+    ).nothrow();
 
     expect(result.exitCode).toBe(1);
     expect(result.stderr).toContain('Could not access output directory');
@@ -85,10 +87,11 @@ describe('Command: "list-archives"', () => {
     const filePath = path.join(process.cwd(), 'notadirectory.txt');
     await fs.writeFile(filePath, 'test content');
 
-    const result = await runCommand('list-archives', [
+    const result = await runCommand(
+      'list-archives',
       '--outputDirectory',
-      filePath,
-    ]).nothrow();
+      filePath
+    ).nothrow();
 
     expect(result.exitCode).toBe(1);
     expect(result.stderr).toContain('is not a directory');

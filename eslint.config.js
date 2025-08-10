@@ -172,5 +172,5 @@ export default tseslint.config(
     },
   }),
 
-  { ignores: ['dist', 'node_modules', '**/*.json'] }
+  { ignores: ['dist', 'node_modules', 'coverage', '**/*.json'] }
 );

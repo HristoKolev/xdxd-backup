@@ -7,21 +7,21 @@ const packageJSON = readPackageJson();
 
 describe('Top-level command', () => {
   it('should display version when --version flag is used', async () => {
-    const result = await runCommand(undefined, ['--version']);
+    const result = await runCommand('--version');
 
     expect(result.stdout.trim()).toMatch(packageJSON.version as string);
     expect(result.exitCode).toBe(0);
   });
 
   it('should display version when -v flag is used', async () => {
-    const result = await runCommand(undefined, ['-v']);
+    const result = await runCommand('-v');
 
     expect(result.stdout.trim()).toMatch(packageJSON.version as string);
     expect(result.exitCode).toBe(0);
   });
 
   it('should display help when --help flag is used', async () => {
-    const result = await runCommand(undefined, ['--help']).nothrow();
+    const result = await runCommand('--help');
 
     expect(result.stdout).toContain('Usage:');
     expect(result.exitCode).toBe(0);

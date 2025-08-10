@@ -11,11 +11,10 @@ import { useTempDir } from '../testing/temp-dir.js';
 
 describe('Command: "clean-failed-archives"', () => {
   useTempDir();
-
   useMockHomeDir();
 
   it('should show help when --help is used', async () => {
-    const result = await runCommand('clean-failed-archives', ['--help']);
+    const result = await runCommand('clean-failed-archives', '--help');
 
     expect(result.exitCode).toBe(0);
     expect(result.stdout).toContain('Usage:');
@@ -34,10 +33,11 @@ describe('Command: "clean-failed-archives"', () => {
     const outputDir = path.join(process.cwd(), 'output');
     await fs.mkdir(outputDir, { recursive: true });
 
-    const result = await runCommand('clean-failed-archives', [
+    const result = await runCommand(
+      'clean-failed-archives',
       '--outputDirectory',
-      outputDir,
-    ]);
+      outputDir
+    );
 
     expect(result.exitCode).toBe(0);
     // No output is expected when there is nothing to delete
@@ -47,10 +47,11 @@ describe('Command: "clean-failed-archives"', () => {
   it('should handle non-existent directory', async () => {
     const nonExistentDir = path.join(process.cwd(), 'nonexistent');
 
-    const result = await runCommand('clean-failed-archives', [
+    const result = await runCommand(
+      'clean-failed-archives',
       '--outputDirectory',
-      nonExistentDir,
-    ]).nothrow();
+      nonExistentDir
+    ).nothrow();
 
     expect(result.exitCode).toBe(1);
     expect(result.stderr).toContain('Could not access output directory');
@@ -60,10 +61,11 @@ describe('Command: "clean-failed-archives"', () => {
     const filePath = path.join(process.cwd(), 'notadirectory.txt');
     await fs.writeFile(filePath, 'test content');
 
-    const result = await runCommand('clean-failed-archives', [
+    const result = await runCommand(
+      'clean-failed-archives',
       '--outputDirectory',
-      filePath,
-    ]).nothrow();
+      filePath
+    ).nothrow();
 
     expect(result.exitCode).toBe(1);
     expect(result.stderr).toContain('is not a directory');
@@ -116,10 +118,11 @@ describe('Command: "clean-failed-archives"', () => {
       failedLogContent.trim()
     );
 
-    const result = await runCommand('clean-failed-archives', [
+    const result = await runCommand(
+      'clean-failed-archives',
       '--outputDirectory',
-      outputDir,
-    ]);
+      outputDir
+    );
 
     expect(result.exitCode).toBe(0);
     expect(result.stdout).toContain(
@@ -184,11 +187,12 @@ describe('Command: "clean-failed-archives"', () => {
       failedLogContent.trim()
     );
 
-    const result = await runCommand('clean-failed-archives', [
+    const result = await runCommand(
+      'clean-failed-archives',
       '--outputDirectory',
       outputDir,
-      '--dry-run',
-    ]);
+      '--dry-run'
+    );
 
     expect(result.exitCode).toBe(0);
     expect(result.stdout).toContain('Dry run mode');
@@ -224,10 +228,11 @@ describe('Command: "clean-failed-archives"', () => {
     const orphanArchive = 'input-15-06-2024_14-30-45.rar';
     await fs.writeFile(path.join(outputDir, orphanArchive), 'archive content');
 
-    const result = await runCommand('clean-failed-archives', [
+    const result = await runCommand(
+      'clean-failed-archives',
       '--outputDirectory',
-      outputDir,
-    ]);
+      outputDir
+    );
 
     expect(result.exitCode).toBe(0);
     expect(result.stdout).toContain(
@@ -251,10 +256,11 @@ describe('Command: "clean-failed-archives"', () => {
     const logContent = ['Start', 'Done', 'End'].join(os.EOL);
     await fs.writeFile(path.join(outputDir, log), logContent);
 
-    const result = await runCommand('clean-failed-archives', [
+    const result = await runCommand(
+      'clean-failed-archives',
       '--outputDirectory',
-      outputDir,
-    ]);
+      outputDir
+    );
 
     expect(result.exitCode).toBe(0);
     // When logs indicate success, nothing is deleted and no output is printed
@@ -299,10 +305,11 @@ describe('Command: "clean-failed-archives"', () => {
       ['Some log content', 'Not important', ''].join(os.EOL)
     );
 
-    const result = await runCommand('clean-failed-archives', [
+    const result = await runCommand(
+      'clean-failed-archives',
       '--outputDirectory',
-      outputDir,
-    ]);
+      outputDir
+    );
 
     expect(result.exitCode).toBe(0);
     expect(result.stdout).toContain(
@@ -338,10 +345,11 @@ describe('Command: "clean-failed-archives"', () => {
 
     await fs.writeFile(path.join(outputDir, log), crlfLogContent);
 
-    const result = await runCommand('clean-failed-archives', [
+    const result = await runCommand(
+      'clean-failed-archives',
       '--outputDirectory',
-      outputDir,
-    ]);
+      outputDir
+    );
 
     expect(result.exitCode).toBe(0);
     // No deletions should occur; no output expected
@@ -395,10 +403,11 @@ describe('Command: "clean-failed-archives"', () => {
     await fs.writeFile(path.join(outputDir, orphanL1), 'orphan log 1');
     await fs.writeFile(path.join(outputDir, orphanL2), 'orphan log 2');
 
-    const result = await runCommand('clean-failed-archives', [
+    const result = await runCommand(
+      'clean-failed-archives',
       '--outputDirectory',
-      outputDir,
-    ]);
+      outputDir
+    );
 
     expect(result.exitCode).toBe(0);
     expect(result.stdout).toContain(

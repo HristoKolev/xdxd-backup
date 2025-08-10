@@ -44,7 +44,7 @@
     "lint": "eslint ./ --max-warnings 0",
     "lint:fix": "npm run lint -- --fix",
     "lint:package": "publint --strict",
-    "test": "npm run install:local && vitest run --passWithNoTests",
+    "test": "npm run install:local && vitest run --coverage --passWithNoTests",
     "test:non-existing-executables": "npm run install:local && cross-env RUN_NON_EXISTING_EXECUTABLES_TESTS=true vitest run non-existing-executables",
     "release": "node scripts/release.js",
     "prepublishOnly": "npm run build && npm run lint:package",
@@ -67,7 +67,8 @@
     "publint": "^0.3.12",
     "run-script-os": "^1.1.6",
     "typescript": "~5.8",
-    "vitest": "^3.2.4"
+    "vitest": "^3.2.4",
+    "@vitest/coverage-v8": "^3.2.4"
   },
   "license": "MIT"
 }

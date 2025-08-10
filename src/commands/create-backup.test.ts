@@ -47,14 +47,14 @@ describe('Command: "create"', () => {
   useMockHomeDir();
 
   it('should show help when --help is used', async () => {
-    const result = await runCommand('create', ['--help']);
+    const result = await runCommand('create', '--help');
 
     expect(result.exitCode).toBe(0);
     expect(result.stdout).toContain('Usage:');
   });
 
   it('should show help when "help create" is used', async () => {
-    const result = await runCommand('help', ['create']);
+    const result = await runCommand('help', 'create');
 
     expect(result.exitCode).toBe(0);
     expect(result.stdout).toContain('Usage:');
@@ -68,7 +68,7 @@ describe('Command: "create"', () => {
   });
 
   it('should fail when no output directory is provided and no default is set in settings', async () => {
-    const result = await runCommand('create', ['-i', './input']).nothrow();
+    const result = await runCommand('create', '-i', './input').nothrow();
 
     expect(result.exitCode).toBe(1);
     expect(result.stderr).toContain(
@@ -77,24 +77,26 @@ describe('Command: "create"', () => {
   });
 
   it('should exit with status code 1 when passed a non-existent input directory', async () => {
-    const result = await runCommand('create', [
+    const result = await runCommand(
+      'create',
       '-i',
       './non-existent-input',
       '-o',
-      './output',
-    ]).nothrow();
+      './output'
+    ).nothrow();
 
     expect(result.exitCode).toBe(1);
     expect(result.stderr).toContain('Could not find input directory');
   });
 
   it('should create archive and log file', async () => {
-    const result = await runCommand('create', [
+    const result = await runCommand(
+      'create',
       '-i',
       './input',
       '-o',
-      './output',
-    ]);
+      './output'
+    );
 
     expect(result.exitCode).toBe(0);
 
@@ -105,12 +107,13 @@ describe('Command: "create"', () => {
   });
 
   it('should create archive that unpacks to match input files', async () => {
-    const result = await runCommand('create', [
+    const result = await runCommand(
+      'create',
       '-i',
       './input',
       '-o',
-      './output',
-    ]);
+      './output'
+    );
 
     expect(result.exitCode).toBe(0);
 
@@ -148,14 +151,15 @@ describe('Command: "create"', () => {
 
   describe('.backupignore', () => {
     it('should exit with status code 1 when passed a non-existent explicit backup ignore file', async () => {
-      const result = await runCommand('create', [
+      const result = await runCommand(
+        'create',
         '-i',
         './input',
         '-o',
         './output',
         '--ignoreFilePath',
-        './non-existent-ignore-file.txt',
-      ]).nothrow();
+        './non-existent-ignore-file.txt'
+      ).nothrow();
 
       expect(result.exitCode).toBe(1);
       expect(result.stderr).toContain('Could not find backup ignore file');
@@ -190,14 +194,15 @@ test_*.txt                  # Excludes files starting with "test_" and ending wi
 
       await fs.writeFile(backupIgnoreDestPath, backupIgnoreContent);
 
-      const result = await runCommand('create', [
+      const result = await runCommand(
+        'create',
         '-i',
         './input',
         '-o',
         './output',
         '--ignoreFilePath',
-        backupIgnoreDestPath,
-      ]);
+        backupIgnoreDestPath
+      );
 
       expect(result.exitCode).toBe(0);
 
@@ -288,12 +293,13 @@ test_*.txt                  # Excludes files starting with "test_" and ending wi
 
       await fs.writeFile(backupIgnoreDestPath, backupIgnoreContent);
 
-      const result = await runCommand('create', [
+      const result = await runCommand(
+        'create',
         '-i',
         './input',
         '-o',
-        './output',
-      ]);
+        './output'
+      );
 
       expect(result.exitCode).toBe(0);
 
@@ -359,14 +365,15 @@ test_*.txt                  # Excludes files starting with "test_" and ending wi
       const emptyIgnorePath = path.join('./input', '.backupignore');
       await fs.writeFile(emptyIgnorePath, '');
 
-      const result = await runCommand('create', [
+      const result = await runCommand(
+        'create',
         '-i',
         './input',
         '-o',
         './output',
         '--ignoreFilePath',
-        emptyIgnorePath,
-      ]);
+        emptyIgnorePath
+      );
 
       expect(result.exitCode).toBe(0);
 
@@ -393,12 +400,13 @@ test_*.txt                  # Excludes files starting with "test_" and ending wi
     });
 
     it('should handle non existing implicit ignore file gracefully', async () => {
-      const result = await runCommand('create', [
+      const result = await runCommand(
+        'create',
         '-i',
         './input',
         '-o',
-        './output',
-      ]);
+        './output'
+      );
 
       expect(result.exitCode).toBe(0);
 
@@ -437,7 +445,7 @@ test_*.txt                  # Excludes files starting with "test_" and ending wi
     await fs.writeFile(settingsPath, JSON.stringify(settings, null, 2));
 
     // Run command without --outputDirectory option
-    const result = await runCommand('create', ['-i', './input']);
+    const result = await runCommand('create', '-i', './input');
 
     expect(result.exitCode).toBe(0);
 
@@ -452,14 +460,15 @@ test_*.txt                  # Excludes files starting with "test_" and ending wi
 
     for (const level of validLevels) {
       it(`should accept valid compression level ${level}`, async () => {
-        const result = await runCommand('create', [
+        const result = await runCommand(
+          'create',
           '-i',
           './input',
           '-o',
           './output',
           '--compressionLevel',
-          level.toString(),
-        ]);
+          level.toString()
+        );
 
         expect(result.exitCode).toBe(0);
       });
@@ -469,14 +478,15 @@ test_*.txt                  # Excludes files starting with "test_" and ending wi
 
     for (const level of invalidLevels) {
       it(`should reject invalid compression level ${level}`, async () => {
-        const result = await runCommand('create', [
+        const result = await runCommand(
+          'create',
           '-i',
           './input',
           '-o',
           './output',
           '--compressionLevel',
-          level,
-        ]).nothrow();
+          level
+        ).nothrow();
 
         expect(result.exitCode).toBe(1);
         expect(result.stderr).toMatch(
@@ -498,7 +508,7 @@ test_*.txt                  # Excludes files starting with "test_" and ending wi
       await fs.writeFile(settingsPath, JSON.stringify(settings, null, 2));
 
       // Run command without --compressionLevel option
-      const result = await runCommand('create', ['-i', './input']);
+      const result = await runCommand('create', '-i', './input');
 
       expect(result.exitCode).toBe(0);
 
@@ -524,12 +534,13 @@ test_*.txt                  # Excludes files starting with "test_" and ending wi
       await fs.writeFile(settingsPath, JSON.stringify(settings, null, 2));
 
       // Run command with explicit compression level that differs from settings
-      const result = await runCommand('create', [
+      const result = await runCommand(
+        'create',
         '-i',
         './input',
         '--compressionLevel',
-        '4',
-      ]);
+        '4'
+      );
 
       expect(result.exitCode).toBe(0);
 
@@ -554,7 +565,7 @@ test_*.txt                  # Excludes files starting with "test_" and ending wi
       await fs.writeFile(settingsPath, JSON.stringify(settings, null, 2));
 
       // Run command without --compressionLevel option
-      const result = await runCommand('create', ['-i', './input']);
+      const result = await runCommand('create', '-i', './input');
 
       expect(result.exitCode).toBe(0);
 

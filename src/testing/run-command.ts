@@ -1,28 +1,18 @@
 import path from 'node:path';
 import url from 'node:url';
 
-import { $ } from 'zx';
+import { $, type ProcessPromise } from 'zx';
 
-import { isDebuggerAttached } from './env-helpers.js';
+import { isDebugging } from './debugger.js';
 
 const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
 
-export function runCommand(command?: string, args?: string[]) {
-  const commandArg = command || '';
+const toolPath = path.resolve(__dirname, '..', '..', 'dist', 'cli.js');
 
-  if (isDebuggerAttached()) {
-    const toolPath = path.resolve(__dirname, '..', '..', 'dist', 'cli.js');
-
-    if (args && args.length > 0) {
-      return $`node --inspect=127.0.0.1:0 "${toolPath}" ${commandArg} ${args}`;
-    }
-
-    return $`node --inspect=127.0.0.1:0 "${toolPath}" ${commandArg}`;
+export function runCommand(...args: string[]): ProcessPromise {
+  if (isDebugging()) {
+    return $`node --inspect=127.0.0.1:0 "${toolPath}" ${args.join(' ')}`;
   }
 
-  if (args && args.length > 0) {
-    return $`xdxd-backup ${commandArg} ${args}`;
-  }
-
-  return $`xdxd-backup ${commandArg}`;
+  return $`xdxd-backup ${args.join(' ')}`;
 }

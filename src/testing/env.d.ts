@@ -17,11 +17,6 @@ declare global {
       CI_DEBUG?: '1';
 
       /**
-       * If set to `true` means that the debugger is attached.
-       */
-      IS_DEBUGGER_ATTACHED?: 'true';
-
-      /**
        * If set to `true` means that the non existing executables tests should be run.
        */
       RUN_NON_EXISTING_EXECUTABLES_TESTS?: 'true';

@@ -14,12 +14,13 @@ describe.skipIf(!runNonExistingExecutableTests())(
     it('Exits with status code 1 when the rar executable in not in PATH', async () => {
       await fs.mkdir('./input');
 
-      const result = await runCommand('create', [
+      const result = await runCommand(
+        'create',
         '-i',
         './input',
         '-o',
-        './output',
-      ]).nothrow();
+        './output'
+      ).nothrow();
 
       expect(result.exitCode).toBe(1);
       expect(result.stderr).toContain('The "rar" executable in not in PATH.');

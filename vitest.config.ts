@@ -1,12 +1,11 @@
 import fsSync from 'node:fs';
-import process from 'node:process';
 
 import dotenv from 'dotenv';
 import { defineConfig } from 'vitest/config';
 
-import { isDebuggerAttached } from './src/testing/env-helpers.js';
+import { isDebugging } from './src/testing/debugger.js';
+import { getTestRetries } from './src/testing/env-helpers.js';
 
-// Load environment variables early so they affect Vitest config (e.g., TEST_RETRIES)
 (() => {
   const fileNames = ['.env', '.env.local'];
   const availableFileNames = fileNames.filter(fsSync.existsSync);
@@ -20,7 +19,6 @@ import { isDebuggerAttached } from './src/testing/env-helpers.js';
       });
 
       if (result.error) {
-        // noinspection ExceptionCaughtLocallyJS
         throw result.error;
       }
     } catch (error) {
@@ -34,12 +32,16 @@ import { isDebuggerAttached } from './src/testing/env-helpers.js';
 
 export default defineConfig({
   test: {
-    testTimeout: isDebuggerAttached() ? 0 : 5_000, // 5 seconds for normal runs, no timeout in debug mode
-    // Retry failing tests. Controlled via TEST_RETRIES env var, defaults to 2.
-    retry: (() => {
-      const value = Number(process.env.TEST_RETRIES || '2');
-      return Number.isFinite(value) && value >= 0 ? Math.floor(value) : 0;
-    })(),
+    testTimeout: isDebugging() ? 0 : 5_000,
+    retry: getTestRetries(),
     setupFiles: ['./setupTests.ts'],
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'text-summary', 'html', 'lcov'],
+      all: true,
+      include: ['src/**/*.ts'],
+      exclude: ['src/**/*.test.ts', 'src/testing/**'],
+      reportsDirectory: 'coverage',
+    },
   },
 });

@@ -8,10 +8,11 @@ export function runsInCI() {
   return process.env.CI === 'true';
 }
 
-export function isDebuggerAttached() {
-  return process.env.IS_DEBUGGER_ATTACHED === 'true';
-}
-
 export function runNonExistingExecutableTests() {
   return process.env.RUN_NON_EXISTING_EXECUTABLES_TESTS === 'true';
+}
+
+export function getTestRetries() {
+  const value = Number(process.env.TEST_RETRIES || '2');
+  return Number.isFinite(value) && value >= 0 ? Math.floor(value) : 0;
 }
